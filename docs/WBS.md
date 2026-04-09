@@ -31,10 +31,10 @@ Week 5  (May 5-11)   ████████  Demo — presentation, video, sub
 - **Target**: End of Week 1, Day 1
 
 ### 1.2 State Accounts
-- [ ] `B-010` `ConsorcioGroup` account struct + space calculation
-- [ ] `B-011` `Member` account struct (PDA: group + wallet)
-- [ ] `B-012` `Round` account struct (PDA: group + month)
-- [ ] `B-013` `Reputation` account struct (PDA: wallet, global)
+- [x] `B-010` `ConsorcioGroup` account struct + space calculation
+- [x] `B-011` `Member` account struct (PDA: group + wallet)
+- [x] `B-012` `Round` account struct (PDA: group + month)
+- [x] `B-013` `Reputation` account struct (PDA: wallet, global)
 - **Target**: End of Week 1, Day 2
 - **Depends on**: B-001
 

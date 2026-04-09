@@ -6,3 +6,20 @@ node_modules
 test-ledger
 .yarn
 .surfpool
+
+# Secrets & credentials
+token.md
+*.pem
+*.key
+.env
+.env.*
+credentials.json
+**/keypair.json
+
+# IDE
+.vscode
+.idea
+
+# Agents / local tooling
+.agents/
+skills-lock.json
