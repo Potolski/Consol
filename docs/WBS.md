@@ -39,10 +39,10 @@ Week 5  (May 5-11)   ████████  Demo — presentation, video, sub
 - **Depends on**: B-001
 
 ### 1.3 Core Instructions
-- [ ] `B-020` `create_group` — creator initializes group with parameters
-- [ ] `B-021` `join_group` — member deposits collateral + first payment, gets Member PDA
-- [ ] `B-022` `leave_group` — member exits during formation phase (full refund)
-- [ ] `B-023` `activate_group` — transition from Forming → Active when slots filled
+- [x] `B-020` `create_group` — creator initializes group with parameters
+- [x] `B-021` `join_group` — member deposits collateral + first payment, gets Member PDA
+- [x] `B-022` `leave_group` — member exits during formation phase (full refund)
+- [x] `B-023` `activate_group` — transition from Forming → Active when slots filled
 - **Target**: End of Week 1
 - **Depends on**: B-010, B-011
 
