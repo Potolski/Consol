@@ -47,12 +47,12 @@ Week 5  (May 5-11)   ████████  Demo — presentation, video, sub
 - **Depends on**: B-010, B-011
 
 ### 1.4 Payment & Round Logic
-- [ ] `B-030` `make_payment` — member submits monthly contribution to vault
-- [ ] `B-031` `start_round` — initialize Round account, open collection window
-- [ ] `B-032` `close_collection` — lock collection, calculate total, check defaults
-- [ ] `B-033` `mark_default` — flag non-payer, apply collateral slash, update member state
-- [ ] `B-034` `distribute` — transfer pool funds to selected winner
-- [ ] `B-035` `claim_distribution` — winner claims (if using claim model vs direct push)
+- [x] `B-030` `make_payment` — member submits monthly contribution to vault
+- [x] `B-031` `start_round` — initialize Round account, open collection window
+- [x] `B-032` `close_collection` — lock collection, calculate total, check defaults
+- [x] `B-033` `mark_default` — flag non-payer, apply collateral slash, update member state
+- [x] `B-034` `distribute` — transfer pool funds to selected winner (direct push model)
+- [x] `B-035` ~~`claim_distribution`~~ — merged into `distribute` (push model, no separate claim)
 - **Target**: End of Week 2
 - **Depends on**: B-020, B-021, B-012
 

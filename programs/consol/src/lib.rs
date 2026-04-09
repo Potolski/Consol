@@ -33,4 +33,24 @@ pub mod consol {
     pub fn activate_group(ctx: Context<ActivateGroup>) -> Result<()> {
         handle_activate_group(ctx)
     }
+
+    pub fn start_round(ctx: Context<StartRound>) -> Result<()> {
+        handle_start_round(ctx)
+    }
+
+    pub fn make_payment(ctx: Context<MakePayment>) -> Result<()> {
+        handle_make_payment(ctx)
+    }
+
+    pub fn close_collection(ctx: Context<CloseCollection>) -> Result<()> {
+        handle_close_collection(ctx)
+    }
+
+    pub fn mark_default(ctx: Context<MarkDefault>) -> Result<()> {
+        handle_mark_default(ctx)
+    }
+
+    pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
+        handle_distribute(ctx)
+    }
 }

@@ -1,0 +1,181 @@
+use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
+
+use crate::constants::*;
+use crate::error::ConsolError;
+use crate::events::PaymentMade;
+use crate::state::{ConsorcioGroup, GroupStatus, Member, MemberStatus, Round, RoundStatus};
+
+#[derive(Accounts)]
+pub struct MakePayment<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+
+    #[account(
+        constraint = group.status == GroupStatus::Active @ ConsolError::InvalidGroupState,
+    )]
+    pub group: Box<Account<'info, ConsorcioGroup>>,
+
+    #[account(
+        mut,
+        seeds = [MEMBER_SEED, group.key().as_ref(), user.key().as_ref()],
+        bump = member.bump,
+        constraint = member.wallet == user.key() @ ConsolError::NotMember,
+        constraint = member.status == MemberStatus::Active @ ConsolError::MemberDefaulted,
+    )]
+    pub member: Box<Account<'info, Member>>,
+
+    #[account(
+        mut,
+        seeds = [ROUND_SEED, group.key().as_ref(), &[group.current_round]],
+        bump = round.bump,
+        constraint = round.status == RoundStatus::Collecting @ ConsolError::PaymentWindowClosed,
+    )]
+    pub round: Box<Account<'info, Round>>,
+
+    #[account(address = group.mint)]
+    pub mint: Account<'info, Mint>,
+
+    #[account(
+        mut,
+        token::mint = mint,
+        token::authority = user,
+    )]
+    pub user_token_account: Account<'info, TokenAccount>,
+
+    #[account(
+        mut,
+        seeds = [VAULT_SEED, group.key().as_ref()],
+        bump = group.vault_bump,
+    )]
+    pub vault: Account<'info, TokenAccount>,
+
+    /// Insurance vault receives the insurance portion
+    #[account(
+        mut,
+        seeds = [INSURANCE_SEED, group.key().as_ref()],
+        bump = group.insurance_bump,
+    )]
+    pub insurance_vault: Account<'info, TokenAccount>,
+
+    pub token_program: Program<'info, Token>,
+}
+
+pub fn handle_make_payment(ctx: Context<MakePayment>) -> Result<()> {
+    let clock = Clock::get()?;
+    let group = &ctx.accounts.group;
+    let member = &ctx.accounts.member;
+    let current_round = group.current_round;
+
+    // Check member hasn't already paid this round
+    // last_paid_round is 0-indexed but starts at 0 before any payment,
+    // so we use current_round + 1 as the marker
+    require!(
+        member.last_paid_round <= current_round,
+        ConsolError::AlreadyPaid
+    );
+    // For round 0, last_paid_round == 0 means unpaid. We need a different check:
+    // if payments_made > 0 and last_paid_round == current_round, they already paid
+    if member.payments_made > 0 && member.last_paid_round == current_round + 1 {
+        return Err(ConsolError::AlreadyPaid.into());
+    }
+
+    // Check if within payment window or grace period
+    let elapsed = clock
+        .unix_timestamp
+        .checked_sub(group.round_started_at)
+        .ok_or(ConsolError::MathOverflow)?;
+    let window_secs = PAYMENT_WINDOW_DAYS * 24 * 60 * 60;
+    let grace_secs = GRACE_PERIOD_DAYS * 24 * 60 * 60;
+
+    require!(
+        elapsed <= window_secs + grace_secs,
+        ConsolError::PaymentWindowClosed
+    );
+
+    let is_late = elapsed > window_secs;
+
+    // Calculate payment: base contribution + late fee if applicable
+    let base_amount = group.monthly_contribution;
+    let late_fee = if is_late {
+        (base_amount as u128)
+            .checked_mul(LATE_FEE_BPS as u128)
+            .ok_or(ConsolError::MathOverflow)?
+            .checked_div(10_000)
+            .ok_or(ConsolError::MathOverflow)? as u64
+    } else {
+        0
+    };
+    let total_payment = base_amount
+        .checked_add(late_fee)
+        .ok_or(ConsolError::MathOverflow)?;
+
+    // Split: insurance portion goes to insurance vault, rest to main vault
+    let insurance_amount = (base_amount as u128)
+        .checked_mul(group.insurance_bps as u128)
+        .ok_or(ConsolError::MathOverflow)?
+        .checked_div(10_000)
+        .ok_or(ConsolError::MathOverflow)? as u64;
+
+    let vault_amount = total_payment
+        .checked_sub(insurance_amount)
+        .ok_or(ConsolError::MathOverflow)?;
+
+    // Transfer to main vault
+    if vault_amount > 0 {
+        token::transfer(
+            CpiContext::new(
+                ctx.accounts.token_program.key(),
+                Transfer {
+                    from: ctx.accounts.user_token_account.to_account_info(),
+                    to: ctx.accounts.vault.to_account_info(),
+                    authority: ctx.accounts.user.to_account_info(),
+                },
+            ),
+            vault_amount,
+        )?;
+    }
+
+    // Transfer insurance portion
+    if insurance_amount > 0 {
+        token::transfer(
+            CpiContext::new(
+                ctx.accounts.token_program.key(),
+                Transfer {
+                    from: ctx.accounts.user_token_account.to_account_info(),
+                    to: ctx.accounts.insurance_vault.to_account_info(),
+                    authority: ctx.accounts.user.to_account_info(),
+                },
+            ),
+            insurance_amount,
+        )?;
+    }
+
+    // Update member
+    let member = &mut ctx.accounts.member;
+    member.payments_made += 1;
+    member.total_paid = member
+        .total_paid
+        .checked_add(total_payment)
+        .ok_or(ConsolError::MathOverflow)?;
+    member.last_paid_round = current_round + 1; // mark as paid for this round
+
+    // Update round
+    let round = &mut ctx.accounts.round;
+    round.total_collected = round
+        .total_collected
+        .checked_add(vault_amount)
+        .ok_or(ConsolError::MathOverflow)?;
+    round.payments_received += 1;
+
+    emit!(PaymentMade {
+        group: group.key(),
+        member: ctx.accounts.user.key(),
+        round: current_round,
+        amount: total_payment,
+        is_late,
+        timestamp: clock.unix_timestamp,
+    });
+
+    Ok(())
+}

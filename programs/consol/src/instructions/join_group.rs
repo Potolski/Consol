@@ -93,6 +93,7 @@ pub fn handle_join_group(ctx: Context<JoinGroup>) -> Result<()> {
     member.has_received = false;
     member.received_round = 0;
     member.total_paid = 0;
+    member.last_paid_round = 0;
     member.status = MemberStatus::Active;
     member.joined_at = clock.unix_timestamp;
     member.bump = ctx.bumps.member;

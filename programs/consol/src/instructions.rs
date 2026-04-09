@@ -1,9 +1,19 @@
 pub mod activate_group;
+pub mod close_collection;
 pub mod create_group;
+pub mod distribute;
 pub mod join_group;
 pub mod leave_group;
+pub mod make_payment;
+pub mod mark_default;
+pub mod start_round;
 
 pub use activate_group::*;
+pub use close_collection::*;
 pub use create_group::*;
+pub use distribute::*;
 pub use join_group::*;
 pub use leave_group::*;
+pub use make_payment::*;
+pub use mark_default::*;
+pub use start_round::*;

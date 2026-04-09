@@ -19,6 +19,8 @@ pub struct Member {
     pub received_round: u8,
     /// Total amount paid across all rounds (for withdrawal refund calc)
     pub total_paid: u64,
+    /// Last round this member paid for (used to prevent double-pay per round)
+    pub last_paid_round: u8,
     /// Member lifecycle status
     pub status: MemberStatus,
     /// Timestamp when the member joined
