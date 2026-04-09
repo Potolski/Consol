@@ -3,6 +3,7 @@ pub mod error;
 pub mod events;
 pub mod instructions;
 pub mod state;
+pub mod switchboard;
 
 use anchor_lang::prelude::*;
 
@@ -52,5 +53,13 @@ pub mod consol {
 
     pub fn distribute(ctx: Context<Distribute>) -> Result<()> {
         handle_distribute(ctx)
+    }
+
+    pub fn commit_round(ctx: Context<CommitRound>) -> Result<()> {
+        handle_commit_round(ctx)
+    }
+
+    pub fn resolve_round(ctx: Context<ResolveRound>) -> Result<()> {
+        handle_resolve_round(ctx)
     }
 }

@@ -25,6 +25,10 @@ pub struct Round {
     pub status: RoundStatus,
     /// Timestamp when this round started (collection window opened)
     pub started_at: i64,
+    /// Slot when randomness was committed (for verification at reveal)
+    pub commit_slot: u64,
+    /// The randomness account used for this round's VRF
+    pub randomness_account: Pubkey,
     /// Bump seed for this round PDA
     pub bump: u8,
 }

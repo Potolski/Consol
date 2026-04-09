@@ -51,6 +51,8 @@ pub enum ConsolError {
     VrfNotResolved,
     #[msg("Member is not eligible for selection this round")]
     NotEligible,
+    #[msg("Invalid Switchboard randomness account")]
+    InvalidRandomnessAccount,
 
     // Defaults
     #[msg("Member has not exceeded the missed payment threshold")]

@@ -57,9 +57,9 @@ Week 5  (May 5-11)   ████████  Demo — presentation, video, sub
 - **Depends on**: B-020, B-021, B-012
 
 ### 1.5 VRF Integration (Lottery Selection)
-- [ ] `B-040` Research Switchboard VRF v2 vs other options (Orao, etc.)
-- [ ] `B-041` `request_randomness` — trigger VRF request for round selection
-- [ ] `B-042` `consume_randomness` — VRF callback resolves winner from eligible set
+- [x] `B-040` Research Switchboard VRF v2 vs other options (Orao, etc.) — chose Switchboard commit-reveal
+- [x] `B-041` `commit_round` — commit phase, stores randomness account + seed slot
+- [x] `B-042` `resolve_round` — reveal phase, reads VRF value, selects winner from eligible members
 - [ ] `B-043` End-to-end VRF test on devnet
 - **Target**: End of Week 2
 - **Depends on**: B-031

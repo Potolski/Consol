@@ -48,6 +48,8 @@ pub fn handle_start_round(ctx: Context<StartRound>) -> Result<()> {
     round.distribution_claimed = false;
     round.distribution_amount = 0;
     round.vrf_result = [0u8; 32];
+    round.commit_slot = 0;
+    round.randomness_account = Pubkey::default();
     round.status = RoundStatus::Collecting;
     round.started_at = clock.unix_timestamp;
     round.bump = ctx.bumps.round;

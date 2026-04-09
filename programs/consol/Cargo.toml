@@ -23,6 +23,7 @@ custom-panic = []
 [dependencies]
 anchor-lang = "1.0.0"
 anchor-spl = { version = "1.0.0", features = ["token_2022", "associated_token"] }
+bytemuck = { version = "1.14", features = ["derive"] }
 
 [dev-dependencies]
 litesvm = "0.10.0"
