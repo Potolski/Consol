@@ -24,10 +24,10 @@ Week 5  (May 5-11)   ████████  Demo — presentation, video, sub
 
 ### 1.1 Project Scaffold
 - [x] Initialize repo and design doc
-- [ ] `B-001` Anchor project setup (`anchor init consol`)
-- [ ] `B-002` Define program error codes (`errors.rs`)
-- [ ] `B-003` Define program events (`events.rs`)
-- [ ] `B-004` Configure Anchor.toml for devnet
+- [x] `B-001` Anchor project setup (`anchor init consol`)
+- [x] `B-002` Define program error codes (`errors.rs`)
+- [x] `B-003` Define program events (`events.rs`)
+- [x] `B-004` Configure Anchor.toml for devnet
 - **Target**: End of Week 1, Day 1
 
 ### 1.2 State Accounts
