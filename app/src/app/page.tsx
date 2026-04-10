@@ -84,9 +84,6 @@ export default function Home() {
 
         {/* 4-step cards */}
         <div className="relative grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3">
-          {/* Connecting line (desktop only) */}
-          <div className="pointer-events-none absolute top-1/2 right-8 left-8 hidden h-px -translate-y-1/2 bg-gradient-to-r from-white/[0.04] via-white/[0.08] to-white/[0.04] lg:block" />
-
           {[
             {
               step: "01",
