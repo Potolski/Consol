@@ -11,6 +11,7 @@ import {
   getVaultPDA,
   getInsuranceVaultPDA,
 } from "@/lib/pdas";
+import { buildCommitIx, buildRevealIx } from "@/lib/switchboard";
 
 export function useConsol() {
   const { program, provider } = useConsolProgram();
@@ -329,6 +330,98 @@ export function useConsol() {
     [program, provider, showSuccess, showError, showLoading, dismiss]
   );
 
+  const commitRound = useCallback(
+    async (groupAddress: string, roundNumber: number) => {
+      if (!program || !provider) throw new Error("Wallet not connected");
+
+      const groupPubkey = new PublicKey(groupAddress);
+      const [roundPDA] = getRoundPDA(groupPubkey, roundNumber);
+
+      const loadingId = showLoading("Committing VRF randomness...");
+      try {
+        // Build Switchboard commit instruction
+        const { randomnessKeypair, randomnessAccount, commitIx } =
+          await buildCommitIx(
+            provider.connection,
+            provider.wallet.publicKey
+          );
+
+        // Build program's commit_round instruction, bundled after Switchboard commitIx
+        const tx = await program.methods
+          .commitRound()
+          .accounts({
+            caller: provider.wallet.publicKey,
+            group: groupPubkey,
+            round: roundPDA,
+            randomnessAccountData: randomnessAccount,
+          })
+          .preInstructions([commitIx])
+          .signers([randomnessKeypair])
+          .rpc();
+
+        dismiss(loadingId);
+        showSuccess(tx, "VRF committed! Waiting for reveal...");
+        return { tx, randomnessAccount };
+      } catch (err) {
+        dismiss(loadingId);
+        showError(err);
+        throw err;
+      }
+    },
+    [program, provider, showSuccess, showError, showLoading, dismiss]
+  );
+
+  const resolveRound = useCallback(
+    async (
+      groupAddress: string,
+      roundNumber: number,
+      randomnessAccount: PublicKey,
+      eligibleMembers: PublicKey[]
+    ) => {
+      if (!program || !provider) throw new Error("Wallet not connected");
+
+      const groupPubkey = new PublicKey(groupAddress);
+      const [roundPDA] = getRoundPDA(groupPubkey, roundNumber);
+
+      const loadingId = showLoading("Revealing VRF and selecting winner...");
+      try {
+        // Build Switchboard reveal instruction
+        const { revealIx } = await buildRevealIx(
+          provider.connection,
+          randomnessAccount
+        );
+
+        // Build program's resolve_round with eligible members as remaining_accounts
+        const remainingAccounts = eligibleMembers.map((pubkey) => ({
+          pubkey,
+          isWritable: false,
+          isSigner: false,
+        }));
+
+        const tx = await program.methods
+          .resolveRound()
+          .accounts({
+            caller: provider.wallet.publicKey,
+            group: groupPubkey,
+            round: roundPDA,
+            randomnessAccountData: randomnessAccount,
+          })
+          .remainingAccounts(remainingAccounts)
+          .preInstructions([revealIx])
+          .rpc();
+
+        dismiss(loadingId);
+        showSuccess(tx, "Winner selected!");
+        return tx;
+      } catch (err) {
+        dismiss(loadingId);
+        showError(err);
+        throw err;
+      }
+    },
+    [program, provider, showSuccess, showError, showLoading, dismiss]
+  );
+
   return {
     createGroup,
     joinGroup,
@@ -338,6 +431,7 @@ export function useConsol() {
     makePayment,
     closeCollection,
     distribute,
-    // TODO: commitRound and resolveRound require Switchboard integration — Phase 6
+    commitRound,
+    resolveRound,
   };
 }

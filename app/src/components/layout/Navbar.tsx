@@ -17,9 +17,9 @@ import {
 const navLinks = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/pools", label: "Pools" },
+  { href: "/activity", label: "Activity" },
+  { href: "/treasury", label: "Treasury" },
 ] as const;
-
-const comingSoonLinks = ["Activity", "Treasury"] as const;
 
 export function Navbar() {
   const pathname = usePathname();
@@ -28,6 +28,8 @@ export function Navbar() {
     if (href === "/dashboard") return pathname === "/dashboard";
     if (href === "/pools")
       return pathname === "/pools" || pathname.startsWith("/group");
+    if (href === "/activity") return pathname === "/activity";
+    if (href === "/treasury") return pathname === "/treasury";
     return false;
   }
 
@@ -62,15 +64,6 @@ export function Navbar() {
                 <span className="absolute inset-x-1 -bottom-[17px] h-[2px] rounded-full bg-[#006c4a]" />
               )}
             </Link>
-          ))}
-          {comingSoonLinks.map((label) => (
-            <button
-              key={label}
-              onClick={() => toast.info("Coming soon")}
-              className="relative rounded-lg px-3.5 py-2 text-sm font-medium text-[#526075] hover:text-[#00345e] transition-colors"
-            >
-              {label}
-            </button>
           ))}
         </nav>
 
@@ -118,15 +111,6 @@ export function Navbar() {
                   >
                     {link.label}
                   </Link>
-                ))}
-                {comingSoonLinks.map((label) => (
-                  <button
-                    key={label}
-                    onClick={() => toast.info("Coming soon")}
-                    className="rounded-lg px-4 py-2.5 text-left text-sm font-medium text-[#526075] hover:bg-[#eff4ff] hover:text-[#00345e] transition-colors"
-                  >
-                    {label}
-                  </button>
                 ))}
               </nav>
             </SheetContent>

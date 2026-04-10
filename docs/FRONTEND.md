@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Consol frontend is a Next.js 16 application providing the user interface for the decentralized consórcio protocol. It enables users to create savings groups, join existing ones, make payments, and participate in VRF-powered lottery selections — all through a modern, dark-themed DeFi interface.
+The Consol frontend is a Next.js 16 application providing the user interface for the decentralized consórcio protocol. It enables users to create savings groups, join existing ones, make payments, and participate in VRF-powered lottery selections — all through a premium light-themed fintech interface following the "Architectural Ledger" design system.
 
 ---
 
@@ -17,212 +17,228 @@ The Consol frontend is a Next.js 16 application providing the user interface for
 | Styling | Tailwind CSS | 4.x |
 | Wallet | Reown AppKit | 1.8.x |
 | Blockchain | @solana/web3.js + @coral-xyz/anchor | 1.x / 0.30.x |
+| VRF | @switchboard-xyz/on-demand | 0.11.x |
 | Animations | framer-motion | 12.x |
 | State | zustand | 5.x |
 | Toasts | sonner | 1.x |
 | Icons | lucide-react | latest |
-| Fonts | Inter + JetBrains Mono | via next/font |
+| Fonts | Manrope + Inter + JetBrains Mono | via next/font |
 
 ### Why These Choices
 
-- **Reown AppKit** over `@solana/wallet-adapter`: Better UX with social login (Google, GitHub, Discord), built-in modal, cleaner API. We use a custom `WalletButton` component for the connect/disconnect UI to match our design system.
+- **Reown AppKit** over `@solana/wallet-adapter`: Better UX with social login (Google, GitHub, Discord), built-in modal, cleaner API. Custom `WalletButton` component for connect/disconnect UI matching our design.
 - **shadcn/ui (base-nova)**: Uses `@base-ui/react` primitives instead of Radix. Key difference: uses `render` prop for polymorphism, NOT `asChild`.
+- **Switchboard VRF**: Dynamic import via `Function` constructor to bypass Turbopack static analysis. Graceful fallback when SDK unavailable.
 - **zustand**: Lightweight state management — simpler than Redux for hackathon speed.
-- **sonner**: Toast notifications integrated with shadcn ecosystem.
 
 ---
 
-## Design System
+## Design System: "The Architectural Ledger"
 
-### Color Palette
+### Philosophy
+Premium fintech aesthetic. Not "bank-in-a-box" — spacious, editorial, trust through precision and white space. Asymmetric layouts, aggressive margins, tonal depth.
 
-The design follows a dark-mode-first DeFi aesthetic with emerald (trust/growth) and gold (value/premium) as the primary accent colors.
+### Color Palette (Light Mode)
 
-| Token | Hex | CSS Usage | Role |
-|-------|-----|-----------|------|
-| Background | `#0A0F1E` | `bg-[#0A0F1E]` | Page background |
-| Surface | `#111827` | `bg-white/[0.02]` | Cards, elevated surfaces |
-| Surface Hover | `#1A2235` | `bg-white/[0.04]` | Hover states |
-| Border | — | `border-white/[0.06]` | Dividers, card borders |
-| Border Hover | — | `border-white/[0.1]` | Interactive borders |
-| Text Primary | `#F1F5F9` | `text-white` | Main text |
-| Text Muted | — | `text-white/50` | Secondary text |
-| Text Subtle | — | `text-white/30` | Tertiary text |
-| Primary | `#10B981` | `text-primary` / `bg-primary` | CTAs, success, emerald |
-| Primary Hover | `#059669` | `bg-primary/90` | Primary hover |
-| Accent | `#F59E0B` | `text-amber-500` | Active states, gold |
-| Destructive | `#EF4444` | `text-red-500` | Errors, defaults |
-| Info | `#3B82F6` | `text-blue-500` | Informational |
-| Solana Purple | `#9945FF` | `text-[#9945FF]` | Solana branding |
+| Token | Hex | Usage |
+|-------|-----|-------|
+| Background | `#f8f9ff` | Page background |
+| Card | `#ffffff` | Elevated cards (surface-container-lowest) |
+| Section | `#eff4ff` | Section backgrounds (surface-container-low) |
+| Nested | `#e5eeff` | Nested elements (surface-container) |
+| Hover | `#dce9ff` | Hover states (surface-container-high) |
+| Active | `#d2e4ff` | Active/selected (surface-container-highest) |
+| Text Primary | `#00345e` | Main text (on-surface) — NOT pure black |
+| Text Secondary | `#26619d` | Secondary text (on-surface-variant) |
+| Text Muted | `#526075` | Muted/subtle text (secondary) |
+| Primary | `#006c4a` | CTAs, success, emerald |
+| Primary Hover | `#005a3e` | Primary hover state |
+| On Primary | `#e0ffec` | Text on primary buttons |
+| Primary Container | `#85f8c4` | Light green backgrounds |
+| Secondary Container | `#d5e3fd` | Secondary button bg |
+| On Secondary | `#455367` | Text on secondary |
+| Error | `#9f403d` | Error/destructive states |
+| Warning | `#b8860b` | Warning, gold accents |
 
-### Typography
+### Critical Design Rules
 
-- **Sans**: Inter — headings, body text, UI labels
-- **Mono**: JetBrains Mono — wallet addresses, USDC amounts, numbers, timestamps
-
-### Spacing & Radius
-
-- Cards: `rounded-2xl` (16px)
-- Buttons: `rounded-xl` (12px)
-- Badges: `rounded-full`
-- Page container: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
-
-### Component Patterns
-
-**Glass cards**:
-```tsx
-className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6
-           transition-colors hover:border-white/[0.1] hover:bg-white/[0.04]"
-```
-
-**Status glow** (GroupCard):
-- Forming: `border-primary/20 hover:shadow-lg hover:shadow-primary/10`
-- Active: `border-amber-500/20 hover:shadow-lg hover:shadow-amber-500/10`
-- Completed: no glow
-
-**Background glow** (hero sections):
-```tsx
-<div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[900px]
-                -translate-x-1/2 rounded-full bg-primary/[0.07] blur-[140px]" />
-```
+1. **No 1px borders** — Boundaries defined ONLY by background color shifts
+2. **No pure black** — Always use `#00345e` (on-surface)
+3. **No gradients** — Depth via tonal layering and glassmorphism only
+4. **12px radius** — `rounded-xl` on all components
+5. **32px+ padding** — Cards use `p-8`, aggressive margins for premium feel
+6. **Glassmorphism** — Only on nav: `bg-white/80 backdrop-blur-md`
+7. **Ambient shadows** — `shadow-[0_4px_24px_rgba(0,52,94,0.06)]`
+8. **Typography**: Manrope (headlines, `font-headline`), Inter (body), JetBrains Mono (amounts/addresses)
 
 ---
 
 ## Directory Structure
 
 ```
-app/
-├── src/
-│   ├── app/                          # Next.js App Router pages
-│   │   ├── layout.tsx                # Root layout (providers, fonts, metadata)
-│   │   ├── page.tsx                  # Home / Explore (educational landing)
-│   │   ├── globals.css               # Tailwind + CSS custom properties
-│   │   ├── create/page.tsx           # Create Group (form + live preview)
-│   │   ├── group/[address]/page.tsx  # Group Detail (single scroll, all state)
-│   │   ├── dashboard/page.tsx        # User's groups & payments
-│   │   └── profile/[address]/page.tsx # Reputation (placeholder)
-│   ├── components/
-│   │   ├── ui/                       # shadcn/ui primitives (auto-generated)
-│   │   ├── layout/                   # Navbar, Footer, AppShell
-│   │   ├── groups/                   # GroupCard
-│   │   └── wallet/                   # WalletButton (custom)
-│   ├── hooks/
-│   │   ├── useConsol.ts              # 8 instruction wrappers
-│   │   ├── useGroup.ts              # Fetch single group
-│   │   ├── useGroups.ts             # Fetch all/filtered groups
-│   │   ├── useRound.ts             # Fetch round by group + number
-│   │   ├── useMember.ts            # Fetch member for wallet
-│   │   ├── useCountdown.ts         # Timer with phase detection
-│   │   └── useTransactionToast.ts  # Toast helpers
-│   ├── lib/
-│   │   ├── constants.ts             # Mirror of on-chain protocol constants
-│   │   ├── pdas.ts                  # 6 PDA derivation helpers
-│   │   ├── types.ts                 # TypeScript enums + account interfaces
-│   │   ├── utils.ts                 # formatUSDC, truncateAddress, etc.
-│   │   ├── store.ts                 # Zustand store (cache + UI state)
-│   │   ├── mock-data.ts             # Demo data for hackathon
-│   │   └── idl/consol.json          # Anchor IDL (after anchor build)
-│   ├── providers/
-│   │   ├── SolanaProvider.tsx       # Reown AppKit setup
-│   │   └── ConsolProvider.tsx       # Anchor Program context
-│   ├── config/
-│   │   └── index.ts                 # AppKit config (networks, adapter)
-│   └── types/
-│       └── appkit.d.ts              # JSX type declarations for web components
-├── next.config.ts
-├── .env.local                        # RPC URL, program ID, Reown project ID
-└── .nvmrc                            # Node 24
+app/src/
+├── app/                              # Next.js App Router pages
+│   ├── layout.tsx                    # Root layout (providers, fonts, metadata)
+│   ├── page.tsx                      # Landing (educational)
+│   ├── globals.css                   # Tailwind + CSS custom properties
+│   ├── pools/page.tsx                # Browse pools (filtered grid)
+│   ├── create/page.tsx               # Create group (2-col form)
+│   ├── group/[address]/page.tsx      # Group detail (2-col + sidebar)
+│   ├── dashboard/page.tsx            # Portfolio dashboard (sidebar layout)
+│   ├── profile/[address]/page.tsx    # Reputation & stats
+│   ├── activity/page.tsx             # Activity feed
+│   └── treasury/page.tsx             # Treasury placeholder
+├── components/
+│   ├── ui/                           # shadcn/ui primitives
+│   ├── layout/                       # Navbar, Footer, AppShell
+│   ├── groups/                       # GroupCard
+│   ├── wallet/                       # WalletButton, WalletRedirect
+│   └── lottery/                      # LotteryAnimation, ConfettiEffect, VRFProofDisplay
+├── hooks/
+│   ├── useConsol.ts                  # 10 instruction wrappers (incl. VRF)
+│   ├── useGroup.ts                   # Fetch single group
+│   ├── useGroups.ts                  # Fetch all/filtered groups
+│   ├── useRound.ts                   # Fetch round
+│   ├── useMember.ts                  # Fetch member
+│   ├── useCountdown.ts              # Timer with phases
+│   └── useTransactionToast.ts       # Toast helpers
+├── lib/
+│   ├── constants.ts                  # On-chain protocol constants
+│   ├── pdas.ts                       # 6 PDA derivation helpers
+│   ├── types.ts                      # TypeScript enums + interfaces
+│   ├── utils.ts                      # formatUSDC, truncateAddress, etc.
+│   ├── store.ts                      # Zustand store
+│   ├── mock-data.ts                  # Demo data (fallback)
+│   ├── switchboard.ts                # Switchboard VRF helpers
+│   └── idl/consol.json              # Anchor IDL (generated)
+├── providers/
+│   ├── SolanaProvider.tsx            # Reown AppKit setup
+│   └── ConsolProvider.tsx            # Anchor Program context
+├── config/
+│   └── index.ts                      # AppKit config
+└── types/
+    └── appkit.d.ts                   # JSX type declarations
 ```
 
 ---
 
 ## Pages
 
-### Home (`/`)
-Educational landing page — the "pitch deck" for hackathon judges.
+### Landing (`/`)
+Educational page for first-time visitors. Pure content — no pool data.
+- Hero: "Save Together. Win Together."
+- How a Consórcio Works (4-step flow)
+- Why On-Chain? (comparison table)
+- See the Math (example calculator)
+- Final CTA: Browse Pools / Create a Pool
 
-**Sections** (in order):
-1. Hero — "Save Together. Win Together." + explainer + CTAs
-2. How a Consórcio Works — 4-step flow (Pool → Pay → Draw → Receive)
-3. Why On-Chain? — Traditional vs Consol comparison table
-4. See the Math — Concrete example ($500/mo × 10 members)
-5. Protocol Stats — Live numbers from mock/on-chain data
-6. Open Groups — Grid of GroupCards
-
-### Create (`/create`)
-Group creation wizard with live preview.
-- Form: description, monthly amount, group size slider, collateral %, insurance %
-- Live preview card + cost breakdown panel
-- Submit: loading toast → success → redirect to group detail
-
-### Group Detail (`/group/[address]`)
-Single scrollable page — the main interaction hub.
-- Header with status badge + config summary + share button
-- Action CTA (context-dependent: Join / Pay / Start Lottery / Distribute)
-- Pool overview (3 stat cards)
-- Round Timeline (visual dots with tooltips)
-- Members Table (filterable: All / Active / Defaulted)
-- Group Rules (open by default for transparency)
+### Pools (`/pools`)
+Browse and filter all groups. Uses `useGroups()` with mock fallback.
+- Filter tabs: All / Forming / Active / Completed (with counts)
+- Responsive GroupCard grid
+- Loading skeletons while fetching
+- Demo banner when using mock data
 
 ### Dashboard (`/dashboard`)
-Personal hub for connected wallet.
-- Wallet-gated (shows connect prompt when disconnected)
-- Summary stats + payment alerts
-- User's active GroupCards
+Personal portfolio hub. Sidebar + main content layout.
+- Sidebar: nav links, "Start New Pool" CTA, profile link
+- Hero: "Building sustainable wealth, together."
+- Bento grid: portfolio balance + bar chart + active pools + rewards
+- Pool cards from `useGroups()` (mock fallback)
+- Recent activity feed
+
+### Create (`/create`)
+Group creation wizard. **Requires wallet connection.**
+- Two-column layout: info + badges (left), form (right)
+- Sliders for group size, collateral, insurance
+- Live fee breakdown and "Total to Commit"
+- Uses `useConsol().createGroup()` with demo fallback
+- Security badges: Vault-Grade, Member Protection, Verifiable Fairness
+
+### Group Detail (`/group/[address]`)
+Main interaction hub. Two-column layout.
+- Header: status badge, title, description, action buttons
+- 3 stat cards: Total Pooled / Your Contribution / Pool Health
+- Monthly Rounds Timeline with month labels
+- Group Members table with names, avatars, status badges
+- Round Summary sidebar + Group Protocol rules
+- "Start Lottery (VRF)" button (Switchboard commit+reveal)
+- "Demo Lottery" button (animation preview)
+- Uses `useGroup()` with 3-tier fallback
 
 ### Profile (`/profile/[address]`)
-Reputation display — placeholder for future implementation.
+Reputation display. Accessible via WalletButton dropdown + Dashboard sidebar.
+- Star rating (4.5/5)
+- Stats: completed groups, defaults, payments, active
+- Payment summary
+
+### Activity (`/activity`)
+Protocol event feed with mock data.
+
+### Treasury (`/treasury`)
+Placeholder — "Under Development".
+
+---
+
+## Data Flow
+
+### Hook Integration Pattern
+
+All pages use the same pattern:
+```tsx
+const { groups: realGroups, loading } = useGroups();
+const groups = realGroups.length > 0 ? realGroups : MOCK_GROUPS;
+const isDemo = realGroups.length === 0;
+```
+
+When the program is deployed on devnet, real data automatically replaces mock data — no code changes needed.
+
+### Switchboard VRF Integration
+
+```
+Step 1: commitRound()
+  → buildCommitIx() creates Switchboard randomness account
+  → Bundles commitIx + program's commit_round in same tx
+
+Step 2: Wait ~3s for oracle
+
+Step 3: resolveRound()
+  → buildRevealIx() gets reveal instruction
+  → Bundles revealIx + program's resolve_round + remaining_accounts (eligible members)
+  → Winner selected on-chain
+```
+
+Dynamic import via `Function` constructor to bypass Turbopack static analysis:
+```ts
+const loader = new Function("m", "return import(m)");
+const sb = await loader("@switchboard-xyz/on-demand");
+```
 
 ---
 
 ## Key API Patterns
 
-### shadcn base-ui Differences
-
-This project uses shadcn's `base-nova` style which uses `@base-ui/react` instead of Radix. Key differences:
+### shadcn base-ui
 
 ```tsx
-// Button polymorphism — use render, NOT asChild
-<Button render={<Link href="/create" />}>Create Group</Button>
+// Button polymorphism
+<Button render={<Link href="/pools" />}>Browse Pools</Button>
 
-// Button auto-sets nativeButton={false} when render is used
+// Slider (single thumb)
+<Slider value={[val]} onValueChange={(v) => setVal(Array.isArray(v) ? v[0] : v)} />
 
-// SheetTrigger — same pattern
+// SheetTrigger
 <SheetTrigger render={<Button variant="ghost" size="icon" />}>
   <Menu />
 </SheetTrigger>
-
-// Slider — single Thumb, simplified API
-<Slider
-  value={[groupSize]}
-  onValueChange={(v) => setGroupSize(Array.isArray(v) ? v[0] : v)}
-  min={3}
-  max={50}
-/>
 ```
 
 ### Wallet Integration
 
 ```tsx
-// Connect/disconnect — custom WalletButton uses AppKit hooks
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 const { open } = useAppKit();
 const { isConnected, address } = useAppKitAccount();
-
-// Connection for Anchor — via ConsolProvider
-import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
-import { useAppKitProvider } from "@reown/appkit/react";
-```
-
-### PDA Derivation
-
-```tsx
-import { getGroupPDA, getMemberPDA, getRoundPDA } from "@/lib/pdas";
-
-// Seeds match on-chain exactly:
-// Group:  [b"group", creator, group_id.to_le_bytes()]
-// Member: [b"member", group, wallet]
-// Round:  [b"round", group, [round_number]]
 ```
 
 ---
@@ -242,31 +258,14 @@ NEXT_PUBLIC_REOWN_PROJECT_ID=<from dashboard.reown.com>
 
 ```bash
 cd app
-nvm use 24
+nvm use 24          # Node 24 required
 npm install
-npm run dev
-# Open http://localhost:3000
+npm run dev         # http://localhost:3000
 ```
-
-### Prerequisites
-
-- Node.js 24+ (via nvm)
-- Reown Project ID from [dashboard.reown.com](https://dashboard.reown.com)
-
-### Building
-
-```bash
-npm run build  # Production build
-npm start      # Start production server
-```
-
----
 
 ## What's Next
 
-1. **Install Anchor CLI** → `anchor build` → generate IDL
-2. **Copy IDL** to `src/lib/idl/consol.json`
-3. **Update ConsolProvider** to import and use real IDL
-4. **Deploy to devnet** → test with real USDC
-5. **VRF Lottery Animation** (framer-motion) — spinning wheel, winner reveal
-6. **Deploy frontend** to Vercel
+1. **Deploy to devnet**: `anchor deploy --provider.cluster devnet` (needs SOL airdrop first)
+2. **Real data**: Hooks already connected — just deploy and data flows automatically
+3. **Vercel deploy**: `vercel --prod` from app/ directory
+4. **Demo video**: Record 3-5 min walkthrough for Colosseum submission

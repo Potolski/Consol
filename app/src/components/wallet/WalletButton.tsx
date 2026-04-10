@@ -2,7 +2,8 @@
 
 import { useAppKit } from "@reown/appkit/react";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { Wallet, LogOut, Copy, ExternalLink, ChevronDown } from "lucide-react";
+import { Wallet, LogOut, Copy, ExternalLink, ChevronDown, User } from "lucide-react";
+import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { truncateAddress } from "@/lib/utils";
@@ -58,6 +59,14 @@ export function WalletButton() {
             </p>
           </div>
           <div className="py-1">
+            <Link
+              href={`/profile/${address}`}
+              onClick={() => setMenuOpen(false)}
+              className="flex w-full items-center gap-2.5 px-3 py-2 text-xs text-[#526075] transition-colors hover:bg-[#dce9ff] hover:text-[#00345e]"
+            >
+              <User className="h-3.5 w-3.5" />
+              My Profile
+            </Link>
             <button
               onClick={() => {
                 navigator.clipboard.writeText(address);

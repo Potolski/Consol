@@ -5,23 +5,28 @@ import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GroupCard from "@/components/groups/GroupCard";
+import { useGroups } from "@/hooks/useGroups";
 import { MOCK_GROUPS } from "@/lib/mock-data";
 
 type Filter = "all" | "forming" | "active" | "completed";
 
 export default function PoolsPage() {
   const [filter, setFilter] = useState<Filter>("all");
+  const { groups: realGroups, loading } = useGroups();
+
+  const groups = realGroups.length > 0 ? realGroups : MOCK_GROUPS;
+  const isDemo = realGroups.length === 0;
 
   const filteredGroups =
     filter === "all"
-      ? MOCK_GROUPS
-      : MOCK_GROUPS.filter((g) => g.status === filter);
+      ? groups
+      : groups.filter((g) => g.status === filter);
 
   const counts = {
-    all: MOCK_GROUPS.length,
-    forming: MOCK_GROUPS.filter((g) => g.status === "forming").length,
-    active: MOCK_GROUPS.filter((g) => g.status === "active").length,
-    completed: MOCK_GROUPS.filter((g) => g.status === "completed").length,
+    all: groups.length,
+    forming: groups.filter((g) => g.status === "forming").length,
+    active: groups.filter((g) => g.status === "active").length,
+    completed: groups.filter((g) => g.status === "completed").length,
   };
 
   const tabs: { key: Filter; label: string }[] = [
@@ -33,6 +38,13 @@ export default function PoolsPage() {
 
   return (
     <div className="flex flex-col gap-8 pb-16 pt-8">
+      {/* Demo mode banner */}
+      {isDemo && !loading && (
+        <div className="mb-6 rounded-xl bg-[#eff4ff] px-4 py-3 text-center text-xs text-[#26619d]">
+          Showing demo data — deploy to devnet for real pools
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -76,8 +88,22 @@ export default function PoolsPage() {
         ))}
       </div>
 
-      {/* Groups Grid */}
-      {filteredGroups.length > 0 ? (
+      {/* Loading skeleton */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="animate-pulse rounded-xl bg-[#eff4ff] p-6"
+            >
+              <div className="mb-4 h-4 w-2/3 rounded bg-[#dce9ff]" />
+              <div className="mb-2 h-3 w-1/2 rounded bg-[#dce9ff]" />
+              <div className="mb-6 h-3 w-1/3 rounded bg-[#dce9ff]" />
+              <div className="h-8 w-full rounded bg-[#dce9ff]" />
+            </div>
+          ))}
+        </div>
+      ) : filteredGroups.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGroups.map((group) => (
             <GroupCard
@@ -88,7 +114,7 @@ export default function PoolsPage() {
               monthlyContribution={group.monthlyContribution}
               totalMembers={group.totalMembers}
               currentMembers={group.currentMembers}
-              status={group.status}
+              status={group.status === "cancelled" ? "completed" : group.status}
               collateralBps={group.collateralBps}
               insuranceBps={group.insuranceBps}
               currentRound={group.currentRound}

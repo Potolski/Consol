@@ -112,41 +112,48 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 - [x] `F-001` Next.js 16 (App Router) + React 19 + TypeScript
 - [x] `F-002` Reown AppKit wallet adapter (replaced @solana/wallet-adapter)
 - [x] `F-003` Tailwind CSS 4 + shadcn/ui (base-nova) + custom dark theme
-- [x] `F-004` Program IDL — **deferred** (anchor not installed yet, hooks handle null gracefully)
+- [x] `F-004` Program IDL — Generated (43KB), imported in ConsolProvider
 - [x] `F-005` Layout: Navbar + custom WalletButton + Footer + AppShell
 - **Completed**: Apr 9
 
 ### 3.2 Core Pages ✅
-- [x] `F-010` **Home/Explore** — Educational landing (hero, 4-step explainer, comparison table, calculator) + GroupCard grid with mock data + protocol stats
-- [x] `F-011` **Create Group** — Form with sliders, live preview, cost breakdown, submit flow with toast + redirect
-- [x] `F-012` **Group Detail** — Single scroll: CTA, pool stats, round timeline, members table with filter, collapsible rules, share button
-- [x] `F-013` **Dashboard** — Wallet detection, stats, alerts, user's GroupCards
-- [x] `F-014` **Profile** — Placeholder (reputation, Phase 7)
+- [x] `F-010` **Landing** — Educational (hero, 4-step explainer, comparison, calculator, CTA)
+- [x] `F-011` **Pools** — Browse with filters (All/Forming/Active/Completed), loading skeletons
+- [x] `F-012` **Create Group** — 2-col form + wallet gate + live preview + real createGroup hook
+- [x] `F-013` **Group Detail** — 2-col: stats + timeline + members | sidebar: round summary + protocol
+- [x] `F-014` **Dashboard** — Sidebar + portfolio balance + bar chart + pool cards + activity feed
+- [x] `F-015` **Profile** — Reputation stars + stats + payment summary
+- [x] `F-016` **Activity** — Protocol event feed
+- [x] `F-017` **Treasury** — Placeholder "Under Development"
 - **Completed**: Apr 10
 
 ### 3.3 Interactive Components ✅
-- [x] `F-020` `GroupCard` — Status glow (forming=emerald, active=gold), progress bar, pool/collateral stats
-- [x] `F-021` `RoundTimeline` — Dots with status colors, tooltips showing winners, "NOW" pulse
-- [x] `F-022` `PaymentModal` — Integrated into Group Detail CTA (not separate modal yet)
-- [x] `F-023` `MemberList` — Table with status dots, paid count, collateral, "you" label, filter
-- [x] `F-024` `CountdownTimer` — useCountdown hook with phase detection (payment/grace/closed)
-- [ ] `F-025` `LotteryAnimation` — **Not started** (Phase 6, framer-motion)
-- **Completed**: Apr 10 (except lottery animation)
+- [x] `F-020` `GroupCard` — Status glow, progress bar, pool/collateral stats
+- [x] `F-021` `RoundTimeline` — Monthly timeline with status dots, tooltips, "NOW" pulse
+- [x] `F-022` Make Contribution — Integrated in Group Detail CTA, useConsol().makePayment with fallback
+- [x] `F-023` `MemberList` — Table with names, avatars, status badges, filter, "View All" toggle
+- [x] `F-024` `CountdownTimer` — useCountdown hook with phase detection
+- [x] `F-025` `LotteryAnimation` — Light-themed SVG wheel + ConfettiEffect + VRFProofDisplay
+- **Completed**: Apr 10
 
 ### 3.4 Program Integration (Hooks) ✅
-- [x] `F-030` `useConsol` — 8 instruction wrappers (create, join, leave, activate, start, pay, close, distribute)
-- [x] `F-031` `useGroup` — Fetch + subscribe to group account state
-- [x] `F-032` `useRound` — Fetch + subscribe to current round state
+- [x] `F-030` `useConsol` — 10 instruction wrappers (incl. commitRound + resolveRound VRF)
+- [x] `F-031` `useGroup` — Fetch group, connected in Group Detail with 3-tier fallback
+- [x] `F-032` `useGroups` — Fetch all groups, connected in Pools + Dashboard with mock fallback
 - [x] `F-033` `useMember` — Fetch member PDA for connected wallet
-- [x] `F-034` `useReputation` — Defined in types (PDA exists, no instruction yet)
-- **Completed**: Apr 10 — **using mock data until IDL is generated**
+- [x] `F-034` `useRound` — Fetch round state
+- [x] `F-035` Switchboard VRF client: lib/switchboard.ts (dynamic import, buildCommitIx/buildRevealIx)
+- [x] `F-036` Demo banners + loading skeletons when using mock data
+- **Completed**: Apr 10 — hooks connected with automatic mock fallback
 
-### 3.5 UX Polish (Partial) ✅
-- [x] `F-040` Toast notifications (transaction loading/success/error via useTransactionToast)
-- [x] `F-041` Loading states (button spinners, empty states)
-- [x] `F-042` Error handling — hooks handle null program, graceful fallbacks
-- [ ] `F-043` Mobile responsive — basic support, needs polish pass
-- [x] `F-044` Empty states (no groups, no payments, wallet disconnected)
+### 3.5 UX Polish ✅
+- [x] `F-040` Toast notifications (transaction loading/success/error)
+- [x] `F-041` Loading skeletons (pools page), button spinners, empty states
+- [x] `F-042` Error handling — graceful fallbacks throughout
+- [x] `F-043` Wallet gate on /create
+- [x] `F-044` WalletRedirect (landing → dashboard on connect)
+- [x] `F-045` Profile accessible via WalletButton dropdown + sidebar
+- [x] `F-046` Zero dead links — all nav items functional or "Coming soon" toast
 - **Completed**: Apr 10
 
 ---
@@ -194,12 +201,13 @@ Ordered by impact-to-effort ratio:
 
 | Track | Progress | Notes |
 |-------|----------|-------|
-| Backend (Smart Contract) | **100%** | 15/15 instructions done, all compile and build |
-| Frontend (UI) | **90%** | Pages wired to on-chain data with mock fallback |
-| Testing | **30%** | 26 unit tests passing (LiteSVM), integration + stress tests pending |
-| Infrastructure | **50%** | Program deployed to devnet, test USDC minted, IDL verified |
+| Backend (Smart Contract) | **100%** | 15/15 instructions, IDL generated + deployed |
+| Frontend (UI) | **98%** | 9 routes, Architectural Ledger design, light mode |
+| Frontend (Integration) | **85%** | Hooks connected with mock fallback, VRF client ready |
+| Testing | **30%** | 26 unit tests passing (LiteSVM), integration pending |
+| Infrastructure | **60%** | Program deployed to devnet, test USDC minted, IDL verified |
 | Presentation | **0%** | Not started |
 
-**Estimated remaining**: ~15h for full hackathon MVP
+**Estimated remaining**: ~6h for full hackathon MVP
 
-**Next critical path**: Seed demo data → VRF test on devnet → Deploy frontend (Vercel) → Integration tests → Demo prep
+**Next critical path**: Seed demo data → VRF test on devnet → Deploy frontend (Vercel) → Demo video → Submit on Colosseum

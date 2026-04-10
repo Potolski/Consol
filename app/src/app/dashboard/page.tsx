@@ -29,6 +29,7 @@ import {
   Home,
   Car,
   Plane,
+  User,
 } from "lucide-react";
 
 /* ─── Avatar helper ─────────────────────────────────────────────────────────── */
@@ -125,7 +126,9 @@ export default function DashboardPage() {
   const { isConnected, address } = useAppKitAccount();
   const { open } = useAppKit();
   const router = useRouter();
-  const { groups: onChainGroups } = useGroups();
+  const { groups: realGroups } = useGroups();
+
+  /* ── Disconnected state ─────────────────────────────────────────────────── */
 
   if (!isConnected) {
     return (
@@ -150,7 +153,9 @@ export default function DashboardPage() {
   const truncated = address ? truncateAddress(address) : "";
 
   // Use the first 3 active/forming groups as pool cards
-  const poolGroups = MOCK_GROUPS.filter(
+  const allGroups = realGroups.length > 0 ? realGroups : MOCK_GROUPS;
+  const isDemo = realGroups.length === 0;
+  const poolGroups = allGroups.filter(
     (g) => g.status === "active" || g.status === "forming"
   ).slice(0, 3);
 
@@ -159,14 +164,6 @@ export default function DashboardPage() {
   const poolProgress = [75, 32, 12];
   const poolNextDates = ["Oct 24, 2023", "Nov 02, 2023", "Oct 30, 2023"];
   const poolMemberCounts = [14, 2, 6];
-
-  // Use on-chain groups if available, otherwise show mock
-  const hasOnChain = onChainGroups.length > 0;
-  const displayGroups = hasOnChain
-    ? onChainGroups.filter((g) => g.status === "active" || g.status === "forming")
-    : MOCK_GROUPS.filter((g) => g.status === "active").slice(0, 2);
-
-  const activeCount = displayGroups.length;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[16rem_1fr] gap-0 min-h-[calc(100vh-4rem)]">
@@ -249,6 +246,15 @@ export default function DashboardPage() {
             }
             return null;
           })}
+
+          {/* My Profile */}
+          <Link
+            href={`/profile/${address}`}
+            className="flex items-center gap-3 px-4 py-3 mx-2 text-[#526075] hover:bg-[#eff4ff] rounded-xl transition-all"
+          >
+            <User className="h-5 w-5" />
+            My Profile
+          </Link>
         </nav>
 
         {/* Start New Pool CTA */}
@@ -284,6 +290,13 @@ export default function DashboardPage() {
       {/* ── Main content ────────────────────────────────────────────────────── */}
       <main className="px-6 md:px-8 py-8 pb-12 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
+          {/* Demo mode banner */}
+          {isDemo && (
+            <div className="mb-6 rounded-xl bg-[#eff4ff] px-4 py-3 text-center text-xs text-[#26619d]">
+              Showing demo data — deploy to devnet for real pools
+            </div>
+          )}
+
           {/* ── Hero header ───────────────────────────────────────────────── */}
           <header className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
             <div className="max-w-2xl">

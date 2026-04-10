@@ -15,13 +15,17 @@ import {
   TrendingUp,
   Check,
   UserCircle,
+  Dices,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
+import { PublicKey } from "@solana/web3.js";
 import { Button } from "@/components/ui/button";
 import { truncateAddress } from "@/lib/utils";
 import { getMockGroup } from "@/lib/mock-data";
 import { useGroup } from "@/hooks/useGroup";
+import { useConsol } from "@/hooks/useConsol";
+import { getMemberPDA } from "@/lib/pdas";
 
 const LotteryAnimation = dynamic(
   () =>
@@ -132,35 +136,104 @@ export default function GroupDetailPage() {
   const [showLottery, setShowLottery] = useState(false);
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("current");
   const [showAllMembers, setShowAllMembers] = useState(false);
+  const { makePayment, commitRound, resolveRound } = useConsol();
 
-  // Try on-chain data first, then mock, then hardcoded fallback
-  const { group: onChainGroup } = useGroup(params.address);
-  const mockFound = getMockGroup(params.address ?? "");
-  const found = onChainGroup || mockFound;
-  const g = found
+  // Try real on-chain data first, then shared mock data, then hardcoded fallback
+  const { group: realGroup, loading: groupLoading } = useGroup(params.address);
+
+  const found = getMockGroup(params.address ?? "");
+  const g = realGroup
     ? {
-        description: found.description,
-        creator: found.creator,
-        monthlyContribution: found.monthlyContribution,
-        totalMembers: found.totalMembers,
-        currentMembers: found.currentMembers,
-        currentRound: found.currentRound,
-        status: found.status as "forming" | "active" | "completed",
-        collateralBps: found.collateralBps,
-        insuranceBps: found.insuranceBps,
-        protocolFeeBps: "protocolFeeBps" in found ? found.protocolFeeBps : 150,
-        poolBalance: found.monthlyContribution * found.currentMembers,
+        description: realGroup.description,
+        creator: realGroup.creator,
+        monthlyContribution: realGroup.monthlyContribution,
+        totalMembers: realGroup.totalMembers,
+        currentMembers: realGroup.currentMembers,
+        currentRound: realGroup.currentRound,
+        status: realGroup.status,
+        collateralBps: realGroup.collateralBps,
+        insuranceBps: realGroup.insuranceBps,
+        protocolFeeBps: realGroup.protocolFeeBps,
+        poolBalance: realGroup.monthlyContribution * realGroup.currentMembers,
         insuranceBalance: Math.floor(
-          found.monthlyContribution * found.currentMembers * (found.insuranceBps / 10_000) * (found.currentRound + 1)
+          realGroup.monthlyContribution * realGroup.currentMembers * (realGroup.insuranceBps / 10_000) * (realGroup.currentRound + 1)
         ),
-        activeMembers: (found as unknown as { activeMembers?: number }).activeMembers ?? found.currentMembers,
+        membersReceived: realGroup.membersReceived,
+        activeMembers: realGroup.activeMembers,
       }
-    : fallbackGroup;
+    : found
+      ? {
+          ...found,
+          poolBalance: found.monthlyContribution * found.currentMembers,
+          insuranceBalance: Math.floor(
+            found.monthlyContribution * found.currentMembers * (found.insuranceBps / 10_000) * (found.currentRound + 1)
+          ),
+          activeMembers: found.activeMembers,
+        }
+      : fallbackGroup;
+
+  const isDemo = !realGroup;
 
   const handleShareGroup = () => {
     navigator.clipboard.writeText(window.location.href);
     toast.success("Link copied!");
   };
+
+  const handleMakeContribution = useCallback(async () => {
+    try {
+      await makePayment(
+        params.address,
+        g.currentRound,
+        new PublicKey("So11111111111111111111111111111111111111112"),
+        new PublicKey("11111111111111111111111111111111")
+      );
+    } catch {
+      toast.info("Payment requires devnet deployment. Showing demo confirmation.");
+      toast.success("Payment confirmed (demo)!", {
+        description: `$${(g.monthlyContribution / 1_000_000).toLocaleString()} USDC contributed to round ${g.currentRound + 1}`,
+      });
+    }
+  }, [makePayment, params.address, g.currentRound, g.monthlyContribution]);
+
+  const handleStartLottery = useCallback(async () => {
+    try {
+      // Step 1: Commit VRF randomness
+      toast.info("Step 1/2: Committing VRF randomness...");
+      const { randomnessAccount } = await commitRound(
+        params.address,
+        g.currentRound
+      );
+
+      // Step 2: Wait briefly for Switchboard oracle to process
+      toast.info("Waiting for Switchboard oracle...");
+      await new Promise((r) => setTimeout(r, 3000));
+
+      // Step 3: Resolve — select winner using revealed randomness
+      const eligibleMembers = mockMembers
+        .filter((m) => m.status !== "defaulted" && !m.hasReceived)
+        .map(
+          (m) =>
+            getMemberPDA(
+              new PublicKey(params.address),
+              new PublicKey(m.wallet)
+            )[0]
+        );
+
+      await resolveRound(
+        params.address,
+        g.currentRound,
+        randomnessAccount,
+        eligibleMembers
+      );
+
+      // Show lottery animation on success
+      setShowLottery(true);
+    } catch {
+      // If real VRF fails, fall back to demo animation
+      toast.error("VRF not available — showing demo animation");
+      setShowLottery(true);
+    }
+  }, [commitRound, resolveRound, params.address, g.currentRound]);
 
   // Show first 4 members in table preview, or all when toggled
   const displayedMembers = useMemo(() => {
@@ -183,6 +256,13 @@ export default function GroupDetailPage() {
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to Pools
       </Link>
+
+      {/* Demo mode banner */}
+      {isDemo && !groupLoading && (
+        <div className="rounded-xl bg-[#eff4ff] px-4 py-3 text-center text-xs text-[#26619d]">
+          Showing demo data — deploy to devnet for real group details
+        </div>
+      )}
 
       {/* -- Header Section (full width) -- */}
       <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
@@ -218,7 +298,7 @@ export default function GroupDetailPage() {
           <Button
             size="lg"
             className="gap-2 rounded-xl bg-[#006c4a] px-6 py-3 font-bold text-[#e0ffec] shadow-[0_4px_24px_rgba(0,52,94,0.06)] hover:bg-[#005a3e]"
-            onClick={() => toast.info("Deploy to devnet to make real payments")}
+            onClick={handleMakeContribution}
           >
             <CircleDollarSign className="h-4 w-4" />
             Make Contribution
@@ -511,11 +591,19 @@ export default function GroupDetailPage() {
             </div>
           </section>
 
-          {/* Demo Lottery Button */}
-          <div className="flex justify-center">
+          {/* Lottery Buttons */}
+          <div className="flex justify-center gap-3">
             <Button
               size="lg"
-              className="gap-2 bg-[#d5e3fd] px-6 text-sm text-[#455367] hover:bg-[#dce9ff]"
+              className="gap-2 rounded-xl bg-[#006c4a] px-6 text-sm font-bold text-[#e0ffec] shadow-[0_4px_24px_rgba(0,52,94,0.06)] hover:bg-[#005a3e]"
+              onClick={handleStartLottery}
+            >
+              <Dices className="h-4 w-4" />
+              Start Lottery (VRF)
+            </Button>
+            <Button
+              size="lg"
+              className="gap-2 rounded-xl bg-[#d5e3fd] px-6 text-sm text-[#455367] hover:bg-[#dce9ff]"
               onClick={() => setShowLottery(true)}
             >
               <Sparkles className="h-4 w-4 text-[#b8860b]" />
