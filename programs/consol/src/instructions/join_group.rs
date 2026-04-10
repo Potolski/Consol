@@ -73,7 +73,7 @@ pub fn handle_join_group(ctx: Context<JoinGroup>) -> Result<()> {
     // Transfer collateral from user to vault
     token::transfer(
         CpiContext::new(
-            ctx.accounts.token_program.key(),
+            ctx.accounts.token_program.to_account_info(),
             Transfer {
                 from: ctx.accounts.user_token_account.to_account_info(),
                 to: ctx.accounts.vault.to_account_info(),

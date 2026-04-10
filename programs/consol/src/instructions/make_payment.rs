@@ -120,7 +120,7 @@ pub fn handle_make_payment(ctx: Context<MakePayment>) -> Result<()> {
     if vault_amount > 0 {
         token::transfer(
             CpiContext::new(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.user_token_account.to_account_info(),
                     to: ctx.accounts.vault.to_account_info(),
@@ -135,7 +135,7 @@ pub fn handle_make_payment(ctx: Context<MakePayment>) -> Result<()> {
     if insurance_amount > 0 {
         token::transfer(
             CpiContext::new(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.user_token_account.to_account_info(),
                     to: ctx.accounts.insurance_vault.to_account_info(),
