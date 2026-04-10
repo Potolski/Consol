@@ -86,6 +86,16 @@ pub fn handle_resolve_round(ctx: Context<ResolveRound>) -> Result<()> {
 
     require!(!eligible_wallets.is_empty(), ConsolError::NoEligibleMembers);
 
+    // Verify ALL eligible members were provided — prevents callers from omitting
+    // members to manipulate the lottery outcome.
+    let expected_eligible = (group.active_members as u16)
+        .checked_sub(group.members_received as u16)
+        .ok_or(ConsolError::MathOverflow)? as usize;
+    require!(
+        eligible_wallets.len() == expected_eligible,
+        ConsolError::NoEligibleMembers
+    );
+
     // Use randomness to select winner: first 8 bytes as u64, mod eligible count
     let random_u64 = u64::from_le_bytes(random_value[0..8].try_into().unwrap());
     let winner_index = (random_u64 % eligible_wallets.len() as u64) as usize;
