@@ -67,18 +67,13 @@ pub fn handle_make_payment(ctx: Context<MakePayment>) -> Result<()> {
     let member = &ctx.accounts.member;
     let current_round = group.current_round;
 
-    // Check member hasn't already paid this round
-    // last_paid_round is 0-indexed but starts at 0 before any payment,
-    // so we use current_round + 1 as the marker
+    // Check member hasn't already paid this round.
+    // payments_made tracks total payments; if it exceeds current_round the member
+    // has already paid for this round (rounds are 0-indexed).
     require!(
-        member.last_paid_round <= current_round,
+        member.payments_made <= current_round,
         ConsolError::AlreadyPaid
     );
-    // For round 0, last_paid_round == 0 means unpaid. We need a different check:
-    // if payments_made > 0 and last_paid_round == current_round, they already paid
-    if member.payments_made > 0 && member.last_paid_round == current_round + 1 {
-        return Err(ConsolError::AlreadyPaid.into());
-    }
 
     // Check if within payment window or grace period
     let elapsed = clock
