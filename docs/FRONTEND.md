@@ -263,9 +263,36 @@ npm install
 npm run dev         # http://localhost:3000
 ```
 
+## UX States
+
+### Loading
+All pages with hooks show skeleton placeholders (`bg-[#eff4ff] rounded-xl animate-pulse`) while data loads. Dashboard, Group Detail, and Pools all have full skeleton layouts matching their real content structure.
+
+### Error
+Hook failures show a soft error banner: `bg-[#9f403d]/5 text-[#9f403d] rounded-xl p-4`.
+
+### Demo Mode
+When `program` is null (not deployed/not connected), pages show mock data with a subtle "Showing demo data" banner. Banner logic: `!program && realGroups.length === 0` — so empty real data (zero groups on devnet) does NOT trigger demo mode.
+
+### Mobile Responsive
+- Dashboard sidebar: `hidden lg:flex` (hidden on mobile)
+- Tables: `overflow-x-auto` with `min-w-[600px]`
+- Filter tabs: horizontal scroll on mobile (`overflow-x-auto`)
+- All grids: single column on mobile, multi-column on desktop
+- Mobile FAB on dashboard for "Start New Pool"
+
+---
+
+## Deployment Status
+
+- **Program**: Deployed to devnet at `Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114`
+- **Test USDC**: `27GAbtwSgLHi53dhfTfika5jKjjSn38uEVpP29ki9nDw` (6 decimals)
+- **IDL**: Published on-chain + verified
+- **Frontend**: Not yet deployed (Vercel pending)
+
 ## What's Next
 
-1. **Deploy to devnet**: `anchor deploy --provider.cluster devnet` (needs SOL airdrop first)
-2. **Real data**: Hooks already connected — just deploy and data flows automatically
-3. **Vercel deploy**: `vercel --prod` from app/ directory
-4. **Demo video**: Record 3-5 min walkthrough for Colosseum submission
+1. **Seed devnet** with demo groups for presentation
+2. **Vercel deploy**: `vercel --prod` from app/ directory
+3. **Demo video**: Record 3-5 min walkthrough for Colosseum submission
+4. **Submit on Colosseum** before May 11

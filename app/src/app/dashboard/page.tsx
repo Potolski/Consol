@@ -5,8 +5,10 @@ import { useAppKit } from "@reown/appkit/react";
 import { useRouter } from "next/navigation";
 import { WalletButton } from "@/components/wallet/WalletButton";
 import { useGroups } from "@/hooks/useGroups";
+import { useConsolProgram } from "@/providers/ConsolProvider";
 import { MOCK_GROUPS } from "@/lib/mock-data";
 import { formatUSDC, truncateAddress } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
@@ -126,7 +128,8 @@ export default function DashboardPage() {
   const { isConnected, address } = useAppKitAccount();
   const { open } = useAppKit();
   const router = useRouter();
-  const { groups: realGroups } = useGroups();
+  const { groups: realGroups, loading, error } = useGroups();
+  const { program } = useConsolProgram();
 
   /* ── Disconnected state ─────────────────────────────────────────────────── */
 
@@ -154,7 +157,7 @@ export default function DashboardPage() {
 
   // Use the first 3 active/forming groups as pool cards
   const allGroups = realGroups.length > 0 ? realGroups : MOCK_GROUPS;
-  const isDemo = realGroups.length === 0;
+  const isDemo = !program && realGroups.length === 0;
   const poolGroups = allGroups.filter(
     (g) => g.status === "active" || g.status === "forming"
   ).slice(0, 3);
@@ -291,13 +294,53 @@ export default function DashboardPage() {
       <main className="px-6 md:px-8 py-8 pb-12 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           {/* Demo mode banner */}
-          {isDemo && (
+          {isDemo && !loading && (
             <div className="mb-6 rounded-xl bg-[#eff4ff] px-4 py-3 text-center text-xs text-[#26619d]">
               Showing demo data — deploy to devnet for real pools
             </div>
           )}
 
+          {/* Error state */}
+          {error && (
+            <div className="mb-6 rounded-xl bg-[#9f403d]/5 p-4 text-center text-sm text-[#9f403d]">
+              Failed to load data. Please try again.
+            </div>
+          )}
+
+          {/* Loading skeleton */}
+          {loading && (
+            <div className="space-y-12">
+              {/* Bento grid skeleton */}
+              <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <Skeleton className="md:col-span-8 h-56 rounded-xl bg-[#eff4ff]" />
+                <div className="md:col-span-4 grid grid-rows-2 gap-6">
+                  <Skeleton className="h-24 rounded-xl bg-[#eff4ff]" />
+                  <Skeleton className="h-24 rounded-xl bg-[#eff4ff]" />
+                </div>
+              </section>
+
+              {/* Pool cards skeleton */}
+              <section className="space-y-6">
+                <Skeleton className="h-7 w-48 rounded-lg bg-[#eff4ff]" />
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-64 rounded-xl bg-[#eff4ff]" />
+                  ))}
+                </div>
+              </section>
+
+              {/* Activity feed skeleton */}
+              <section className="space-y-4 rounded-xl bg-[#eff4ff] p-8">
+                <Skeleton className="h-7 w-40 rounded-lg bg-[#dce9ff]" />
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 rounded-xl bg-[#dce9ff]" />
+                ))}
+              </section>
+            </div>
+          )}
+
           {/* ── Hero header ───────────────────────────────────────────────── */}
+          {!loading && (<>
           <header className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
             <div className="max-w-2xl">
               <h1 className="text-4xl md:text-5xl font-extrabold font-headline tracking-tight text-[#00345e] mb-4">
@@ -329,7 +372,7 @@ export default function DashboardPage() {
                   <span className="text-xs font-bold text-[#526075] tracking-widest uppercase">
                     TOTAL PORTFOLIO BALANCE
                   </span>
-                  <h2 className="text-5xl font-extrabold font-headline text-[#00345e] mt-2">
+                  <h2 className="text-3xl md:text-5xl font-extrabold font-headline text-[#00345e] mt-2">
                     $42,850.24
                   </h2>
                 </div>
@@ -551,6 +594,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </section>
+          </>)}
         </div>
       </main>
 

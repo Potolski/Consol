@@ -42,11 +42,9 @@ const statusConfig = {
   },
   cancelled: {
     label: "Cancelled",
-    border: "border-red-500/10",
-    hoverShadow: "",
+    shadow: "",
     badgeBg: "bg-red-500/10",
     badgeText: "text-red-400",
-    badgeBorder: "border-red-500/20",
   },
 } as const;
 

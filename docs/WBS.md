@@ -203,11 +203,11 @@ Ordered by impact-to-effort ratio:
 |-------|----------|-------|
 | Backend (Smart Contract) | **100%** | 15/15 instructions, IDL generated + deployed |
 | Frontend (UI) | **98%** | 9 routes, Architectural Ledger design, light mode |
-| Frontend (Integration) | **85%** | Hooks connected with mock fallback, VRF client ready |
+| Frontend (Integration) | **90%** | Hooks connected, loading skeletons, error states, mobile responsive |
 | Testing | **30%** | 26 unit tests passing (LiteSVM), integration pending |
 | Infrastructure | **60%** | Program deployed to devnet, test USDC minted, IDL verified |
 | Presentation | **0%** | Not started |
 
-**Estimated remaining**: ~6h for full hackathon MVP
+**Estimated remaining**: ~4h for full hackathon MVP
 
 **Next critical path**: Seed demo data → VRF test on devnet → Deploy frontend (Vercel) → Demo video → Submit on Colosseum

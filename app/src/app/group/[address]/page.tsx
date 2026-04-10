@@ -21,6 +21,7 @@ import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { PublicKey } from "@solana/web3.js";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { truncateAddress } from "@/lib/utils";
 import { getMockGroup } from "@/lib/mock-data";
 import { useGroup } from "@/hooks/useGroup";
@@ -139,7 +140,7 @@ export default function GroupDetailPage() {
   const { makePayment, commitRound, resolveRound } = useConsol();
 
   // Try real on-chain data first, then shared mock data, then hardcoded fallback
-  const { group: realGroup, loading: groupLoading } = useGroup(params.address);
+  const { group: realGroup, loading: groupLoading, error } = useGroup(params.address);
 
   const found = getMockGroup(params.address ?? "");
   const g = realGroup
@@ -257,6 +258,41 @@ export default function GroupDetailPage() {
         Back to Pools
       </Link>
 
+      {/* Error state */}
+      {error && (
+        <div className="rounded-xl bg-[#9f403d]/5 p-4 text-center text-sm text-[#9f403d]">
+          Failed to load data. Please try again.
+        </div>
+      )}
+
+      {/* Loading skeleton */}
+      {groupLoading && (
+        <div className="flex flex-col gap-8">
+          {/* Header skeleton */}
+          <div className="flex flex-col gap-4">
+            <Skeleton className="h-8 w-32 rounded-full bg-[#eff4ff]" />
+            <Skeleton className="h-12 w-full max-w-80 rounded-xl bg-[#eff4ff]" />
+            <Skeleton className="h-5 w-full max-w-96 rounded-lg bg-[#eff4ff]" />
+          </div>
+          {/* Stat cards skeleton */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-48 rounded-xl bg-[#eff4ff]" />
+            ))}
+          </div>
+          {/* Timeline skeleton */}
+          <Skeleton className="h-40 rounded-xl bg-[#eff4ff]" />
+          {/* Members table skeleton */}
+          <div className="space-y-3">
+            <Skeleton className="h-7 w-40 rounded-lg bg-[#eff4ff]" />
+            <Skeleton className="h-12 rounded-xl bg-[#eff4ff]" />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-16 rounded-xl bg-[#eff4ff]" />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Demo mode banner */}
       {isDemo && !groupLoading && (
         <div className="rounded-xl bg-[#eff4ff] px-4 py-3 text-center text-xs text-[#26619d]">
@@ -265,6 +301,7 @@ export default function GroupDetailPage() {
       )}
 
       {/* -- Header Section (full width) -- */}
+      {!groupLoading && (<>
       <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
           <div className="mb-2 flex items-center gap-3">
@@ -279,7 +316,7 @@ export default function GroupDetailPage() {
               #AP-2024-082
             </span>
           </div>
-          <h1 className="font-headline text-4xl font-extrabold tracking-tighter text-[#00345e] md:text-5xl">
+          <h1 className="font-headline text-3xl font-extrabold tracking-tighter text-[#00345e] md:text-5xl">
             Green Horizon Savings
           </h1>
           <p className="mt-2 max-w-lg text-lg text-[#26619d]">
@@ -484,7 +521,8 @@ export default function GroupDetailPage() {
             </div>
 
             <div className="overflow-hidden rounded-xl bg-white shadow-[0_4px_24px_rgba(0,52,94,0.06)]">
-              <table className="w-full border-collapse text-left">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[600px] border-collapse text-left">
                 <thead>
                   <tr className="bg-[#eff4ff]">
                     <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[#26619d]">
@@ -578,6 +616,7 @@ export default function GroupDetailPage() {
                   })}
                 </tbody>
               </table>
+              </div>
 
               {/* View All link */}
               <div className="bg-[#eff4ff]/30 px-6 py-4 text-center">
@@ -669,6 +708,7 @@ export default function GroupDetailPage() {
           <span className="font-mono text-[#26619d]">{params.address}</span>
         </p>
       </div>
+      </>)}
 
       {/* -- Lottery Animation -- */}
       <LotteryAnimation

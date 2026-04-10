@@ -6,16 +6,18 @@ import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GroupCard from "@/components/groups/GroupCard";
 import { useGroups } from "@/hooks/useGroups";
+import { useConsolProgram } from "@/providers/ConsolProvider";
 import { MOCK_GROUPS } from "@/lib/mock-data";
 
 type Filter = "all" | "forming" | "active" | "completed";
 
 export default function PoolsPage() {
   const [filter, setFilter] = useState<Filter>("all");
-  const { groups: realGroups, loading } = useGroups();
+  const { groups: realGroups, loading, error } = useGroups();
+  const { program } = useConsolProgram();
 
   const groups = realGroups.length > 0 ? realGroups : MOCK_GROUPS;
-  const isDemo = realGroups.length === 0;
+  const isDemo = !program && realGroups.length === 0;
 
   const filteredGroups =
     filter === "all"
@@ -40,8 +42,15 @@ export default function PoolsPage() {
     <div className="flex flex-col gap-8 pb-16 pt-8">
       {/* Demo mode banner */}
       {isDemo && !loading && (
-        <div className="mb-6 rounded-xl bg-[#eff4ff] px-4 py-3 text-center text-xs text-[#26619d]">
+        <div className="rounded-xl bg-[#eff4ff] px-4 py-3 text-center text-xs text-[#26619d]">
           Showing demo data — deploy to devnet for real pools
+        </div>
+      )}
+
+      {/* Error state */}
+      {error && (
+        <div className="rounded-xl bg-[#9f403d]/5 p-4 text-center text-sm text-[#9f403d]">
+          Failed to load data. Please try again.
         </div>
       )}
 
@@ -65,12 +74,12 @@ export default function PoolsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="bg-[#eff4ff] rounded-xl p-1 inline-flex gap-1">
+      <div className="bg-[#eff4ff] rounded-xl p-1 inline-flex gap-1 overflow-x-auto max-w-full">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setFilter(tab.key)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+            className={`shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
               filter === tab.key
                 ? "bg-white shadow-sm text-[#00345e] font-semibold"
                 : "text-[#526075] hover:text-[#00345e]"
