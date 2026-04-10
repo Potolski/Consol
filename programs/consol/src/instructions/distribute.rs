@@ -20,7 +20,7 @@ pub struct Distribute<'info> {
         mut,
         seeds = [ROUND_SEED, group.key().as_ref(), &[group.current_round]],
         bump = round.bump,
-        constraint = round.status == RoundStatus::Selecting @ ConsolError::InvalidRoundState,
+        constraint = round.status == RoundStatus::Distributing @ ConsolError::InvalidRoundState,
         constraint = round.winner_selected @ ConsolError::VrfNotResolved,
     )]
     pub round: Box<Account<'info, Round>>,
