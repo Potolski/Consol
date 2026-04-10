@@ -2,28 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-export function formatUSDC(amount: number): string {
-  const value = amount / 1_000_000;
-  // Drop decimals when the value is a whole number
-  if (Number.isInteger(value)) {
-    return "$" + value.toLocaleString("en-US");
-  }
-  return (
-    "$" +
-    value.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })
-  );
-}
-
-export function truncateAddress(address: string): string {
-  if (address.length <= 10) return address;
-  return address.slice(0, 4) + "..." + address.slice(-4);
-}
+import { formatUSDC, truncateAddress } from "@/lib/utils";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 

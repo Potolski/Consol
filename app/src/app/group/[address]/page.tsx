@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { formatUSDC, truncateAddress } from "@/components/groups/GroupCard";
+import { formatUSDC, truncateAddress } from "@/lib/utils";
 
 // ── Mock Data ────────────────────────────────────────────────────────────────
 
