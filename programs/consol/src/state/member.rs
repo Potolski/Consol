@@ -23,6 +23,8 @@ pub struct Member {
     pub last_paid_round: u8,
     /// Last round this member was marked as defaulting (prevents double-default per round)
     pub last_default_round: u8,
+    /// Whether this member has claimed their insurance share
+    pub insurance_claimed: bool,
     /// Member lifecycle status
     pub status: MemberStatus,
     /// Timestamp when the member joined

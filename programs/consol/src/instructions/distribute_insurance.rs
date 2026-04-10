@@ -23,6 +23,7 @@ pub struct DistributeInsurance<'info> {
         seeds = [MEMBER_SEED, group.key().as_ref(), member.wallet.as_ref()],
         bump = member.bump,
         constraint = member.status == MemberStatus::Active @ ConsolError::MemberDefaulted,
+        constraint = !member.insurance_claimed @ ConsolError::AlreadyReceived,
     )]
     pub member: Box<Account<'info, Member>>,
 
@@ -84,6 +85,10 @@ pub fn handle_distribute_insurance(ctx: Context<DistributeInsurance>) -> Result<
         ),
         share,
     )?;
+
+    // Mark member as having claimed insurance
+    let member = &mut ctx.accounts.member;
+    member.insurance_claimed = true;
 
     // Decrement active_members so subsequent calls get correct share
     // (insurance_balance shrinks, active_members shrinks → share stays proportional)
