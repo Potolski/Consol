@@ -3,6 +3,7 @@
 import { useAppKitAccount } from "@reown/appkit/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { WalletButton } from "@/components/wallet/WalletButton";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import {
@@ -36,7 +37,7 @@ export default function DashboardPage() {
             and winnings.
           </p>
         </div>
-        <appkit-button />
+        <WalletButton />
       </div>
     );
   }
