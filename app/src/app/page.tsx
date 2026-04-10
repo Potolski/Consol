@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   ArrowRight,
@@ -10,8 +12,19 @@ import {
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GroupCard from "@/components/groups/GroupCard";
+import { useGroups } from "@/hooks/useGroups";
+import { MOCK_GROUPS } from "@/lib/mock-data";
 
 export default function Home() {
+  const { groups: onChainGroups, loading } = useGroups();
+
+  // Use on-chain groups if available, otherwise show mock data
+  const hasOnChain = onChainGroups.length > 0;
+  const displayGroups = hasOnChain
+    ? onChainGroups.filter((g) => g.status === "forming" || g.status === "active")
+    : MOCK_GROUPS.filter((g) => g.status === "forming" || g.status === "active");
+
   return (
     <div className="flex flex-col gap-28 pb-16">
       {/* ── Hero Section ── */}
@@ -283,6 +296,48 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* ── Open Groups Grid ── */}
+      <section id="groups" className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <h2 className="font-headline text-xl font-bold text-[#00345e] sm:text-2xl">
+            Open Pools
+          </h2>
+          <Link
+            href="/create"
+            className="inline-flex items-center gap-1 text-sm font-medium text-[#006c4a] transition-colors hover:text-[#005a3e]"
+          >
+            Create yours
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        {loading ? (
+          <div className="py-12 text-center text-sm text-[#526075]">Loading pools...</div>
+        ) : displayGroups.length === 0 ? (
+          <div className="py-12 text-center text-sm text-[#526075]">
+            No open pools yet. Be the first to create one!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {displayGroups.map((group) => (
+              <GroupCard
+                key={group.address}
+                address={group.address}
+                description={group.description}
+                creator={group.creator}
+                monthlyContribution={group.monthlyContribution}
+                totalMembers={group.totalMembers}
+                currentMembers={group.currentMembers}
+                status={group.status}
+                collateralBps={group.collateralBps}
+                insuranceBps={group.insuranceBps}
+                currentRound={group.currentRound}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ── Final CTA ── */}

@@ -151,13 +151,16 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 
 ---
 
-## Track 4: Infrastructure & DevOps ❌
+## Track 4: Infrastructure & DevOps (Partial)
 
 ### 4.1 Deployment
-- [ ] `I-001` Install Anchor CLI + deploy program to devnet
-- [ ] `I-002` Mint test USDC on devnet for demo
+- [x] `I-001` Deploy program to devnet — `Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114`
+- [x] `I-002` Mint test USDC on devnet — `27GAbtwSgLHi53dhfTfika5jKjjSn38uEVpP29ki9nDw` (6 decimals)
+- [x] `I-002b` Publish IDL on-chain + verify binary hash match
+- [x] `I-002c` Wire frontend pages to on-chain data (useGroups, useGroup, useConsol hooks)
 - [ ] `I-003` Deploy frontend (Vercel)
 - [ ] `I-004` Configure domain
+- **Deployed**: Apr 10
 
 ### 4.2 Developer Tooling
 - [ ] `I-010` Seed script: create demo group + populate with test wallets
@@ -192,11 +195,11 @@ Ordered by impact-to-effort ratio:
 | Track | Progress | Notes |
 |-------|----------|-------|
 | Backend (Smart Contract) | **100%** | 15/15 instructions done, all compile and build |
-| Frontend (UI) | **80%** | All pages functional with mock data, missing real integration |
+| Frontend (UI) | **90%** | Pages wired to on-chain data with mock fallback |
 | Testing | **30%** | 26 unit tests passing (LiteSVM), integration + stress tests pending |
-| Infrastructure | **0%** | Needs devnet deploy |
+| Infrastructure | **50%** | Program deployed to devnet, test USDC minted, IDL verified |
 | Presentation | **0%** | Not started |
 
-**Estimated remaining**: ~20h for full hackathon MVP
+**Estimated remaining**: ~15h for full hackathon MVP
 
-**Next critical path**: Deploy devnet → Generate IDL → Connect frontend to real program → VRF test → Integration tests → Demo prep
+**Next critical path**: Seed demo data → VRF test on devnet → Deploy frontend (Vercel) → Integration tests → Demo prep

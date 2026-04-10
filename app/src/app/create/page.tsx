@@ -18,10 +18,14 @@ import {
   HelpCircle,
   Wallet,
 } from "lucide-react";
+import { PublicKey } from "@solana/web3.js";
+import { useConsol } from "@/hooks/useConsol";
+import { USDC_MINT_DEVNET } from "@/lib/constants";
 
 export default function CreateGroupPage() {
   const router = useRouter();
   const { isConnected } = useAppKitAccount();
+  const { createGroup } = useConsol();
 
   if (!isConnected) {
     return (
@@ -49,12 +53,26 @@ export default function CreateGroupPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const handleCreateGroup = async () => {
+    if (!createGroup) {
+      toast.error("Connect your wallet first");
+      return;
+    }
     setSubmitting(true);
-    toast.loading("Creating group...");
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    toast.dismiss();
-    toast.success("Group created successfully!");
-    router.push("/group/demo-new-group");
+    try {
+      const result = await createGroup({
+        monthlyContribution: monthlyAmount * 1_000_000, // dollars to USDC 6-decimal
+        totalMembers: groupSize,
+        collateralBps: collateralPct * 100,
+        insuranceBps: insurancePct * 100,
+        description,
+        mint: new PublicKey(USDC_MINT_DEVNET),
+      });
+      router.push(`/group/${result.groupAddress}`);
+    } catch {
+      // Error already shown by useConsol toast
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const preview = useMemo(() => {

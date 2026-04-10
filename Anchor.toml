@@ -13,7 +13,7 @@ consol = "Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114"
 
 [provider]
 cluster = "devnet"
-wallet = "~/.config/solana/id.json"
+wallet = "./deploy-keypair.json"
 
 [scripts]
 test = "cargo test"

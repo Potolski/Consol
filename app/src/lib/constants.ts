@@ -21,3 +21,6 @@ export const MAX_MISSED_PAYMENTS = 3;
 export const FORMATION_TIMEOUT_DAYS = 30;
 
 export const PROGRAM_ID = "Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114";
+
+// Test USDC mint on devnet (6 decimals, mint authority = deploy wallet)
+export const USDC_MINT_DEVNET = "27GAbtwSgLHi53dhfTfika5jKjjSn38uEVpP29ki9nDw";

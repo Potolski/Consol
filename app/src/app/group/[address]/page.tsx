@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { truncateAddress } from "@/lib/utils";
 import { getMockGroup } from "@/lib/mock-data";
+import { useGroup } from "@/hooks/useGroup";
 
 const LotteryAnimation = dynamic(
   () =>
@@ -132,16 +133,27 @@ export default function GroupDetailPage() {
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("current");
   const [showAllMembers, setShowAllMembers] = useState(false);
 
-  // Try to find group from shared mock data, fall back to hardcoded
-  const found = getMockGroup(params.address ?? "");
+  // Try on-chain data first, then mock, then hardcoded fallback
+  const { group: onChainGroup } = useGroup(params.address);
+  const mockFound = getMockGroup(params.address ?? "");
+  const found = onChainGroup || mockFound;
   const g = found
     ? {
-        ...found,
+        description: found.description,
+        creator: found.creator,
+        monthlyContribution: found.monthlyContribution,
+        totalMembers: found.totalMembers,
+        currentMembers: found.currentMembers,
+        currentRound: found.currentRound,
+        status: found.status as "forming" | "active" | "completed",
+        collateralBps: found.collateralBps,
+        insuranceBps: found.insuranceBps,
+        protocolFeeBps: "protocolFeeBps" in found ? found.protocolFeeBps : 150,
         poolBalance: found.monthlyContribution * found.currentMembers,
         insuranceBalance: Math.floor(
           found.monthlyContribution * found.currentMembers * (found.insuranceBps / 10_000) * (found.currentRound + 1)
         ),
-        activeMembers: found.activeMembers,
+        activeMembers: (found as unknown as { activeMembers?: number }).activeMembers ?? found.currentMembers,
       }
     : fallbackGroup;
 

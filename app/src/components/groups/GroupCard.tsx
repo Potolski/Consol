@@ -13,7 +13,7 @@ interface GroupCardProps {
   monthlyContribution: number; // raw USDC amount (6 decimals)
   totalMembers: number;
   currentMembers: number;
-  status: "forming" | "active" | "completed";
+  status: "forming" | "active" | "completed" | "cancelled";
   collateralBps: number;
   insuranceBps: number;
   currentRound?: number;
@@ -39,6 +39,14 @@ const statusConfig = {
     shadow: "",
     badgeBg: "bg-[#eff4ff]",
     badgeText: "text-[#526075]",
+  },
+  cancelled: {
+    label: "Cancelled",
+    border: "border-red-500/10",
+    hoverShadow: "",
+    badgeBg: "bg-red-500/10",
+    badgeText: "text-red-400",
+    badgeBorder: "border-red-500/20",
   },
 } as const;
 

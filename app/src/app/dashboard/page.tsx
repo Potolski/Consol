@@ -4,6 +4,7 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { useAppKit } from "@reown/appkit/react";
 import { useRouter } from "next/navigation";
 import { WalletButton } from "@/components/wallet/WalletButton";
+import { useGroups } from "@/hooks/useGroups";
 import { MOCK_GROUPS } from "@/lib/mock-data";
 import { formatUSDC, truncateAddress } from "@/lib/utils";
 import Link from "next/link";
@@ -124,8 +125,7 @@ export default function DashboardPage() {
   const { isConnected, address } = useAppKitAccount();
   const { open } = useAppKit();
   const router = useRouter();
-
-  /* ── Disconnected state ─────────────────────────────────────────────────── */
+  const { groups: onChainGroups } = useGroups();
 
   if (!isConnected) {
     return (
@@ -159,6 +159,14 @@ export default function DashboardPage() {
   const poolProgress = [75, 32, 12];
   const poolNextDates = ["Oct 24, 2023", "Nov 02, 2023", "Oct 30, 2023"];
   const poolMemberCounts = [14, 2, 6];
+
+  // Use on-chain groups if available, otherwise show mock
+  const hasOnChain = onChainGroups.length > 0;
+  const displayGroups = hasOnChain
+    ? onChainGroups.filter((g) => g.status === "active" || g.status === "forming")
+    : MOCK_GROUPS.filter((g) => g.status === "active").slice(0, 2);
+
+  const activeCount = displayGroups.length;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[16rem_1fr] gap-0 min-h-[calc(100vh-4rem)]">
