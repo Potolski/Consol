@@ -11,6 +11,8 @@ pub enum ConsolError {
     InvalidCollateralBps,
     #[msg("Invalid insurance basis points")]
     InvalidInsuranceBps,
+    #[msg("Mint must have 6 decimals (USDC standard)")]
+    InvalidMintDecimals,
 
     // Group state
     #[msg("Group is not in the expected state for this operation")]

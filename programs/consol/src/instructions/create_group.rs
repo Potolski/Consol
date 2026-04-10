@@ -86,6 +86,10 @@ pub fn handle_create_group(ctx: Context<CreateGroup>, params: CreateGroupParams)
         params.insurance_bps <= 2_000,
         ConsolError::InvalidInsuranceBps
     );
+    require!(
+        ctx.accounts.mint.decimals == 6,
+        ConsolError::InvalidMintDecimals
+    );
 
     let clock = Clock::get()?;
     let group = &mut ctx.accounts.group;
