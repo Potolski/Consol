@@ -84,11 +84,13 @@ pub fn handle_mark_default(ctx: Context<MarkDefault>) -> Result<()> {
     };
 
     let collateral = member.collateral_deposited;
-    let slash_amount = (collateral as u128)
+    let slash_amount: u64 = (collateral as u128)
         .checked_mul(slash_bps as u128)
         .ok_or(ConsolError::MathOverflow)?
         .checked_div(10_000)
-        .ok_or(ConsolError::MathOverflow)? as u64;
+        .ok_or(ConsolError::MathOverflow)?
+        .try_into()
+        .map_err(|_| ConsolError::MathOverflow)?;
 
     // Cap slash to remaining collateral
     let actual_slash = slash_amount.min(collateral);

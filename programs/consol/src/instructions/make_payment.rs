@@ -92,12 +92,14 @@ pub fn handle_make_payment(ctx: Context<MakePayment>) -> Result<()> {
 
     // Calculate payment: base contribution + late fee if applicable
     let base_amount = group.monthly_contribution;
-    let late_fee = if is_late {
+    let late_fee: u64 = if is_late {
         (base_amount as u128)
             .checked_mul(LATE_FEE_BPS as u128)
             .ok_or(ConsolError::MathOverflow)?
             .checked_div(10_000)
-            .ok_or(ConsolError::MathOverflow)? as u64
+            .ok_or(ConsolError::MathOverflow)?
+            .try_into()
+            .map_err(|_| ConsolError::MathOverflow)?
     } else {
         0
     };
@@ -106,11 +108,13 @@ pub fn handle_make_payment(ctx: Context<MakePayment>) -> Result<()> {
         .ok_or(ConsolError::MathOverflow)?;
 
     // Split: insurance portion goes to insurance vault, rest to main vault
-    let insurance_amount = (base_amount as u128)
+    let insurance_amount: u64 = (base_amount as u128)
         .checked_mul(group.insurance_bps as u128)
         .ok_or(ConsolError::MathOverflow)?
         .checked_div(10_000)
-        .ok_or(ConsolError::MathOverflow)? as u64;
+        .ok_or(ConsolError::MathOverflow)?
+        .try_into()
+        .map_err(|_| ConsolError::MathOverflow)?;
 
     let vault_amount = total_payment
         .checked_sub(insurance_amount)

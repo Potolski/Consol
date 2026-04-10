@@ -64,11 +64,13 @@ pub fn handle_join_group(ctx: Context<JoinGroup>) -> Result<()> {
     let total_obligation = (group.monthly_contribution as u128)
         .checked_mul(group.total_members as u128)
         .ok_or(ConsolError::MathOverflow)?;
-    let collateral_amount = total_obligation
+    let collateral_amount: u64 = total_obligation
         .checked_mul(group.collateral_bps as u128)
         .ok_or(ConsolError::MathOverflow)?
         .checked_div(10_000)
-        .ok_or(ConsolError::MathOverflow)? as u64;
+        .ok_or(ConsolError::MathOverflow)?
+        .try_into()
+        .map_err(|_| ConsolError::MathOverflow)?;
 
     // Transfer collateral from user to vault
     token::transfer(

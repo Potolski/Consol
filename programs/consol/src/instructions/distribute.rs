@@ -72,11 +72,13 @@ pub fn handle_distribute(ctx: Context<Distribute>) -> Result<()> {
     let round = &ctx.accounts.round;
 
     // Calculate distribution: total_collected minus protocol fee
-    let protocol_fee = (round.total_collected as u128)
+    let protocol_fee: u64 = (round.total_collected as u128)
         .checked_mul(group.protocol_fee_bps as u128)
         .ok_or(ConsolError::MathOverflow)?
         .checked_div(10_000)
-        .ok_or(ConsolError::MathOverflow)? as u64;
+        .ok_or(ConsolError::MathOverflow)?
+        .try_into()
+        .map_err(|_| ConsolError::MathOverflow)?;
 
     let distribution_amount = round
         .total_collected
