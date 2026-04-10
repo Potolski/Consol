@@ -59,10 +59,10 @@ impl RandomnessAccountData {
         }))
     }
 
-    /// Get the 32-byte random value. Only valid if reveal_slot matches current slot.
-    pub fn get_value(&self, clock_slot: u64) -> Result<[u8; 32]> {
+    /// Get the 32-byte random value. Valid once the oracle has revealed (reveal_slot > 0).
+    pub fn get_value(&self, _clock_slot: u64) -> Result<[u8; 32]> {
         require!(
-            self.reveal_slot == clock_slot,
+            self.is_revealed(),
             ConsolError::VrfNotResolved
         );
         Ok(self.value)
