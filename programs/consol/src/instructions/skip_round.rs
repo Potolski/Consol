@@ -31,16 +31,14 @@ pub struct SkipRound<'info> {
 pub fn handle_skip_round(ctx: Context<SkipRound>) -> Result<()> {
     let group = &ctx.accounts.group;
 
-    // Can only skip if there are no eligible members
-    // (all active members already received, or no active members remain)
-    // The caller must demonstrate this is the case. We check:
-    // - If active_members == 0, obviously nobody to pick
-    // - If members_received >= active count of members who haven't defaulted,
-    //   everyone eligible has already received
-    // - If total_collected == 0, nobody paid this round (mass default scenario)
-    let can_skip = group.active_members == 0 || ctx.accounts.round.total_collected == 0;
+    // Can only skip if there are truly no eligible winners:
+    // 1. No active members remain (everyone defaulted/withdrew)
+    // 2. All active members have already received the pool in prior rounds
+    let no_active = group.active_members == 0;
+    let all_received = group.active_members > 0
+        && group.members_received >= group.active_members;
 
-    require!(can_skip, ConsolError::NoEligibleMembers);
+    require!(no_active || all_received, ConsolError::NoEligibleMembers);
 
     // Mark round as completed with no winner
     let round = &mut ctx.accounts.round;
