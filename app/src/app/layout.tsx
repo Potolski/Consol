@@ -33,7 +33,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} dark`}
     >
-      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+      <body className="min-h-screen flex flex-col bg-[#0A0F1E] text-white antialiased">
         <SolanaProvider>
           <ConsolProvider>
             <TooltipProvider>
@@ -42,9 +42,9 @@ export default function RootLayout({
                 position="bottom-right"
                 toastOptions={{
                   style: {
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                    color: "var(--foreground)",
+                    background: "#111827",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    color: "#F1F5F9",
                   },
                 }}
               />

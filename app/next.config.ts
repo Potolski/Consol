@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    root: ".",
-  },
+  turbopack: {},
   transpilePackages: ["@solana/wallet-adapter-react-ui"],
   webpack: (config) => {
     config.resolve.fallback = {
