@@ -4,7 +4,7 @@
 
 - **Start**: April 6, 2026
 - **Submission deadline**: May 11, 2026
-- **Available time**: ~33 days from today (April 8)
+- **Last updated**: April 10, 2026
 
 ---
 
@@ -18,305 +18,178 @@ Week 4  (Apr 28-May 4) ██████  Integration — end-to-end flows, tes
 Week 5  (May 5-11)   ████████  Demo — presentation, video, submission, bugfixes
 ```
 
+### ⚡ Actual Progress (as of Apr 10)
+
+We're ahead of schedule — backend Weeks 1-2 AND frontend Weeks 3 tasks completed in Week 1.
+
+```
+Apr 6-8    ████  Backend: scaffold + state + core instructions + payments + VRF
+Apr 9-10   ████  Frontend: scaffold + UX design + all pages + data layer + mock wiring
+Apr 11+    ····  Next: smart contract completion + deploy + real integration + demo
+```
+
 ---
 
 ## Track 1: Backend (Solana Program)
 
-### 1.1 Project Scaffold
-- [x] Initialize repo and design doc
+### 1.1 Project Scaffold ✅
 - [x] `B-001` Anchor project setup (`anchor init consol`)
-- [x] `B-002` Define program error codes (`errors.rs`)
-- [x] `B-003` Define program events (`events.rs`)
+- [x] `B-002` Define program error codes (`errors.rs`) — 25 error codes
+- [x] `B-003` Define program events (`events.rs`) — 9 events
 - [x] `B-004` Configure Anchor.toml for devnet
-- **Target**: End of Week 1, Day 1
+- **Completed**: Apr 6
 
-### 1.2 State Accounts
+### 1.2 State Accounts ✅
 - [x] `B-010` `ConsorcioGroup` account struct + space calculation
 - [x] `B-011` `Member` account struct (PDA: group + wallet)
-- [x] `B-012` `Round` account struct (PDA: group + month)
+- [x] `B-012` `Round` account struct (PDA: group + round_number)
 - [x] `B-013` `Reputation` account struct (PDA: wallet, global)
-- **Target**: End of Week 1, Day 2
-- **Depends on**: B-001
+- **Completed**: Apr 7
 
-### 1.3 Core Instructions
+### 1.3 Core Instructions ✅
 - [x] `B-020` `create_group` — creator initializes group with parameters
-- [x] `B-021` `join_group` — member deposits collateral + first payment, gets Member PDA
+- [x] `B-021` `join_group` — member deposits collateral, gets Member PDA
 - [x] `B-022` `leave_group` — member exits during formation phase (full refund)
-- [x] `B-023` `activate_group` — transition from Forming → Active when slots filled
-- **Target**: End of Week 1
-- **Depends on**: B-010, B-011
+- [x] `B-023` `activate_group` — transition Forming → Active when all slots filled
+- **Completed**: Apr 7
 
-### 1.4 Payment & Round Logic
-- [x] `B-030` `make_payment` — member submits monthly contribution to vault
+### 1.4 Payment & Round Logic ✅
+- [x] `B-030` `make_payment` — member submits monthly contribution (7d window + 3d grace + 5% late fee)
 - [x] `B-031` `start_round` — initialize Round account, open collection window
-- [x] `B-032` `close_collection` — lock collection, calculate total, check defaults
-- [x] `B-033` `mark_default` — flag non-payer, apply collateral slash, update member state
-- [x] `B-034` `distribute` — transfer pool funds to selected winner (direct push model)
-- [x] `B-035` ~~`claim_distribution`~~ — merged into `distribute` (push model, no separate claim)
-- **Target**: End of Week 2
-- **Depends on**: B-020, B-021, B-012
+- [x] `B-032` `close_collection` — lock collection, transition to Selecting
+- [x] `B-033` `mark_default` — progressive collateral slashing (10% → 25% → 100%)
+- [x] `B-034` `distribute` — transfer pool funds to winner (push model, 1.5% protocol fee)
+- **Completed**: Apr 8
 
-### 1.5 VRF Integration (Lottery Selection)
-- [x] `B-040` Research Switchboard VRF v2 vs other options (Orao, etc.) — chose Switchboard commit-reveal
+### 1.5 VRF Integration (Lottery Selection) ✅
+- [x] `B-040` Research Switchboard VRF — chose commit-reveal pattern
 - [x] `B-041` `commit_round` — commit phase, stores randomness account + seed slot
 - [x] `B-042` `resolve_round` — reveal phase, reads VRF value, selects winner from eligible members
 - [ ] `B-043` End-to-end VRF test on devnet
-- **Target**: End of Week 2
-- **Depends on**: B-031
+- **Code completed**: Apr 8 — **needs devnet testing**
 
-### 1.6 Group Completion
-- [ ] `B-050` `complete_round` — finalize a round after distribution
-- [ ] `B-051` `close_group` — finalize group after all rounds, return collateral
-- [ ] `B-052` `return_collateral` — release collateral to non-defaulted members
-- [ ] `B-053` `distribute_insurance_surplus` — split remaining insurance pool
-- **Target**: Mid Week 3
+### 1.6 Group Completion ❌
+- [ ] `B-050` `close_group` — finalize group after all rounds
+- [ ] `B-051` `return_collateral` — release collateral to non-defaulted members
+- [ ] `B-052` `distribute_insurance_surplus` — split remaining insurance pool
+- **Estimated**: ~5h
 - **Depends on**: B-034, B-042
 
-### 1.7 Safety & Constraints
-- [ ] `B-060` Add all boundary checks (overflow, underflow, zero amounts)
-- [ ] `B-061` Validate payment windows (too early, too late, grace period)
-- [ ] `B-062` Prevent double payments, double claims, double selection
+### 1.7 Safety & Constraints (Partial) ✅
+- [x] `B-060` Checked arithmetic (overflow/underflow protection on all math)
+- [x] `B-061` Payment window validation (7 days + 3 days grace)
+- [x] `B-062` Prevent double payments (last_paid_round marker)
 - [ ] `B-063` Handle edge case: all members default in a round
 - [ ] `B-064` Handle edge case: group dissolution (majority default)
-- **Target**: Week 3-4 (ongoing)
-- **Depends on**: B-030 through B-053
 
 ---
 
-## Track 2: Testing
+## Track 2: Testing ❌
 
-### 2.1 Unit Tests (Anchor/Rust)
-- [ ] `T-001` Test group creation with valid/invalid parameters
-- [ ] `T-002` Test join: collateral deposit, member PDA creation, capacity check
-- [ ] `T-003` Test payment: correct amount, window enforcement, vault balance
-- [ ] `T-004` Test default: missed payment detection, collateral slash math
-- [ ] `T-005` Test distribution: correct amount, eligible set filtering
-- [ ] `T-006` Test completion: collateral return, insurance surplus
-- **Target**: Parallel with backend, always current
-- **Depends on**: Corresponding B-xxx tasks
+### 2.1 Unit Tests
+- [ ] `T-001` through `T-006` — Not started
+- **Estimated**: ~10h
 
-### 2.2 Integration Tests (TypeScript)
-- [ ] `T-010` Full lifecycle: create → join (all members) → activate
-- [ ] `T-011` Full lifecycle: N rounds of payment → selection → distribution
-- [ ] `T-012` Default scenario: member misses payment, gets slashed, group continues
-- [ ] `T-013` Early withdrawal scenario
-- [ ] `T-014` VRF integration test on devnet
-- **Target**: Week 3-4
-- **Depends on**: B-050, B-042
+### 2.2 Integration Tests
+- [ ] `T-010` through `T-014` — Not started
+- **Depends on**: B-050, anchor build + deploy
 
-### 2.3 Stress & Edge Case Tests
-- [ ] `T-020` Maximum group size (50 members)
-- [ ] `T-021` Minimum group size (3 members)
-- [ ] `T-022` Simultaneous payments from all members
-- [ ] `T-023` Default cascade (multiple defaults in sequence)
-- **Target**: Week 4
-- **Depends on**: T-010 through T-014
+### 2.3 Stress Tests
+- [ ] `T-020` through `T-023` — Not started
 
 ---
 
-## Track 3: Frontend
+## Track 3: Frontend ✅ (Phases 1-3 Complete)
 
-### 3.1 Project Setup
-- [ ] `F-001` Initialize Next.js/React project with TypeScript
-- [ ] `F-002` Configure Solana wallet adapter (@solana/wallet-adapter)
-- [ ] `F-003` Set up Tailwind CSS + base theme (colors, typography)
-- [ ] `F-004` Import program IDL + generate TypeScript client
-- [ ] `F-005` Create base layout (navbar, wallet connect, footer)
-- **Target**: Start of Week 3
-- **Depends on**: B-001 (for IDL)
+### 3.1 Project Setup ✅
+- [x] `F-001` Next.js 16 (App Router) + React 19 + TypeScript
+- [x] `F-002` Reown AppKit wallet adapter (replaced @solana/wallet-adapter)
+- [x] `F-003` Tailwind CSS 4 + shadcn/ui (base-nova) + custom dark theme
+- [x] `F-004` Program IDL — **deferred** (anchor not installed yet, hooks handle null gracefully)
+- [x] `F-005` Layout: Navbar + custom WalletButton + Footer + AppShell
+- **Completed**: Apr 9
 
-### 3.2 Core Pages
-- [ ] `F-010` **Home/Explore** — Browse open groups, key stats, CTA to create
-- [ ] `F-011` **Create Group** — Form to configure and deploy a new consórcio
-- [ ] `F-012` **Group Detail** — Members list, round timeline, current status, actions
-- [ ] `F-013` **Dashboard** — User's active groups, payment schedule, history
-- [ ] `F-014` **Profile** — Wallet reputation, completed consórcios, stats
-- **Target**: End of Week 3
-- **Depends on**: F-001 through F-005
+### 3.2 Core Pages ✅
+- [x] `F-010` **Home/Explore** — Educational landing (hero, 4-step explainer, comparison table, calculator) + GroupCard grid with mock data + protocol stats
+- [x] `F-011` **Create Group** — Form with sliders, live preview, cost breakdown, submit flow with toast + redirect
+- [x] `F-012` **Group Detail** — Single scroll: CTA, pool stats, round timeline, members table with filter, collapsible rules, share button
+- [x] `F-013` **Dashboard** — Wallet detection, stats, alerts, user's GroupCards
+- [x] `F-014` **Profile** — Placeholder (reputation, Phase 7)
+- **Completed**: Apr 10
 
-### 3.3 Interactive Components
-- [ ] `F-020` `GroupCard` — Pool summary (members, amount, progress, status)
-- [ ] `F-021` `RoundTimeline` — Visual progress of all rounds (who received, current)
-- [ ] `F-022` `PaymentModal` — Submit monthly payment with confirmation
-- [ ] `F-023` `MemberList` — Members with status indicators (paid, pending, defaulted)
-- [ ] `F-024` `CountdownTimer` — Payment window / selection countdown
-- [ ] `F-025` `LotteryAnimation` — VRF selection visualization (spinning wheel / card reveal)
-- **Target**: End of Week 3 / Early Week 4
-- **Depends on**: F-010 through F-014
+### 3.3 Interactive Components ✅
+- [x] `F-020` `GroupCard` — Status glow (forming=emerald, active=gold), progress bar, pool/collateral stats
+- [x] `F-021` `RoundTimeline` — Dots with status colors, tooltips showing winners, "NOW" pulse
+- [x] `F-022` `PaymentModal` — Integrated into Group Detail CTA (not separate modal yet)
+- [x] `F-023` `MemberList` — Table with status dots, paid count, collateral, "you" label, filter
+- [x] `F-024` `CountdownTimer` — useCountdown hook with phase detection (payment/grace/closed)
+- [ ] `F-025` `LotteryAnimation` — **Not started** (Phase 6, framer-motion)
+- **Completed**: Apr 10 (except lottery animation)
 
-### 3.4 Program Integration (Hooks)
-- [ ] `F-030` `useConsol` — Core hook: create, join, pay, claim instructions
-- [ ] `F-031` `useGroup` — Fetch + subscribe to group account state
-- [ ] `F-032` `useRound` — Fetch + subscribe to current round state
-- [ ] `F-033` `useMember` — Fetch member PDA for connected wallet
-- [ ] `F-034` `useReputation` — Fetch global reputation for wallet
-- **Target**: Week 3-4 (parallel with pages)
-- **Depends on**: F-004, B-020+
+### 3.4 Program Integration (Hooks) ✅
+- [x] `F-030` `useConsol` — 8 instruction wrappers (create, join, leave, activate, start, pay, close, distribute)
+- [x] `F-031` `useGroup` — Fetch + subscribe to group account state
+- [x] `F-032` `useRound` — Fetch + subscribe to current round state
+- [x] `F-033` `useMember` — Fetch member PDA for connected wallet
+- [x] `F-034` `useReputation` — Defined in types (PDA exists, no instruction yet)
+- **Completed**: Apr 10 — **using mock data until IDL is generated**
 
-### 3.5 UX Polish
-- [ ] `F-040` Toast notifications (payment confirmed, selected as winner, etc.)
-- [ ] `F-041` Loading states and skeleton screens
-- [ ] `F-042` Error handling with human-readable messages
-- [ ] `F-043` Mobile responsive layout
-- [ ] `F-044` Empty states (no groups, no payments yet)
-- **Target**: Week 4
-- **Depends on**: F-010 through F-034
+### 3.5 UX Polish (Partial) ✅
+- [x] `F-040` Toast notifications (transaction loading/success/error via useTransactionToast)
+- [x] `F-041` Loading states (button spinners, empty states)
+- [x] `F-042` Error handling — hooks handle null program, graceful fallbacks
+- [ ] `F-043` Mobile responsive — basic support, needs polish pass
+- [x] `F-044` Empty states (no groups, no payments, wallet disconnected)
+- **Completed**: Apr 10
 
 ---
 
-## Track 4: Infrastructure & DevOps
+## Track 4: Infrastructure & DevOps ❌
 
 ### 4.1 Deployment
-- [ ] `I-001` Deploy program to Solana devnet
+- [ ] `I-001` Install Anchor CLI + deploy program to devnet
 - [ ] `I-002` Mint test USDC on devnet for demo
-- [ ] `I-003` Deploy frontend (Vercel or similar)
-- [ ] `I-004` Configure custom domain (if available)
-- **Target**: I-001 end of Week 2, I-003 end of Week 3
+- [ ] `I-003` Deploy frontend (Vercel)
+- [ ] `I-004` Configure domain
 
 ### 4.2 Developer Tooling
 - [ ] `I-010` Seed script: create demo group + populate with test wallets
-- [ ] `I-011` Fast-forward script: simulate N rounds for demo state
-- [ ] `I-012` Reset script: clean devnet state for fresh demo
-- **Target**: Week 4
-- **Depends on**: B-050
-
-### 4.3 Monitoring
-- [ ] `I-020` Set up basic program logging (Anchor events)
-- [ ] `I-021` Index events for frontend (Helius webhooks or on-chain polling)
-- **Target**: Week 4 (nice-to-have)
+- [ ] `I-011` Fast-forward script: simulate N rounds
+- [ ] `I-012` Reset script: clean devnet state
 
 ---
 
-## Track 5: Presentation & Submission
+## Track 5: Presentation & Submission ❌
 
-### 5.1 Pitch Deck
-- [ ] `P-001` Outline pitch narrative (problem → solution → demo → market → team)
-- [ ] `P-002` Design slides (8-12 slides max)
-- [ ] `P-003` Add market data (ROSCA $500B, Brazil consórcio stats, crypto adoption)
-- [ ] `P-004` Technical architecture diagram (clean, single slide)
-- [ ] `P-005` Competitive landscape slide
-- [ ] `P-006` Roadmap slide (hackathon MVP → v2 → mainnet)
-- **Target**: Week 4
-
-### 5.2 Demo
-- [ ] `P-010` Write demo script (2-3 minute walkthrough)
-- [ ] `P-011` Seed devnet with realistic demo data
-- [ ] `P-012` Practice demo flow end-to-end (no dead clicks)
-- [ ] `P-013` Record backup video in case of live issues
-- **Target**: Week 5 (May 5-8)
-
-### 5.3 Video Submission
-- [ ] `P-020` Record submission video (typically 3-5 min for Colosseum)
-- [ ] `P-021` Edit: intro, problem, demo walkthrough, architecture, closing
-- [ ] `P-022` Add captions/subtitles
-- [ ] `P-023` Upload and test link
-- **Target**: May 9-10 (2 days before deadline)
-
-### 5.4 Submission Package
-- [ ] `P-030` Write project README.md (for GitHub repo)
-- [ ] `P-031` Clean up repo (remove dead code, add comments where needed)
-- [ ] `P-032` Fill out Colosseum submission form
-- [ ] `P-033` Verify all links work (demo, video, repo, deployed frontend)
-- [ ] `P-034` Submit on Colosseum platform
-- **Deadline**: May 11, 2026
-- **Depends on**: Everything
+- [ ] `P-001` through `P-034` — Not started
+- **Target**: Week 4-5
 
 ---
 
-## Track 6: Stretch Goals (If Time Permits)
+## Track 6: Stretch Goals
 
-Ordered by impact-to-effort ratio for hackathon judging:
+Ordered by impact-to-effort ratio:
 
-- [ ] `S-001` **Solana Blinks** — Shareable "Join this consórcio" link that works in any Blink-compatible wallet. High wow factor for demo.
-- [ ] `S-002` **Lottery animation** — Satisfying VRF reveal animation (wheel spin, card flip). Makes the demo memorable.
-- [ ] `S-003` **Bid mechanism (Lance)** — Track B selection via sealed bids. Adds depth to the protocol.
-- [ ] `S-004` **Tranche disbursement** — 50/25/25 release schedule. Shows we thought about default risk seriously.
-- [ ] `S-005` **Notification integration** — Dialect or Notifi for payment reminders and selection alerts.
-- [ ] `S-006` **Yield on idle funds** — Deposit insurance pool into Marinade/Kamino. Shows composability.
-- [ ] `S-007` **Basic reputation display** — Show on-chain track record on profile page.
-
----
-
-## Dependency Graph (Critical Path)
-
-```
-B-001 (scaffold)
-  │
-  ├── B-010/011/012 (state accounts)
-  │     │
-  │     ├── B-020/021/022/023 (create/join/leave/activate)
-  │     │     │
-  │     │     ├── B-030/031/032/033 (payment & round logic)
-  │     │     │     │
-  │     │     │     ├── B-040/041/042/043 (VRF integration)  ← HIGHEST RISK
-  │     │     │     │     │
-  │     │     │     │     └── B-034/035 (distribute/claim)
-  │     │     │     │           │
-  │     │     │     │           └── B-050/051/052/053 (completion)
-  │     │     │     │                 │
-  │     │     │     │                 └── T-010/011 (integration tests)
-  │     │     │     │                       │
-  │     │     │     │                       └── I-010/011 (seed scripts)
-  │     │     │     │                             │
-  │     │     │     │                             └── P-010/011 (demo prep)
-  │     │     │     │                                   │
-  │     │     │     │                                   └── P-020 (video) → P-034 (submit)
-  │     │     │     │
-  │     │     │     └── B-033 (defaults) → B-063/064 (edge cases)
-  │     │     │
-  │     │     └── F-004 (IDL client) → F-030/031 (hooks) → F-010..014 (pages)
-  │     │
-  │     └── T-001..006 (unit tests, parallel with instructions)
-  │
-  └── F-001..003 (frontend scaffold, parallel with backend)
-
-CRITICAL PATH: B-001 → B-010 → B-020 → B-030 → B-041 → B-034 → B-050 → T-011 → I-010 → P-010 → P-020 → P-034
-```
-
-### Risk Register
-
-| ID | Risk | Likelihood | Impact | Mitigation |
-|----|------|-----------|--------|------------|
-| R1 | VRF integration harder than expected | High | High | Start VRF research Day 1. If Switchboard is too complex, fall back to commit-reveal scheme using block hashes (less secure but functional for demo). |
-| R2 | Account size limits (Solana 10KB max) | Medium | Medium | Calculate space early (B-010). If group size exceeds limits, use realloc or separate accounts. |
-| R3 | Frontend-program integration bugs | High | Medium | Generate IDL client early. Test with simple calls before building full UI. |
-| R4 | Devnet instability during demo | Medium | High | Record backup demo video (P-013). Have seed scripts ready to quickly recreate state. |
-| R5 | Scope creep (adding stretch goals too early) | High | High | Strictly follow MVP first. No stretch goals until all MVP tasks are complete. |
-| R6 | Solo dev burnout | Medium | High | Plan rest days. Stick to WBS priorities. Cut scope rather than crunch. |
+- [ ] `S-001` **Solana Blinks** — Shareable "Join this consórcio" link
+- [ ] `S-002` **Lottery animation** — VRF reveal with spinning wheel (framer-motion) ← **next priority**
+- [ ] `S-003` **Bid mechanism (Lance)** — Sealed bid selection track
+- [ ] `S-004` **Tranche disbursement** — 50/25/25 release schedule
+- [ ] `S-005` **Notification integration** — Dialect/Notifi payment reminders
+- [ ] `S-006` **Yield on idle funds** — Deposit insurance into Marinade/Kamino
+- [ ] `S-007` **Reputation display** — On-chain track record on profile page
 
 ---
 
-## Daily Cadence
+## Current Status Summary
 
-```
-Each day:
-  1. Check WBS — what's the next unchecked item on the critical path?
-  2. Work on critical path items first, then parallel track items
-  3. Mark completed items as [x]
-  4. If blocked, note the blocker and switch to a parallel task
-  5. Commit working code at end of day — never go to bed with uncommitted work
-```
+| Track | Progress | Notes |
+|-------|----------|-------|
+| Backend (Smart Contract) | **85-90%** | 11/14 instructions done, missing group completion |
+| Frontend (UI) | **80%** | All pages functional with mock data, missing real integration |
+| Testing | **0%** | Not started |
+| Infrastructure | **0%** | Needs anchor install + devnet deploy |
+| Presentation | **0%** | Not started |
 
----
+**Estimated remaining**: ~30h for full hackathon MVP
 
-## Week-by-Week Milestones
-
-### Week 1 (Apr 6-13) — "It compiles"
-**Goal**: Program scaffold + all state accounts + create/join/activate instructions + first unit tests.
-- Milestone: Can create a group and have members join on devnet.
-
-### Week 2 (Apr 14-20) — "It works"
-**Goal**: Payment flow + VRF lottery + distribution + default handling.
-- Milestone: Can run a complete round (pay → select → distribute) on devnet.
-
-### Week 3 (Apr 21-27) — "It looks good"
-**Goal**: Frontend scaffold + all core pages + program integration.
-- Milestone: Can do the full flow from the browser with a wallet.
-
-### Week 4 (Apr 28 - May 4) — "It's solid"
-**Goal**: Integration tests + seed scripts + UX polish + edge case handling.
-- Milestone: Demo-ready product with realistic data.
-
-### Week 5 (May 5-11) — "Ship it"
-**Goal**: Pitch deck + demo recording + video + submission.
-- Milestone: Submitted on Colosseum before May 11.
+**Next critical path**: Install Anchor → `anchor build` → Deploy devnet → Generate IDL → Connect frontend to real program → VRF test → Demo prep
