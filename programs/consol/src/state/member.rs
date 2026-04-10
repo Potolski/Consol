@@ -15,7 +15,7 @@ pub struct Member {
     pub payments_missed: u8,
     /// Whether this member has received the pool distribution
     pub has_received: bool,
-    /// The round in which this member received (0 = hasn't received)
+    /// The round in which this member received (u8::MAX = hasn't received; check has_received first)
     pub received_round: u8,
     /// Total amount paid across all rounds (for withdrawal refund calc)
     pub total_paid: u64,

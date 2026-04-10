@@ -91,7 +91,7 @@ pub fn handle_join_group(ctx: Context<JoinGroup>) -> Result<()> {
     member.payments_made = 0;
     member.payments_missed = 0;
     member.has_received = false;
-    member.received_round = 0;
+    member.received_round = u8::MAX;
     member.total_paid = 0;
     member.last_paid_round = 0;
     member.last_default_round = u8::MAX; // sentinel: never defaulted
