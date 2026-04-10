@@ -34,11 +34,13 @@ pub fn handle_skip_round(ctx: Context<SkipRound>) -> Result<()> {
     // Can only skip if there are truly no eligible winners:
     // 1. No active members remain (everyone defaulted/withdrew)
     // 2. All active members have already received the pool in prior rounds
+    // 3. No payments were collected this round (collection already closed via Selecting constraint)
     let no_active = group.active_members == 0;
     let all_received = group.active_members > 0
         && group.members_received >= group.active_members;
+    let no_payments = ctx.accounts.round.total_collected == 0;
 
-    require!(no_active || all_received, ConsolError::NoEligibleMembers);
+    require!(no_active || all_received || no_payments, ConsolError::NoEligibleMembers);
 
     // Mark round as completed with no winner
     let round = &mut ctx.accounts.round;

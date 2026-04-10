@@ -65,7 +65,7 @@ pub fn handle_leave_group(ctx: Context<LeaveGroup>) -> Result<()> {
 
     token::transfer(
         CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
+            ctx.accounts.token_program.key(),
             Transfer {
                 from: ctx.accounts.vault.to_account_info(),
                 to: ctx.accounts.user_token_account.to_account_info(),

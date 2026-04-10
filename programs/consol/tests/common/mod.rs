@@ -193,6 +193,7 @@ impl TestEnv {
         let (group_pda, _) = derive_group_pda(creator, params.group_id);
         let (vault_pda, _) = derive_vault_pda(&group_pda);
         let (insurance_pda, _) = derive_insurance_pda(&group_pda);
+        let (treasury_pda, _) = derive_treasury_pda(&group_pda);
 
         let accounts = consol::accounts::CreateGroup {
             creator: *creator,
@@ -200,6 +201,7 @@ impl TestEnv {
             mint: self.mint,
             vault: vault_pda,
             insurance_vault: insurance_pda,
+            treasury_vault: treasury_pda,
             token_program: TOKEN_PROGRAM_ID,
             system_program: anchor_lang::system_program::ID,
         };
@@ -485,6 +487,10 @@ pub fn derive_vault_pda(group: &Pubkey) -> (Pubkey, u8) {
 
 pub fn derive_insurance_pda(group: &Pubkey) -> (Pubkey, u8) {
     Pubkey::find_program_address(&[INSURANCE_SEED, group.as_ref()], &consol::ID)
+}
+
+pub fn derive_treasury_pda(group: &Pubkey) -> (Pubkey, u8) {
+    Pubkey::find_program_address(&[TREASURY_SEED, group.as_ref()], &consol::ID)
 }
 
 pub fn derive_member_pda(group: &Pubkey, wallet: &Pubkey) -> (Pubkey, u8) {

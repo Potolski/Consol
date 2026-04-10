@@ -88,8 +88,8 @@ pub fn handle_resolve_round(ctx: Context<ResolveRound>) -> Result<()> {
 
     // Verify ALL eligible members were provided — prevents callers from omitting
     // members to manipulate the lottery outcome.
-    let expected_eligible = (group.active_members as u16)
-        .checked_sub(group.members_received as u16)
+    let expected_eligible = (ctx.accounts.group.active_members as u16)
+        .checked_sub(ctx.accounts.group.members_received as u16)
         .ok_or(ConsolError::MathOverflow)? as usize;
     require!(
         eligible_wallets.len() == expected_eligible,

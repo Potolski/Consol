@@ -106,7 +106,7 @@ pub fn handle_mark_default(ctx: Context<MarkDefault>) -> Result<()> {
 
         token::transfer(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
+                ctx.accounts.token_program.key(),
                 Transfer {
                     from: ctx.accounts.vault.to_account_info(),
                     to: ctx.accounts.insurance_vault.to_account_info(),

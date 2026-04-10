@@ -3,7 +3,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 use crate::constants::*;
 use crate::error::ConsolError;
-use crate::events::WinnerSelected;
+use crate::events::DistributionClaimed;
 use crate::state::{ConsorcioGroup, GroupStatus, Member, MemberStatus, Round, RoundStatus};
 
 #[derive(Accounts)]
@@ -95,7 +95,7 @@ pub fn handle_distribute(ctx: Context<Distribute>) -> Result<()> {
 
     token::transfer(
         CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
+            ctx.accounts.token_program.key(),
             Transfer {
                 from: ctx.accounts.vault.to_account_info(),
                 to: ctx.accounts.winner_token_account.to_account_info(),
@@ -110,7 +110,7 @@ pub fn handle_distribute(ctx: Context<Distribute>) -> Result<()> {
     if protocol_fee > 0 {
         token::transfer(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
+                ctx.accounts.token_program.key(),
                 Transfer {
                     from: ctx.accounts.vault.to_account_info(),
                     to: ctx.accounts.treasury_vault.to_account_info(),
@@ -143,12 +143,11 @@ pub fn handle_distribute(ctx: Context<Distribute>) -> Result<()> {
         group.status = GroupStatus::Completed;
     }
 
-    emit!(WinnerSelected {
+    emit!(DistributionClaimed {
         group: group.key(),
         round: round.round_number,
-        winner: winner.wallet,
+        member: winner.wallet,
         amount: distribution_amount,
-        vrf_proof: round.vrf_result,
         timestamp: clock.unix_timestamp,
     });
 

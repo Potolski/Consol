@@ -81,7 +81,7 @@ pub fn handle_distribute_insurance(ctx: Context<DistributeInsurance>) -> Result<
 
     token::transfer(
         CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
+            ctx.accounts.token_program.key(),
             Transfer {
                 from: ctx.accounts.insurance_vault.to_account_info(),
                 to: ctx.accounts.member_token_account.to_account_info(),
