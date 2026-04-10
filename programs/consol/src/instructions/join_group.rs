@@ -94,6 +94,7 @@ pub fn handle_join_group(ctx: Context<JoinGroup>) -> Result<()> {
     member.received_round = 0;
     member.total_paid = 0;
     member.last_paid_round = 0;
+    member.last_default_round = u8::MAX; // sentinel: never defaulted
     member.status = MemberStatus::Active;
     member.joined_at = clock.unix_timestamp;
     member.bump = ctx.bumps.member;

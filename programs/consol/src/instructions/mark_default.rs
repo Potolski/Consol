@@ -67,6 +67,12 @@ pub fn handle_mark_default(ctx: Context<MarkDefault>) -> Result<()> {
         ConsolError::AlreadyPaid
     );
 
+    // Prevent double-marking in the same round
+    require!(
+        member.last_default_round != current_round,
+        ConsolError::AlreadyPaid
+    );
+
     let new_missed = member.payments_missed + 1;
 
     // Calculate collateral slash based on offense count
@@ -113,6 +119,7 @@ pub fn handle_mark_default(ctx: Context<MarkDefault>) -> Result<()> {
     // Update member
     let member = &mut ctx.accounts.member;
     member.payments_missed = new_missed;
+    member.last_default_round = current_round;
     member.collateral_deposited = collateral
         .checked_sub(actual_slash)
         .ok_or(ConsolError::MathOverflow)?;
