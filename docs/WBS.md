@@ -83,11 +83,19 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 
 ---
 
-## Track 2: Testing ❌
+## Track 2: Testing (Partial)
 
-### 2.1 Unit Tests
-- [ ] `T-001` through `T-006` — Not started
-- **Estimated**: ~10h
+### 2.1 Unit Tests ✅
+- [x] `T-001` Test group creation with valid/invalid parameters (6 tests)
+- [x] `T-002` Test join: collateral deposit, member PDA creation, capacity check (2 tests)
+- [x] `T-003` Test payment: correct amount, late fee, window enforcement, vault balance (4 tests)
+- [x] `T-004` Test default: missed payment detection, collateral slash math (2 tests)
+- [x] `T-005` Test skip_round: no-payment scenario, round advancement (1 test)
+- [x] `T-006` Test completion: collateral return, insurance surplus, formation timeout, double-claim prevention (6 tests)
+- **Framework**: LiteSVM 0.10 with direct token account injection
+- **Total**: 26 tests, all passing
+- **Completed**: Apr 10
+- **Note**: Full distribution flow (VRF) deferred to integration tests (T-010+)
 
 ### 2.2 Integration Tests
 - [ ] `T-010` through `T-014` — Not started
@@ -183,12 +191,12 @@ Ordered by impact-to-effort ratio:
 
 | Track | Progress | Notes |
 |-------|----------|-------|
-| Backend (Smart Contract) | **85-90%** | 11/14 instructions done, missing group completion |
+| Backend (Smart Contract) | **100%** | 15/15 instructions done, all compile and build |
 | Frontend (UI) | **80%** | All pages functional with mock data, missing real integration |
-| Testing | **0%** | Not started |
-| Infrastructure | **0%** | Needs anchor install + devnet deploy |
+| Testing | **30%** | 26 unit tests passing (LiteSVM), integration + stress tests pending |
+| Infrastructure | **0%** | Needs devnet deploy |
 | Presentation | **0%** | Not started |
 
-**Estimated remaining**: ~30h for full hackathon MVP
+**Estimated remaining**: ~20h for full hackathon MVP
 
-**Next critical path**: Install Anchor → `anchor build` → Deploy devnet → Generate IDL → Connect frontend to real program → VRF test → Demo prep
+**Next critical path**: Deploy devnet → Generate IDL → Connect frontend to real program → VRF test → Integration tests → Demo prep

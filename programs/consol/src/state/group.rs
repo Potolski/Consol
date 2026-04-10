@@ -44,7 +44,7 @@ pub struct ConsorcioGroup {
     pub description: String,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum GroupStatus {
     /// Accepting new members
     Forming,

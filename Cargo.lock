@@ -872,10 +872,18 @@ dependencies = [
  "anchor-spl",
  "bytemuck",
  "litesvm",
+ "solana-account",
+ "solana-clock",
+ "solana-instruction",
  "solana-keypair",
  "solana-message",
+ "solana-program-option",
+ "solana-program-pack",
+ "solana-pubkey 3.0.0",
  "solana-signer",
  "solana-transaction",
+ "spl-associated-token-account-interface",
+ "spl-token-interface",
 ]
 
 [[package]]
