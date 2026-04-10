@@ -74,12 +74,12 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 - [x] `B-052` `distribute_insurance` — split insurance surplus pro-rata (per-member crank)
 - **Completed**: Apr 10
 
-### 1.7 Safety & Constraints (Partial) ✅
+### 1.7 Safety & Constraints ✅
 - [x] `B-060` Checked arithmetic (overflow/underflow protection on all math)
 - [x] `B-061` Payment window validation (7 days + 3 days grace)
 - [x] `B-062` Prevent double payments (last_paid_round marker)
-- [ ] `B-063` Handle edge case: all members default in a round
-- [ ] `B-064` Handle edge case: group dissolution (majority default)
+- [x] `B-063` `skip_round` — handle all-default rounds (no payments / no eligible members)
+- [x] `B-064` `close_group` extended — dissolution when active < MIN_GROUP_SIZE, formation timeout cancel
 
 ---
 

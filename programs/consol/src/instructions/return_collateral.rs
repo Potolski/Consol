@@ -12,7 +12,7 @@ pub struct ReturnCollateral<'info> {
     pub caller: Signer<'info>,
 
     #[account(
-        constraint = group.status == GroupStatus::Completed @ ConsolError::InvalidGroupState,
+        constraint = group.status == GroupStatus::Completed || group.status == GroupStatus::Cancelled @ ConsolError::InvalidGroupState,
     )]
     pub group: Box<Account<'info, ConsorcioGroup>>,
 

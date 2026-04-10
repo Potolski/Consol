@@ -11,6 +11,7 @@ pub mod make_payment;
 pub mod mark_default;
 pub mod resolve_round;
 pub mod return_collateral;
+pub mod skip_round;
 pub mod start_round;
 
 pub use activate_group::*;
@@ -26,4 +27,5 @@ pub use make_payment::*;
 pub use mark_default::*;
 pub use resolve_round::*;
 pub use return_collateral::*;
+pub use skip_round::*;
 pub use start_round::*;

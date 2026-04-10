@@ -74,4 +74,8 @@ pub mod consol {
     pub fn distribute_insurance(ctx: Context<DistributeInsurance>) -> Result<()> {
         handle_distribute_insurance(ctx)
     }
+
+    pub fn skip_round(ctx: Context<SkipRound>) -> Result<()> {
+        handle_skip_round(ctx)
+    }
 }

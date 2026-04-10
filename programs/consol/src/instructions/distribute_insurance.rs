@@ -14,7 +14,7 @@ pub struct DistributeInsurance<'info> {
 
     #[account(
         mut,
-        constraint = group.status == GroupStatus::Completed @ ConsolError::InvalidGroupState,
+        constraint = group.status == GroupStatus::Completed || group.status == GroupStatus::Cancelled @ ConsolError::InvalidGroupState,
     )]
     pub group: Box<Account<'info, ConsorcioGroup>>,
 
