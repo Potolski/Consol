@@ -81,6 +81,15 @@ pub struct DefaultMarked {
 }
 
 #[event]
+pub struct InsuranceDistributed {
+    pub group: Pubkey,
+    pub member: Pubkey,
+    pub amount: u64,
+    pub remaining_members: u8,
+    pub timestamp: i64,
+}
+
+#[event]
 pub struct GroupCompleted {
     pub group: Pubkey,
     pub total_rounds: u8,

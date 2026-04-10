@@ -3,6 +3,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 use crate::constants::*;
 use crate::error::ConsolError;
+use crate::events::InsuranceDistributed;
 use crate::state::{ConsorcioGroup, GroupStatus, Member, MemberStatus};
 
 /// Distribute insurance pool surplus to a non-defaulted member after group completion.
@@ -99,6 +100,15 @@ pub fn handle_distribute_insurance(ctx: Context<DistributeInsurance>) -> Result<
     // (insurance_balance shrinks, active_members shrinks → share stays proportional)
     let group = &mut ctx.accounts.group;
     group.active_members -= 1;
+
+    let clock = Clock::get()?;
+    emit!(InsuranceDistributed {
+        group: group.key(),
+        member: member.wallet,
+        amount: share,
+        remaining_members: group.active_members,
+        timestamp: clock.unix_timestamp,
+    });
 
     Ok(())
 }
