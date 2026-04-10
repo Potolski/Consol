@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,14 +18,26 @@ import {
   Info,
   ArrowRight,
   Calculator,
+  Loader2,
 } from "lucide-react";
 
 export default function CreateGroupPage() {
+  const router = useRouter();
   const [description, setDescription] = useState("");
   const [monthlyAmount, setMonthlyAmount] = useState(500);
   const [groupSize, setGroupSize] = useState(10);
   const [collateralPct, setCollateralPct] = useState(20);
   const [insurancePct, setInsurancePct] = useState(3);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleCreateGroup = async () => {
+    setSubmitting(true);
+    toast.loading("Creating group...");
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    toast.dismiss();
+    toast.success("Group created successfully!");
+    router.push("/group/demo-new-group");
+  };
 
   const preview = useMemo(() => {
     const poolPerRound = monthlyAmount * groupSize;
@@ -206,10 +220,20 @@ export default function CreateGroupPage() {
           <Button
             size="lg"
             className="w-full gap-2 bg-primary py-6 text-base font-semibold text-white shadow-lg shadow-primary/25"
-            disabled={!description || monthlyAmount < 10}
+            disabled={!description || monthlyAmount < 10 || submitting}
+            onClick={handleCreateGroup}
           >
-            Create Group
-            <ArrowRight className="h-4 w-4" />
+            {submitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              <>
+                Create Group
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
           </Button>
           <p className="text-center text-xs text-white/30">
             You&apos;ll be the first member. Collateral will be deducted upon

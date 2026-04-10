@@ -1,10 +1,11 @@
 "use client";
 
 import { useAppKitAccount } from "@reown/appkit/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { WalletButton } from "@/components/wallet/WalletButton";
 import { Badge } from "@/components/ui/badge";
+import GroupCard from "@/components/groups/GroupCard";
+import { MOCK_GROUPS } from "@/lib/mock-data";
 import Link from "next/link";
 import {
   Layers,
@@ -14,7 +15,6 @@ import {
   Wallet,
   ArrowRight,
   Bell,
-  AlertTriangle,
   CheckCircle2,
 } from "lucide-react";
 
@@ -72,25 +72,25 @@ export default function DashboardPage() {
           {
             icon: Layers,
             label: "Active Groups",
-            value: "0",
+            value: "2",
             color: "text-primary",
           },
           {
             icon: DollarSign,
             label: "Total Invested",
-            value: "$0",
+            value: "$3,500",
             color: "text-blue-500",
           },
           {
             icon: Clock,
             label: "Next Payment",
-            value: "—",
+            value: "4d 12h",
             color: "text-amber-500",
           },
           {
             icon: Trophy,
             label: "Total Winnings",
-            value: "$0",
+            value: "$5,000",
             color: "text-emerald-400",
           },
         ].map((stat) => (
@@ -137,40 +137,27 @@ export default function DashboardPage() {
             variant="outline"
             className="border-white/[0.08] bg-white/[0.03] text-white/40"
           >
-            0 active
+            2 active
           </Badge>
         </div>
-        <div className="rounded-2xl border border-dashed border-white/[0.08] bg-white/[0.01] p-12">
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.04]">
-              <Layers className="h-7 w-7 text-white/15" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-white/50">
-                No groups yet
-              </p>
-              <p className="mt-1 text-xs text-white/30">
-                Join an existing group or create your own consórcio
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
-                render={<Link href="/" />}
-              >
-                Browse Groups
-              </Button>
-              <Button
-                size="sm"
-                className="bg-primary font-medium text-white"
-                render={<Link href="/create" />}
-              >
-                Create Group
-              </Button>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {MOCK_GROUPS.filter((g) => g.status === "active")
+            .slice(0, 2)
+            .map((group) => (
+              <GroupCard
+                key={group.address}
+                address={group.address}
+                description={group.description}
+                creator={group.creator}
+                monthlyContribution={group.monthlyContribution}
+                totalMembers={group.totalMembers}
+                currentMembers={group.currentMembers}
+                status={group.status}
+                collateralBps={group.collateralBps}
+                insuranceBps={group.insuranceBps}
+                currentRound={group.currentRound}
+              />
+            ))}
         </div>
       </div>
     </div>

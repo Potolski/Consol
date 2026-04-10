@@ -8,14 +8,20 @@ import {
   Trophy,
   X,
   Check,
-  BarChart3,
   DollarSign,
   CircleDot,
   Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GroupCard from "@/components/groups/GroupCard";
+import { MOCK_GROUPS, getMockStats } from "@/lib/mock-data";
 
 export default function Home() {
+  const stats = getMockStats();
+  const openGroups = MOCK_GROUPS.filter(
+    (g) => g.status === "forming" || g.status === "active"
+  );
+
   return (
     <div className="flex flex-col gap-28 pb-16">
       {/* ── Hero Section ── */}
@@ -297,10 +303,10 @@ export default function Home() {
       {/* ── Protocol Stats Bar ── */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {[
-          { icon: Users, label: "Total Groups", value: "\u2014" },
-          { icon: Activity, label: "Active Members", value: "\u2014" },
-          { icon: DollarSign, label: "USDC Volume", value: "\u2014" },
-          { icon: CircleDot, label: "Rounds Complete", value: "\u2014" },
+          { icon: Users, label: "Total Groups", value: String(stats.totalGroups) },
+          { icon: Activity, label: "Active Members", value: String(stats.activeMembers) },
+          { icon: DollarSign, label: "USDC Volume", value: `$${stats.usdcVolume.toLocaleString()}` },
+          { icon: CircleDot, label: "Rounds Complete", value: String(stats.roundsComplete) },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -330,26 +336,22 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="flex flex-col items-center gap-5 rounded-2xl border border-dashed border-white/[0.08] bg-white/[0.01] py-20 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.04]">
-            <Users className="h-6 w-6 text-white/20" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-white/60">
-              No groups yet
-            </p>
-            <p className="mt-1 text-xs text-white/30">
-              Be the first to create a cons&oacute;rcio
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
-            render={<Link href="/create" />}
-          >
-            Create Group
-          </Button>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {openGroups.map((group) => (
+            <GroupCard
+              key={group.address}
+              address={group.address}
+              description={group.description}
+              creator={group.creator}
+              monthlyContribution={group.monthlyContribution}
+              totalMembers={group.totalMembers}
+              currentMembers={group.currentMembers}
+              status={group.status}
+              collateralBps={group.collateralBps}
+              insuranceBps={group.insuranceBps}
+              currentRound={group.currentRound}
+            />
+          ))}
         </div>
       </section>
     </div>

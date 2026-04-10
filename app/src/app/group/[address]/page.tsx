@@ -15,14 +15,17 @@ import {
   AlertTriangle,
   CheckCircle2,
   Timer,
+  Share2,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatUSDC, truncateAddress } from "@/lib/utils";
+import { getMockGroup } from "@/lib/mock-data";
 
-// ── Mock Data ────────────────────────────────────────────────────────────────
+// ── Fallback Mock Data ──────────────────────────────────────────────────────
 
-const mockGroup = {
+const fallbackGroup = {
   description: "Car Fund Circle",
   creator: "7xKp3dFr9mNq8bWkLz4f2D",
   monthlyContribution: 500_000_000,
@@ -50,14 +53,24 @@ const mockMembers = [
   { wallet: "6hYuPnSm3wQp7dXs0jYv9L", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: false, receivedRound: 0, collateralDeposited: 1_000_000_000, isYou: false },
 ];
 
+// Map of round number -> winner wallet for tooltip display
+const roundWinners: Record<number, string> = {};
+mockMembers.forEach((m) => {
+  if (m.hasReceived && m.receivedRound > 0) {
+    roundWinners[m.receivedRound] = m.wallet;
+  }
+});
+
 // ── Status helpers ───────────────────────────────────────────────────────────
 
-function getMemberStatusDot(member: (typeof mockMembers)[number]) {
+type MemberFilter = "all" | "active" | "defaulted";
+
+function getMemberStatusDot(member: (typeof mockMembers)[number], currentRound: number) {
   if (member.status === "defaulted")
     return <span className="inline-block h-2 w-2 rounded-full bg-red-500" />;
   if (member.paymentsMissed > 0)
     return <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />;
-  if (member.paymentsMade >= mockGroup.currentRound + 1)
+  if (member.paymentsMade >= currentRound + 1)
     return <span className="inline-block h-2 w-2 rounded-full bg-primary" />;
   return <span className="inline-block h-2 w-2 rounded-full bg-white/20" />;
 }
@@ -66,19 +79,46 @@ function getMemberStatusDot(member: (typeof mockMembers)[number]) {
 
 export default function GroupDetailPage() {
   const params = useParams<{ address: string }>();
-  const [rulesOpen, setRulesOpen] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(true);
+  const [memberFilter, setMemberFilter] = useState<MemberFilter>("all");
 
-  const g = mockGroup;
+  // Try to find group from shared mock data, fall back to hardcoded
+  const found = getMockGroup(params.address ?? "");
+  const g = found
+    ? {
+        ...found,
+        poolBalance: found.monthlyContribution * found.currentMembers,
+        insuranceBalance: Math.floor(
+          found.monthlyContribution * found.currentMembers * (found.insuranceBps / 10_000) * (found.currentRound + 1)
+        ),
+        activeMembers: found.activeMembers,
+      }
+    : fallbackGroup;
+
   const displayRound = g.currentRound + 1; // 0-indexed -> 1-indexed
   const poolPerRound = (g.monthlyContribution * g.totalMembers) / 1_000_000;
-  const estPayout = poolPerRound - (poolPerRound * g.protocolFeeBps) / 10_000;
+  const protocolFeeBps = "protocolFeeBps" in g ? g.protocolFeeBps : 150;
+  const estPayout = poolPerRound - (poolPerRound * protocolFeeBps) / 10_000;
   const paidThisRound = mockMembers.filter(
     (m) => m.status !== "defaulted" && m.paymentsMade >= displayRound
   ).length;
 
+  // Filtered members for the table
+  const filteredMembers = useMemo(() => {
+    if (memberFilter === "all") return mockMembers;
+    if (memberFilter === "active")
+      return mockMembers.filter((m) => m.status !== "defaulted");
+    return mockMembers.filter((m) => m.status === "defaulted");
+  }, [memberFilter]);
+
+  const handleShareGroup = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Link copied!");
+  };
+
   return (
     <div className="flex flex-col gap-8 pb-16">
-      {/* ── Back link ── */}
+      {/* -- Back link -- */}
       <Link
         href="/"
         className="inline-flex w-fit items-center gap-1.5 text-sm text-white/40 transition-colors hover:text-white/70"
@@ -87,15 +127,28 @@ export default function GroupDetailPage() {
         Back to Explore
       </Link>
 
-      {/* ── Header ── */}
+      {/* -- Header -- */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-            Active
+            {g.status === "forming"
+              ? "Forming"
+              : g.status === "completed"
+                ? "Completed"
+                : "Active"}
           </span>
           <h1 className="text-2xl font-extrabold text-white sm:text-3xl">
             {g.description}
           </h1>
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto gap-1.5 border-white/10 bg-white/[0.03] text-xs text-white/50 hover:bg-white/[0.06] hover:text-white/70"
+            onClick={handleShareGroup}
+          >
+            <Share2 className="h-3.5 w-3.5" />
+            Share
+          </Button>
         </div>
         <p className="text-sm text-white/50">
           <span className="font-mono">{formatUSDC(g.monthlyContribution)}/mo</span>
@@ -111,7 +164,7 @@ export default function GroupDetailPage() {
               {truncateAddress(g.creator)}
             </span>
           </span>
-          <span className="hidden sm:inline">\u00B7</span>
+          <span className="hidden sm:inline">{"\u00B7"}</span>
           <span>
             Round{" "}
             <span className="font-mono text-white/50">
@@ -121,7 +174,7 @@ export default function GroupDetailPage() {
         </div>
       </div>
 
-      {/* ── Action CTA ── */}
+      {/* -- Action CTA -- */}
       <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.08] via-primary/[0.04] to-transparent p-6 sm:p-8">
         {/* Glow */}
         <div className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-primary/[0.08] blur-[80px]" />
@@ -151,7 +204,7 @@ export default function GroupDetailPage() {
         </div>
       </div>
 
-      {/* ── Pool Overview ── */}
+      {/* -- Pool Overview -- */}
       <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
         {[
           {
@@ -199,7 +252,7 @@ export default function GroupDetailPage() {
         ))}
       </div>
 
-      {/* ── Round Timeline ── */}
+      {/* -- Round Timeline -- */}
       <div className="flex flex-col gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-white">Round Timeline</h2>
@@ -215,6 +268,7 @@ export default function GroupDetailPage() {
             const isCompleted = roundNum <= g.currentRound;
             const isCurrent = roundNum === displayRound;
             const isPending = roundNum > displayRound;
+            const winner = roundWinners[roundNum];
 
             return (
               <div key={i} className="flex flex-1 flex-col items-center gap-2">
@@ -245,7 +299,14 @@ export default function GroupDetailPage() {
                   )}
                   {/* Dot */}
                   <div
-                    className={`relative z-10 shrink-0 rounded-full ${
+                    title={
+                      isCompleted && winner
+                        ? `Round ${roundNum} winner: ${truncateAddress(winner)}`
+                        : isCurrent
+                          ? `Round ${roundNum} (current)`
+                          : `Round ${roundNum} (pending)`
+                    }
+                    className={`relative z-10 shrink-0 cursor-default rounded-full ${
                       isCompleted
                         ? "h-3 w-3 bg-primary"
                         : isCurrent
@@ -303,13 +364,34 @@ export default function GroupDetailPage() {
         </div>
       </div>
 
-      {/* ── Members Table ── */}
+      {/* -- Members Table -- */}
       <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-semibold text-white">
             <Users className="mr-2 inline-block h-4 w-4 text-white/40" />
             Members ({g.activeMembers}/{g.totalMembers})
           </h2>
+
+          {/* Filter buttons */}
+          <div className="flex items-center gap-1 rounded-lg border border-white/[0.06] bg-white/[0.02] p-0.5">
+            {(["all", "active", "defaulted"] as const).map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setMemberFilter(filter)}
+                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                  memberFilter === filter
+                    ? "bg-white/[0.08] text-white"
+                    : "text-white/40 hover:text-white/60"
+                }`}
+              >
+                {filter === "all"
+                  ? "All"
+                  : filter === "active"
+                    ? "Active"
+                    : "Defaulted"}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="-mx-6 overflow-x-auto px-6">
@@ -325,7 +407,7 @@ export default function GroupDetailPage() {
               </tr>
             </thead>
             <tbody>
-              {mockMembers.map((member, i) => {
+              {filteredMembers.map((member, i) => {
                 const isDefaulted = member.status === "defaulted";
                 return (
                   <tr
@@ -362,7 +444,7 @@ export default function GroupDetailPage() {
                     {/* Status */}
                     <td className="py-3 pr-4">
                       <div className="flex items-center gap-2">
-                        {getMemberStatusDot(member)}
+                        {getMemberStatusDot(member, g.currentRound)}
                         <span
                           className={`text-xs ${
                             isDefaulted
@@ -421,12 +503,19 @@ export default function GroupDetailPage() {
                   </tr>
                 );
               })}
+              {filteredMembers.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-sm text-white/30">
+                    No members match this filter.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* ── Group Rules ── */}
+      {/* -- Group Rules (open by default) -- */}
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02]">
         <button
           onClick={() => setRulesOpen(!rulesOpen)}
@@ -446,7 +535,7 @@ export default function GroupDetailPage() {
               { label: "Payment window", value: "7 days" },
               { label: "Grace period", value: "3 days (5% late fee)" },
               { label: "Max missed payments", value: "3" },
-              { label: "Protocol fee", value: `${g.protocolFeeBps / 100}%` },
+              { label: "Protocol fee", value: `${protocolFeeBps / 100}%` },
               {
                 label: "Selection method",
                 value: "Switchboard VRF (verifiable)",
@@ -466,7 +555,7 @@ export default function GroupDetailPage() {
         )}
       </div>
 
-      {/* ── On-chain address ── */}
+      {/* -- On-chain address -- */}
       <div className="text-center">
         <p className="text-xs text-white/20">
           Group address:{" "}
