@@ -3,16 +3,12 @@
 import { useState } from "react";
 import { Check, Copy, ExternalLink, ShieldCheck } from "lucide-react";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
 interface VRFProofDisplayProps {
   vrfResult: string;
   roundNumber: number;
   winnerIndex: number;
   totalEligible: number;
 }
-
-// ── Component ────────────────────────────────────────────────────────────────
 
 export function VRFProofDisplay({
   vrfResult,
@@ -33,30 +29,30 @@ export function VRFProofDisplay({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-[#0D1117] p-4">
+    <div className="flex flex-col gap-3 rounded-xl bg-[#eff4ff] p-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h4 className="text-xs font-medium uppercase tracking-wider text-white/40">
+        <h4 className="text-xs font-medium uppercase tracking-wider text-[#526075]">
           Verifiable Random Function Proof
         </h4>
-        <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+        <span className="inline-flex items-center gap-1 rounded-full bg-[#006c4a]/10 px-2 py-0.5 text-[10px] font-medium text-[#006c4a]">
           <ShieldCheck className="h-3 w-3" />
           Provably Fair
         </span>
       </div>
 
       {/* VRF bytes */}
-      <div className="group relative overflow-hidden rounded-lg bg-black/40 p-3">
-        <code className="block break-all font-mono text-xs text-white/50">
+      <div className="group relative overflow-hidden rounded-lg bg-white p-3">
+        <code className="block break-all font-mono text-xs text-[#26619d]">
           {truncatedVrf}
         </code>
         <button
           onClick={handleCopy}
-          className="absolute right-2 top-2 rounded-md border border-white/[0.08] bg-white/[0.04] p-1.5 text-white/30 transition-colors hover:bg-white/[0.08] hover:text-white/60"
+          className="absolute right-2 top-2 rounded-md bg-[#eff4ff] p-1.5 text-[#526075] transition-colors hover:bg-[#dce9ff] hover:text-[#00345e]"
           aria-label="Copy VRF result"
         >
           {copied ? (
-            <Check className="h-3 w-3 text-primary" />
+            <Check className="h-3 w-3 text-[#006c4a]" />
           ) : (
             <Copy className="h-3 w-3" />
           )}
@@ -65,23 +61,24 @@ export function VRFProofDisplay({
 
       {/* Calculation */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-[10px] font-medium uppercase tracking-wider text-white/30">
+        <span className="text-[10px] font-medium uppercase tracking-wider text-[#526075]">
           Selection Calculation
         </span>
-        <code className="font-mono text-xs text-white/60">
+        <code className="font-mono text-xs text-[#00345e]">
           hash(vrf_result[0..8]) % {totalEligible} = {winnerIndex}
         </code>
       </div>
 
       {/* Round info */}
-      <div className="flex items-center justify-between border-t border-white/[0.06] pt-3">
-        <span className="text-xs text-white/30">
+      <div className="flex items-center justify-between pt-3">
+        <span className="text-xs text-[#526075]">
           Round {roundNumber}
         </span>
         <a
-          href="#"
-          className="inline-flex items-center gap-1 text-xs text-primary/70 transition-colors hover:text-primary"
-          onClick={(e) => e.preventDefault()}
+          href={`https://explorer.solana.com/tx/${vrfResult?.slice(0, 16)}?cluster=devnet`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-[#006c4a] transition-colors hover:text-[#005a3e]"
         >
           Verify on Solana Explorer
           <ExternalLink className="h-3 w-3" />

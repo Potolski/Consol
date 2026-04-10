@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Manrope } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SolanaProvider } from "@/providers/SolanaProvider";
@@ -17,6 +17,11 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const manrope = Manrope({
+  variable: "--font-headline",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Consol — Decentralized Consorcio Protocol",
   description:
@@ -31,9 +36,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} dark`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${manrope.variable}`}
     >
-      <body className="min-h-screen flex flex-col bg-[#0A0F1E] text-white antialiased">
+      <body className="min-h-screen flex flex-col bg-[#f8f9ff] text-[#00345e] antialiased">
         <SolanaProvider>
           <ConsolProvider>
             <TooltipProvider>
@@ -42,9 +47,10 @@ export default function RootLayout({
                 position="bottom-right"
                 toastOptions={{
                   style: {
-                    background: "#111827",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    color: "#F1F5F9",
+                    background: "#ffffff",
+                    border: "none",
+                    boxShadow: "0 4px 24px rgba(0, 52, 94, 0.08)",
+                    color: "#00345e",
                   },
                 }}
               />

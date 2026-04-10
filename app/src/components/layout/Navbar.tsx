@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, Bell, Settings } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { WalletButton } from "@/components/wallet/WalletButton";
 import { Button } from "@/components/ui/button";
@@ -14,23 +15,31 @@ import {
 } from "@/components/ui/sheet";
 
 const navLinks = [
-  { href: "/", label: "Explore" },
-  { href: "/create", label: "Create" },
   { href: "/dashboard", label: "Dashboard" },
-];
+  { href: "/pools", label: "Pools" },
+] as const;
+
+const comingSoonLinks = ["Activity", "Treasury"] as const;
 
 export function Navbar() {
   const pathname = usePathname();
 
+  function isActive(href: string) {
+    if (href === "/dashboard") return pathname === "/dashboard";
+    if (href === "/pools")
+      return pathname === "/pools" || pathname.startsWith("/group");
+    return false;
+  }
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-[#0A0F1E]/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2.5">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-emerald-400 shadow-lg shadow-primary/20 transition-shadow group-hover:shadow-primary/40">
-            <span className="text-base font-extrabold text-white">C</span>
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-[#006c4a] shadow-lg shadow-[#006c4a]/15 transition-shadow group-hover:shadow-[#006c4a]/25">
+            <span className="text-base font-extrabold text-[#e0ffec]">C</span>
           </div>
-          <span className="text-lg font-bold tracking-tight text-white">
+          <span className="text-lg font-bold tracking-tight text-[#006c4a]">
             Consol
           </span>
         </Link>
@@ -43,21 +52,45 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 "relative rounded-lg px-3.5 py-2 text-sm font-medium transition-colors",
-                pathname === link.href
-                  ? "text-white"
-                  : "text-white/50 hover:text-white/80"
+                isActive(link.href)
+                  ? "text-[#006c4a]"
+                  : "text-[#526075] hover:text-[#00345e]"
               )}
             >
               {link.label}
-              {pathname === link.href && (
-                <span className="absolute inset-x-1 -bottom-[17px] h-[2px] rounded-full bg-primary" />
+              {isActive(link.href) && (
+                <span className="absolute inset-x-1 -bottom-[17px] h-[2px] rounded-full bg-[#006c4a]" />
               )}
             </Link>
+          ))}
+          {comingSoonLinks.map((label) => (
+            <button
+              key={label}
+              onClick={() => toast.info("Coming soon")}
+              className="relative rounded-lg px-3.5 py-2 text-sm font-medium text-[#526075] hover:text-[#00345e] transition-colors"
+            >
+              {label}
+            </button>
           ))}
         </nav>
 
         {/* Right side */}
         <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => toast.info("Notifications coming soon")}
+              className="p-2 text-[#526075] hover:bg-[#eff4ff] rounded-full transition-colors"
+            >
+              <Bell className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => toast.info("Settings coming soon")}
+              className="p-2 text-[#526075] hover:bg-[#eff4ff] rounded-full transition-colors"
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+          </div>
+
           <WalletButton />
 
           {/* Mobile menu */}
@@ -69,7 +102,7 @@ export function Navbar() {
             >
               <Menu className="h-5 w-5" />
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 border-white/[0.06] bg-[#0D1326]">
+            <SheetContent side="right" className="w-72 bg-white border-none">
               <SheetTitle className="sr-only">Navigation</SheetTitle>
               <nav className="mt-8 flex flex-col gap-1">
                 {navLinks.map((link) => (
@@ -78,13 +111,22 @@ export function Navbar() {
                     href={link.href}
                     className={cn(
                       "rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
-                      pathname === link.href
-                        ? "bg-primary/10 text-primary"
-                        : "text-white/50 hover:bg-white/5 hover:text-white"
+                      isActive(link.href)
+                        ? "bg-[#eff4ff] text-[#006c4a]"
+                        : "text-[#526075] hover:bg-[#eff4ff] hover:text-[#00345e]"
                     )}
                   >
                     {link.label}
                   </Link>
+                ))}
+                {comingSoonLinks.map((label) => (
+                  <button
+                    key={label}
+                    onClick={() => toast.info("Coming soon")}
+                    className="rounded-lg px-4 py-2.5 text-left text-sm font-medium text-[#526075] hover:bg-[#eff4ff] hover:text-[#00345e] transition-colors"
+                  >
+                    {label}
+                  </button>
                 ))}
               </nav>
             </SheetContent>

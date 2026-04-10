@@ -9,21 +9,17 @@ import {
   Shield,
   CircleDollarSign,
   Clock,
-  Users,
-  ChevronDown,
-  ChevronUp,
-  Zap,
-  AlertTriangle,
   CheckCircle2,
-  Timer,
   Share2,
   Sparkles,
-  Trophy,
+  TrendingUp,
+  Check,
+  UserCircle,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { formatUSDC, truncateAddress } from "@/lib/utils";
+import { truncateAddress } from "@/lib/utils";
 import { getMockGroup } from "@/lib/mock-data";
 
 const LotteryAnimation = dynamic(
@@ -54,45 +50,87 @@ const fallbackGroup = {
 };
 
 const mockMembers = [
-  { wallet: "7xKp3dFr9mNq8bWkLz4f2D", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: true, receivedRound: 1, collateralDeposited: 1_000_000_000, isYou: true },
+  { wallet: "7xKp3dFr9mNq8bWkLz4f2D", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: true, receivedRound: 1, collateralDeposited: 1_000_000_000, isYou: false },
   { wallet: "9mNqBvXr2kLp5dWs7hYt3E", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: true, receivedRound: 2, collateralDeposited: 1_000_000_000, isYou: false },
   { wallet: "3dFrHnKm8wQp1bXs6jYv4G", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: true, receivedRound: 3, collateralDeposited: 1_000_000_000, isYou: false },
-  { wallet: "8bWkTmRn4vSp9dXs2hYu5F", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: false, receivedRound: 0, collateralDeposited: 1_000_000_000, isYou: false },
+  { wallet: "8bWkTmRn4vSp9dXs2hYu5F", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: false, receivedRound: 0, collateralDeposited: 1_000_000_000, isYou: true },
   { wallet: "5hYtLnPm7wQp3dXs8jYv6H", status: "active", paymentsMade: 3, paymentsMissed: 1, hasReceived: false, receivedRound: 0, collateralDeposited: 750_000_000, isYou: false },
   { wallet: "2jYvNnQm6wSp4dXs9hYt7J", status: "defaulted", paymentsMade: 1, paymentsMissed: 3, hasReceived: false, receivedRound: 0, collateralDeposited: 0, isYou: false },
   { wallet: "4dXsMnRm5vQp8bWs1hYu8K", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: false, receivedRound: 0, collateralDeposited: 1_000_000_000, isYou: false },
   { wallet: "6hYuPnSm3wQp7dXs0jYv9L", status: "active", paymentsMade: 4, paymentsMissed: 0, hasReceived: false, receivedRound: 0, collateralDeposited: 1_000_000_000, isYou: false },
 ];
 
-// Map of round number -> winner wallet for tooltip display
-const roundWinners: Record<number, string> = {};
-mockMembers.forEach((m) => {
-  if (m.hasReceived && m.receivedRound > 0) {
-    roundWinners[m.receivedRound] = m.wallet;
+const memberNames: Record<string, string> = {
+  "7xKp3dFr9mNq8bWkLz4f2D": "Alex Rivera",
+  "9mNqBvXr2kLp5dWs7hYt3E": "Sarah Chen",
+  "3dFrHnKm8wQp1bXs6jYv4G": "Mike Torres",
+  "8bWkTmRn4vSp9dXs2hYu5F": "John Doe",
+  "5hYtLnPm7wQp3dXs8jYv6H": "Lisa Park",
+  "2jYvNnQm6wSp4dXs9hYt7J": "Carlos Ruiz",
+  "4dXsMnRm5vQp8bWs1hYu8K": "Emma Davis",
+  "6hYuPnSm3wQp7dXs0jYv9L": "Marcus Thorne",
+};
+
+const memberRoles: Record<string, string> = {
+  "7xKp3dFr9mNq8bWkLz4f2D": "Circle Lead",
+  "9mNqBvXr2kLp5dWs7hYt3E": "Verified Member",
+  "3dFrHnKm8wQp1bXs6jYv4G": "Verified Member",
+  "8bWkTmRn4vSp9dXs2hYu5F": "Action Required",
+  "5hYtLnPm7wQp3dXs8jYv6H": "Verified Member",
+  "2jYvNnQm6wSp4dXs9hYt7J": "Defaulted",
+  "4dXsMnRm5vQp8bWs1hYu8K": "Verified Member",
+  "6hYuPnSm3wQp7dXs0jYv9L": "Verified Member",
+};
+
+// Color palette for avatar circles based on wallet
+const avatarColors = [
+  "bg-[#006c4a]",
+  "bg-[#26619d]",
+  "bg-[#6b21a8]",
+  "bg-[#005a3e]",
+  "bg-[#b8860b]",
+  "bg-[#9f403d]",
+  "bg-[#0e7490]",
+  "bg-[#4338ca]",
+];
+
+function getAvatarColor(wallet: string) {
+  let hash = 0;
+  for (let i = 0; i < wallet.length; i++) {
+    hash = wallet.charCodeAt(i) + ((hash << 5) - hash);
   }
-});
-
-// ── Status helpers ───────────────────────────────────────────────────────────
-
-type MemberFilter = "all" | "active" | "defaulted";
-
-function getMemberStatusDot(member: (typeof mockMembers)[number], currentRound: number) {
-  if (member.status === "defaulted")
-    return <span className="inline-block h-2 w-2 rounded-full bg-red-500" />;
-  if (member.paymentsMissed > 0)
-    return <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />;
-  if (member.paymentsMade >= currentRound + 1)
-    return <span className="inline-block h-2 w-2 rounded-full bg-primary" />;
-  return <span className="inline-block h-2 w-2 rounded-full bg-white/20" />;
+  return avatarColors[Math.abs(hash) % avatarColors.length];
 }
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+}
+
+// Timeline months
+const timelineMonths = [
+  { label: "March 2024", short: "Mar 2024" },
+  { label: "April 2024", short: "Apr 2024" },
+  { label: "May 2024", short: "May 2024" },
+  { label: "June 2024", short: "Jun 2024" },
+  { label: "July 2024", short: "Jul 2024" },
+  { label: "August 2024", short: "Aug 2024" },
+  { label: "September 2024", short: "Sep 2024" },
+  { label: "October 2024", short: "Oct 2024" },
+];
+
+type TimelineFilter = "past" | "current" | "future";
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function GroupDetailPage() {
   const params = useParams<{ address: string }>();
-  const [rulesOpen, setRulesOpen] = useState(true);
-  const [memberFilter, setMemberFilter] = useState<MemberFilter>("all");
   const [showLottery, setShowLottery] = useState(false);
+  const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("current");
+  const [showAllMembers, setShowAllMembers] = useState(false);
 
   // Try to find group from shared mock data, fall back to hardcoded
   const found = getMockGroup(params.address ?? "");
@@ -107,505 +145,428 @@ export default function GroupDetailPage() {
       }
     : fallbackGroup;
 
-  const displayRound = g.currentRound + 1; // 0-indexed -> 1-indexed
-  const poolPerRound = (g.monthlyContribution * g.totalMembers) / 1_000_000;
-  const protocolFeeBps = "protocolFeeBps" in g ? g.protocolFeeBps : 150;
-  const estPayout = poolPerRound - (poolPerRound * protocolFeeBps) / 10_000;
-  const paidThisRound = mockMembers.filter(
-    (m) => m.status !== "defaulted" && m.paymentsMade >= displayRound
-  ).length;
-
-  // Filtered members for the table
-  const filteredMembers = useMemo(() => {
-    if (memberFilter === "all") return mockMembers;
-    if (memberFilter === "active")
-      return mockMembers.filter((m) => m.status !== "defaulted");
-    return mockMembers.filter((m) => m.status === "defaulted");
-  }, [memberFilter]);
-
   const handleShareGroup = () => {
     navigator.clipboard.writeText(window.location.href);
     toast.success("Link copied!");
   };
 
+  // Show first 4 members in table preview, or all when toggled
+  const displayedMembers = useMemo(() => {
+    // Put "you" member at a visible position, sort others naturally
+    const sorted = [...mockMembers].sort((a, b) => {
+      if (a.isYou) return 0;
+      if (b.isYou) return 0;
+      return 0;
+    });
+    return showAllMembers ? sorted : sorted.slice(0, 4);
+  }, [showAllMembers]);
+
   return (
     <div className="flex flex-col gap-8 pb-16">
       {/* -- Back link -- */}
       <Link
-        href="/"
-        className="inline-flex w-fit items-center gap-1.5 text-sm text-white/40 transition-colors hover:text-white/70"
+        href="/pools"
+        className="inline-flex w-fit items-center gap-1.5 text-sm text-[#26619d] transition-colors hover:text-[#00345e]"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        Back to Explore
+        Back to Pools
       </Link>
 
-      {/* -- Header -- */}
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-            {g.status === "forming"
-              ? "Forming"
-              : g.status === "completed"
-                ? "Completed"
-                : "Active"}
-          </span>
-          <h1 className="text-2xl font-extrabold text-white sm:text-3xl">
-            {g.description}
+      {/* -- Header Section (full width) -- */}
+      <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <div className="mb-2 flex items-center gap-3">
+            <span className="inline-flex items-center rounded-full bg-[#006c4a] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#e0ffec]">
+              {g.status === "forming"
+                ? "Forming Pool"
+                : g.status === "completed"
+                  ? "Completed"
+                  : "Active Pool"}
+            </span>
+            <span className="font-mono text-sm text-[#26619d]">
+              #AP-2024-082
+            </span>
+          </div>
+          <h1 className="font-headline text-4xl font-extrabold tracking-tighter text-[#00345e] md:text-5xl">
+            Green Horizon Savings
           </h1>
+          <p className="mt-2 max-w-lg text-lg text-[#26619d]">
+            A collaborative wealth-building circle focused on renewable energy venture capital. 12 members, monthly rotation.
+          </p>
+        </div>
+        <div className="flex shrink-0 gap-3">
           <Button
-            variant="outline"
-            size="sm"
-            className="ml-auto gap-1.5 border-white/10 bg-white/[0.03] text-xs text-white/50 hover:bg-white/[0.06] hover:text-white/70"
+            size="lg"
+            className="gap-2 rounded-xl bg-[#d5e3fd] px-6 py-3 font-semibold text-[#455367] hover:bg-[#dce9ff]"
             onClick={handleShareGroup}
           >
-            <Share2 className="h-3.5 w-3.5" />
-            Share
+            <Share2 className="h-4 w-4" />
+            Share Invite
+          </Button>
+          <Button
+            size="lg"
+            className="gap-2 rounded-xl bg-[#006c4a] px-6 py-3 font-bold text-[#e0ffec] shadow-[0_4px_24px_rgba(0,52,94,0.06)] hover:bg-[#005a3e]"
+            onClick={() => toast.info("Deploy to devnet to make real payments")}
+          >
+            <CircleDollarSign className="h-4 w-4" />
+            Make Contribution
           </Button>
         </div>
-        <p className="text-sm text-white/50">
-          <span className="font-mono">{formatUSDC(g.monthlyContribution)}/mo</span>
-          {" \u00B7 "}
-          {g.totalMembers} members
-          {" \u00B7 "}
-          {g.collateralBps / 100}% collateral
-        </p>
-        <div className="flex flex-wrap items-center gap-4 text-xs text-white/30">
-          <span>
-            Created by{" "}
-            <span className="font-mono text-white/50">
-              {truncateAddress(g.creator)}
+      </header>
+
+      {/* -- Three Stat Cards (full width, grid-cols-3) -- */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {/* Total Pooled Funds */}
+        <div className="flex h-48 flex-col justify-between rounded-xl bg-white p-8 shadow-[0_4px_24px_rgba(0,52,94,0.06)]">
+          <div className="flex items-start justify-between">
+            <span className="font-headline text-xs font-bold uppercase tracking-widest text-[#26619d]">
+              Total Pooled Funds
             </span>
-          </span>
-          <span className="hidden sm:inline">{"\u00B7"}</span>
-          <span>
-            Round{" "}
-            <span className="font-mono text-white/50">
-              {displayRound} of {g.totalMembers}
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#006c4a]/10 text-[#006c4a]">
+              <Wallet className="h-5 w-5" />
             </span>
-          </span>
+          </div>
+          <div>
+            <div className="font-headline text-4xl font-extrabold tracking-tight text-[#00345e]">
+              $42,850.00
+            </div>
+            <div className="mt-1 flex items-center gap-1 text-sm font-semibold text-[#006c4a]">
+              <TrendingUp className="h-3.5 w-3.5" />
+              +12.4% vs last round
+            </div>
+          </div>
+        </div>
+
+        {/* Your Contribution */}
+        <div className="flex h-48 flex-col justify-between rounded-xl bg-white p-8 shadow-[0_4px_24px_rgba(0,52,94,0.06)]">
+          <div className="flex items-start justify-between">
+            <span className="font-headline text-xs font-bold uppercase tracking-widest text-[#26619d]">
+              Your Contribution
+            </span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#26619d]/10 text-[#26619d]">
+              <UserCircle className="h-5 w-5" />
+            </span>
+          </div>
+          <div>
+            <div className="font-headline text-4xl font-extrabold tracking-tight text-[#00345e]">
+              $3,570.00
+            </div>
+            <div className="mt-1 text-sm font-medium text-[#26619d]">
+              8.3% of total pool ownership
+            </div>
+          </div>
+        </div>
+
+        {/* Pool Health */}
+        <div className="flex h-48 flex-col justify-between rounded-xl bg-[#eff4ff] p-8 shadow-[0_4px_24px_rgba(0,52,94,0.06)]">
+          <div className="flex items-start justify-between">
+            <span className="font-headline text-xs font-bold uppercase tracking-widest text-[#26619d]">
+              Pool Health
+            </span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#006c4a]/10 text-[#006c4a]">
+              <Shield className="h-5 w-5" />
+            </span>
+          </div>
+          <div>
+            <div className="font-headline text-4xl font-extrabold tracking-tight text-[#00345e]">
+              98.2%
+            </div>
+            <div className="mt-1 text-sm font-medium text-[#26619d]">
+              On-time contribution rate
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* -- Action CTA -- */}
-      <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.08] via-primary/[0.04] to-transparent p-6 sm:p-8">
-        {/* Glow */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-primary/[0.08] blur-[80px]" />
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg font-bold text-white sm:text-xl">
-              Make Payment
-            </h2>
-            <p className="text-sm text-white/40">
-              <Timer className="mr-1 inline-block h-3.5 w-3.5 text-white/30" />
-              Payment window:{" "}
-              <span className="font-mono text-white/60">4d 12h</span>{" "}
-              remaining{" \u00B7 "}
-              <span className="font-mono text-white/60">
-                {paidThisRound}/{g.totalMembers}
-              </span>{" "}
-              paid this round
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
+      {/* -- Two-Column Layout -- */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_20rem]">
+        {/* ===== LEFT COLUMN ===== */}
+        <div className="flex flex-col gap-8">
+          {/* -- Monthly Rounds Timeline -- */}
+          <section>
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="font-headline text-2xl font-extrabold tracking-tight text-[#00345e]">
+                Monthly Rounds Timeline
+              </h2>
+              <div className="flex items-center gap-4 text-sm font-medium">
+                <button
+                  onClick={() => setTimelineFilter("past")}
+                  className={timelineFilter === "past" ? "font-bold text-[#00345e]" : "text-[#526075]"}
+                >
+                  Past
+                </button>
+                <span className="text-[#d2e4ff]">{"·"}</span>
+                <button
+                  onClick={() => setTimelineFilter("current")}
+                  className={timelineFilter === "current" ? "font-bold text-[#00345e]" : "text-[#526075]"}
+                >
+                  Current
+                </button>
+                <span className="text-[#d2e4ff]">{"·"}</span>
+                <button
+                  onClick={() => setTimelineFilter("future")}
+                  className={timelineFilter === "future" ? "font-bold text-[#00345e]" : "text-[#526075]"}
+                >
+                  Future
+                </button>
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden rounded-xl bg-white p-8 shadow-[0_4px_24px_rgba(0,52,94,0.06)]">
+              {/* Horizontal line */}
+              <div className="absolute left-8 right-8 top-1/2 z-0 h-0.5 -translate-y-1/2 bg-[#dce9ff]" />
+
+              <div className="no-scrollbar relative z-10 flex justify-between gap-4 overflow-x-auto pb-4">
+                {timelineMonths.slice(0, 5).map((month, i) => {
+                  const roundNum = i + 3; // rounds 3-7 for display
+                  const isPast = roundNum < 5;
+                  const isCurrent = roundNum === 5;
+                  const isFuture = roundNum > 5;
+
+                  return (
+                    <div key={i} className={`flex min-w-[140px] flex-col items-center ${isPast ? "opacity-60" : ""}`}>
+                      {/* Label above */}
+                      <span className={`mb-4 text-xs font-bold uppercase tracking-widest ${
+                        isCurrent
+                          ? "font-headline text-[#006c4a]"
+                          : isFuture
+                            ? "text-[#26619d]/40"
+                            : "font-headline text-[#26619d]"
+                      }`}>
+                        {isCurrent ? "Active Now" : `Round ${roundNum < 10 ? "0" : ""}${roundNum}`}
+                      </span>
+
+                      {/* Circle node */}
+                      {isCurrent ? (
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#006c4a] text-[#e0ffec] shadow-[0_4px_24px_rgba(0,52,94,0.06)] ring-8 ring-white">
+                          <Sparkles className="h-5 w-5" />
+                        </div>
+                      ) : isPast ? (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dce9ff] text-[#00345e] ring-8 ring-white">
+                          <Check className="h-4 w-4" />
+                        </div>
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eff4ff] text-[#26619d]/40 ring-8 ring-white">
+                          <Clock className="h-4 w-4" />
+                        </div>
+                      )}
+
+                      {/* Month label */}
+                      <span className={`mt-3 text-sm ${
+                        isCurrent
+                          ? "font-extrabold text-[#00345e]"
+                          : isFuture
+                            ? "font-medium text-[#26619d]/60"
+                            : "font-semibold text-[#00345e]"
+                      }`}>
+                        {month.short}
+                      </span>
+
+                      {/* Sub-label */}
+                      {isPast && (
+                        <span className="text-[10px] font-bold uppercase text-[#26619d]">
+                          $3,500 Paid
+                        </span>
+                      )}
+                      {isCurrent && (
+                        <span className="text-[10px] font-bold uppercase tracking-tighter text-[#006c4a]">
+                          Contribution Due
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* -- Group Members -- */}
+          <section>
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="font-headline text-2xl font-extrabold tracking-tight text-[#00345e]">
+                Group Members
+              </h2>
+              <span className="text-sm font-medium text-[#26619d]">
+                12 Contributors
+              </span>
+            </div>
+
+            <div className="overflow-hidden rounded-xl bg-white shadow-[0_4px_24px_rgba(0,52,94,0.06)]">
+              <table className="w-full border-collapse text-left">
+                <thead>
+                  <tr className="bg-[#eff4ff]">
+                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[#26619d]">
+                      Member
+                    </th>
+                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[#26619d]">
+                      Contribution
+                    </th>
+                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[#26619d]">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-widest text-[#26619d]">
+                      Last Paid
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {displayedMembers.map((member, i) => {
+                    const name = memberNames[member.wallet] ?? truncateAddress(member.wallet);
+                    const role = memberRoles[member.wallet] ?? "Member";
+                    const isYou = member.isYou;
+                    const isPending = member.paymentsMissed > 0 || isYou;
+                    const isDefaulted = member.status === "defaulted";
+
+                    return (
+                      <tr
+                        key={member.wallet}
+                        className={`transition-colors hover:bg-[#dce9ff] ${isYou ? "bg-[#e5eeff]/30" : i % 2 === 1 ? "bg-[#eff4ff]/50" : "bg-white"}`}
+                      >
+                        {/* Member */}
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold text-white ${
+                                isYou ? "bg-[#006c4a]" : getAvatarColor(member.wallet)
+                              }`}
+                            >
+                              {getInitials(name)}
+                            </div>
+                            <div>
+                              <div className="font-bold text-[#00345e]">
+                                {name}
+                                {isYou && " (You)"}
+                              </div>
+                              <div className={`text-xs ${isYou ? "font-semibold text-[#006c4a]" : "text-[#26619d]"}`}>
+                                {role}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Contribution */}
+                        <td className={`px-6 py-5 font-semibold ${isYou ? "text-[#006c4a]" : "text-[#00345e]"}`}>
+                          $3,500.00
+                        </td>
+
+                        {/* Status */}
+                        <td className="px-6 py-5">
+                          {isDefaulted ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#9f403d]/10 px-3 py-1 text-xs font-bold text-[#9f403d]">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#9f403d]" />
+                              Defaulted
+                            </span>
+                          ) : isPending ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#d5e3fd] px-3 py-1 text-xs font-bold text-[#455367]">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#526075]" />
+                              Pending
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#006c4a]/10 px-3 py-1 text-xs font-bold text-[#006c4a]">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#006c4a]" />
+                              Confirmed
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Last Paid */}
+                        <td className="px-6 py-5 text-right text-sm text-[#26619d]">
+                          {isYou
+                            ? "---"
+                            : member.paymentsMade >= 4
+                              ? i === 0
+                                ? "2h ago"
+                                : i === 1
+                                  ? "Yesterday"
+                                  : "3 days ago"
+                              : "---"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+
+              {/* View All link */}
+              <div className="bg-[#eff4ff]/30 px-6 py-4 text-center">
+                <button
+                  onClick={() => setShowAllMembers((prev) => !prev)}
+                  className="text-sm font-bold text-[#006c4a] hover:underline"
+                >
+                  {showAllMembers ? "Show Less" : "View All 12 Members"}
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Demo Lottery Button */}
+          <div className="flex justify-center">
             <Button
               size="lg"
-              className="gap-2 bg-primary px-6 font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 hover:shadow-primary/40"
-            >
-              <Zap className="h-4 w-4" />
-              Pay {formatUSDC(g.monthlyContribution)} USDC
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="gap-2 border-white/10 bg-white/[0.03] px-5 text-sm text-white/60 hover:bg-white/[0.06] hover:text-white/80"
+              className="gap-2 bg-[#d5e3fd] px-6 text-sm text-[#455367] hover:bg-[#dce9ff]"
               onClick={() => setShowLottery(true)}
             >
-              <Sparkles className="h-4 w-4 text-amber-400" />
+              <Sparkles className="h-4 w-4 text-[#b8860b]" />
               Demo Lottery
             </Button>
           </div>
         </div>
-      </div>
 
-      {/* -- Recent Winner Banner -- */}
-      {g.currentRound > 0 && (() => {
-        const lastRound = g.currentRound;
-        const lastWinner = roundWinners[lastRound];
-        if (!lastWinner) return null;
-        const payoutAmount = (g.monthlyContribution * g.totalMembers) / 1_000_000;
-        const netPayout = payoutAmount - (payoutAmount * protocolFeeBps) / 10_000;
-        return (
-          <div className="flex items-center gap-3 rounded-xl border border-amber-500/15 bg-gradient-to-r from-amber-500/[0.06] via-amber-500/[0.03] to-transparent px-4 py-3">
-            <Trophy className="h-4 w-4 shrink-0 text-amber-500" />
-            <p className="text-sm text-white/60">
-              <span className="font-semibold text-amber-400">Round {lastRound} Winner:</span>{" "}
-              <span className="font-mono text-white/50">{truncateAddress(lastWinner)}</span>{" "}
-              received{" "}
-              <span className="font-mono font-semibold text-white/70">
-                ~${netPayout.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </span>{" "}
-              USDC
-            </p>
-          </div>
-        );
-      })()}
-
-      {/* -- Pool Overview -- */}
-      <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
-        {[
-          {
-            icon: Wallet,
-            label: "Pool Balance",
-            value: formatUSDC(g.poolBalance),
-            sub: "this round",
-            color: "text-primary",
-          },
-          {
-            icon: Shield,
-            label: "Insurance Fund",
-            value: formatUSDC(g.insuranceBalance),
-            sub: "accumulated",
-            color: "text-amber-500",
-          },
-          {
-            icon: CircleDollarSign,
-            label: "Est. Next Payout",
-            value:
-              "~$" +
-              estPayout.toLocaleString("en-US", {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }),
-            sub: "after protocol fee",
-            color: "text-blue-400",
-          },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 transition-colors hover:border-white/[0.1] hover:bg-white/[0.04]"
-          >
-            <div className="mb-3 flex items-center gap-2">
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              <span className="text-xs font-medium text-white/40">
-                {stat.label}
-              </span>
+        {/* ===== RIGHT COLUMN (Sidebar) ===== */}
+        <div className="flex flex-col gap-6">
+          {/* Round Summary */}
+          <div className="rounded-xl bg-white p-8 shadow-[0_4px_24px_rgba(0,52,94,0.06)]">
+            <h3 className="font-headline text-lg font-bold text-[#00345e]">
+              Round Summary
+            </h3>
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-[#26619d]">Current Target</span>
+                <span className="font-bold text-[#00345e]">$42,000.00</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-[#26619d]">Collected</span>
+                <span className="font-bold text-[#00345e]">$28,000.00</span>
+              </div>
+              {/* Progress bar */}
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[#e5eeff]">
+                <div className="h-full w-2/3 rounded-full bg-[#006c4a]" />
+              </div>
+              <p className="text-xs leading-relaxed text-[#26619d]">
+                8 of 12 members have contributed. The round closes in{" "}
+                <span className="font-bold text-[#00345e]">4 days, 12 hours</span>.
+              </p>
             </div>
-            <p className="font-mono text-2xl font-bold text-white">
-              {stat.value}
-            </p>
-            <p className="mt-0.5 text-xs text-white/30">{stat.sub}</p>
           </div>
-        ))}
-      </div>
 
-      {/* -- Round Timeline -- */}
-      <div className="flex flex-col gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-white">Round Timeline</h2>
-          <span className="font-mono text-xs text-white/30">
-            Round {displayRound} of {g.totalMembers}
-          </span>
-        </div>
-
-        {/* Dots */}
-        <div className="flex items-center gap-0">
-          {Array.from({ length: g.totalMembers }).map((_, i) => {
-            const roundNum = i + 1;
-            const isCompleted = roundNum <= g.currentRound;
-            const isCurrent = roundNum === displayRound;
-            const isPending = roundNum > displayRound;
-            const winner = roundWinners[roundNum];
-
-            return (
-              <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                {/* Label */}
-                <span className="text-[10px] font-medium leading-none">
-                  {isCompleted && (
-                    <span className="text-primary">Won</span>
-                  )}
-                  {isCurrent && (
-                    <span className="font-bold text-amber-500">NOW</span>
-                  )}
-                  {isPending && (
-                    <span className="text-transparent">&bull;</span>
-                  )}
-                </span>
-
-                {/* Dot + connector */}
-                <div className="flex w-full items-center">
-                  {/* Left connector */}
-                  {i > 0 && (
-                    <div
-                      className={`h-0.5 flex-1 ${
-                        roundNum <= displayRound
-                          ? "bg-primary/40"
-                          : "bg-white/[0.06]"
-                      }`}
-                    />
-                  )}
-                  {/* Dot */}
-                  <div
-                    title={
-                      isCompleted && winner
-                        ? `Round ${roundNum} winner: ${truncateAddress(winner)}`
-                        : isCurrent
-                          ? `Round ${roundNum} (current)`
-                          : `Round ${roundNum} (pending)`
-                    }
-                    className={`relative z-10 shrink-0 cursor-default rounded-full ${
-                      isCompleted
-                        ? "h-3 w-3 bg-primary"
-                        : isCurrent
-                          ? "h-4 w-4 animate-pulse border-2 border-amber-500 bg-amber-500/30"
-                          : "h-3 w-3 border border-white/20 bg-transparent"
-                    }`}
-                  />
-                  {/* Right connector */}
-                  {i < g.totalMembers - 1 && (
-                    <div
-                      className={`h-0.5 flex-1 ${
-                        roundNum < displayRound
-                          ? "bg-primary/40"
-                          : "bg-white/[0.06]"
-                      }`}
-                    />
-                  )}
-                </div>
-
-                {/* Round number */}
-                <span
-                  className={`font-mono text-[10px] ${
-                    isCurrent
-                      ? "font-bold text-amber-500"
-                      : isCompleted
-                        ? "text-primary/60"
-                        : "text-white/20"
-                  }`}
-                >
-                  {roundNum}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Timeline info */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] pt-4">
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="h-4 w-4 text-amber-500" />
-            <span className="text-white/60">
-              Round {displayRound}{" \u00B7 "}
-              <span className="text-white/40">Collecting Payments</span>
-            </span>
-          </div>
-          <div className="flex items-center gap-4 text-xs">
-            <span className="flex items-center gap-1 font-mono text-white/40">
-              <Timer className="h-3 w-3" />
-              4d 12h remaining
-            </span>
-            <span className="font-mono text-white/40">
-              {paidThisRound}/{g.totalMembers} paid
-            </span>
+          {/* Group Protocol */}
+          <div className="rounded-xl bg-[#eff4ff] p-8">
+            <h3 className="font-headline text-sm font-bold uppercase tracking-widest text-[#00345e]">
+              Group Protocol
+            </h3>
+            <ul className="mt-4 space-y-3">
+              <li className="flex items-start gap-2 text-xs text-[#26619d]">
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#006c4a]" />
+                <span>Mandatory contribution by the 1st of every month.</span>
+              </li>
+              <li className="flex items-start gap-2 text-xs text-[#26619d]">
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#006c4a]" />
+                <span>1.5% fee directed to insurance pool.</span>
+              </li>
+              <li className="flex items-start gap-2 text-xs text-[#26619d]">
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#006c4a]" />
+                <span>Full collateral returned after completion.</span>
+              </li>
+            </ul>
           </div>
         </div>
-      </div>
-
-      {/* -- Members Table -- */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold text-white">
-            <Users className="mr-2 inline-block h-4 w-4 text-white/40" />
-            Members ({g.activeMembers}/{g.totalMembers})
-          </h2>
-
-          {/* Filter buttons */}
-          <div className="flex items-center gap-1 rounded-lg border border-white/[0.06] bg-white/[0.02] p-0.5">
-            {(["all", "active", "defaulted"] as const).map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setMemberFilter(filter)}
-                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-                  memberFilter === filter
-                    ? "bg-white/[0.08] text-white"
-                    : "text-white/40 hover:text-white/60"
-                }`}
-              >
-                {filter === "all"
-                  ? "All"
-                  : filter === "active"
-                    ? "Active"
-                    : "Defaulted"}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="-mx-6 overflow-x-auto px-6">
-          <table className="w-full min-w-[600px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-white/[0.06] text-xs text-white/30">
-                <th className="pb-3 pr-4 font-medium">#</th>
-                <th className="pb-3 pr-4 font-medium">Member</th>
-                <th className="pb-3 pr-4 font-medium">Status</th>
-                <th className="pb-3 pr-4 text-center font-medium">Paid</th>
-                <th className="pb-3 pr-4 text-center font-medium">Received</th>
-                <th className="pb-3 text-right font-medium">Collateral</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredMembers.map((member, i) => {
-                const isDefaulted = member.status === "defaulted";
-                return (
-                  <tr
-                    key={member.wallet}
-                    className={`border-b border-white/[0.03] transition-colors hover:bg-white/[0.02] ${
-                      isDefaulted ? "opacity-40" : ""
-                    }`}
-                  >
-                    {/* # */}
-                    <td className="py-3 pr-4 font-mono text-xs text-white/30">
-                      {i + 1}
-                    </td>
-
-                    {/* Member */}
-                    <td className="py-3 pr-4">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`font-mono text-xs ${
-                            isDefaulted
-                              ? "line-through text-white/30"
-                              : "text-white/70"
-                          }`}
-                        >
-                          {truncateAddress(member.wallet)}
-                        </span>
-                        {member.isYou && (
-                          <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                            you
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Status */}
-                    <td className="py-3 pr-4">
-                      <div className="flex items-center gap-2">
-                        {getMemberStatusDot(member, g.currentRound)}
-                        <span
-                          className={`text-xs ${
-                            isDefaulted
-                              ? "text-red-400"
-                              : member.paymentsMissed > 0
-                                ? "text-amber-500"
-                                : "text-white/50"
-                          }`}
-                        >
-                          {isDefaulted
-                            ? "Defaulted"
-                            : member.paymentsMissed > 0
-                              ? "Late"
-                              : "Active"}
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Paid */}
-                    <td className="py-3 pr-4 text-center font-mono text-xs">
-                      <span className="text-white/60">
-                        {member.paymentsMade}
-                      </span>
-                      {member.paymentsMissed > 0 && (
-                        <span className="ml-1 text-red-400">
-                          ({member.paymentsMissed} missed)
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Received */}
-                    <td className="py-3 pr-4 text-center">
-                      {member.hasReceived ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                          <CheckCircle2 className="h-3 w-3" />
-                          R{member.receivedRound}
-                        </span>
-                      ) : isDefaulted ? (
-                        <span className="text-xs text-white/20">&mdash;</span>
-                      ) : (
-                        <span className="text-xs text-white/20">Pending</span>
-                      )}
-                    </td>
-
-                    {/* Collateral */}
-                    <td className="py-3 text-right font-mono text-xs text-white/50">
-                      {isDefaulted ? (
-                        <span className="flex items-center justify-end gap-1 text-red-400">
-                          <AlertTriangle className="h-3 w-3" />
-                          Slashed
-                        </span>
-                      ) : (
-                        formatUSDC(member.collateralDeposited)
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-              {filteredMembers.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-sm text-white/30">
-                    No members match this filter.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* -- Group Rules (open by default) -- */}
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02]">
-        <button
-          onClick={() => setRulesOpen(!rulesOpen)}
-          className="flex w-full items-center justify-between p-6 text-left transition-colors hover:bg-white/[0.02]"
-        >
-          <h2 className="text-sm font-semibold text-white">Group Rules</h2>
-          {rulesOpen ? (
-            <ChevronUp className="h-4 w-4 text-white/30" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-white/30" />
-          )}
-        </button>
-
-        {rulesOpen && (
-          <div className="flex flex-col gap-3 border-t border-white/[0.06] px-6 pb-6 pt-4">
-            {[
-              { label: "Payment window", value: "7 days" },
-              { label: "Grace period", value: "3 days (5% late fee)" },
-              { label: "Max missed payments", value: "3" },
-              { label: "Protocol fee", value: `${protocolFeeBps / 100}%` },
-              {
-                label: "Selection method",
-                value: "Switchboard VRF (verifiable)",
-              },
-            ].map((rule) => (
-              <div
-                key={rule.label}
-                className="flex items-center justify-between text-sm"
-              >
-                <span className="text-white/40">{rule.label}</span>
-                <span className="font-mono text-xs text-white/60">
-                  {rule.value}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* -- On-chain address -- */}
       <div className="text-center">
-        <p className="text-xs text-white/20">
+        <p className="text-xs text-[#526075]">
           Group address:{" "}
-          <span className="font-mono text-white/30">{params.address}</span>
+          <span className="font-mono text-[#26619d]">{params.address}</span>
         </p>
       </div>
 

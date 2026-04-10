@@ -9,7 +9,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
-  --font-heading: var(--font-sans);
+  --font-headline: var(--font-headline);
+  --font-heading: var(--font-headline);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -44,25 +45,23 @@
   --color-warning: var(--warning);
   --color-info: var(--info);
   --color-solana-purple: #9945FF;
-  --color-solana-green: #14F195;
-  --color-gold-50: #FFFBEB;
-  --color-gold-100: #FEF3C7;
-  --color-gold-200: #FDE68A;
-  --color-gold-300: #FCD34D;
-  --color-gold-400: #FBBF24;
-  --color-gold-500: #F59E0B;
-  --color-gold-600: #D97706;
-  --color-gold-700: #B45309;
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
+
+  /* Surface hierarchy */
+  --color-surface-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-high: #dce9ff;
+  --color-surface-highest: #d2e4ff;
+  --color-surface-lowest: #ffffff;
 
   /* Animations */
   --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
   --animate-slide-up: slide-up 0.3s ease-out;
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    50% { box-shadow: 0 0 20px 4px rgba(16, 185, 129, 0.3); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 108, 74, 0); }
+    50% { box-shadow: 0 0 20px 4px rgba(0, 108, 74, 0.2); }
   }
   @keyframes slide-up {
     0% { transform: translateY(10px); opacity: 0; }
@@ -70,70 +69,37 @@
   }
 }
 
-/* Dark theme is the default and only theme */
+/* Architectural Ledger — Light mode */
 :root {
-  --radius: 0.625rem;
-  /* Dark by default */
-  --background: #0A0F1E;
-  --foreground: #F1F5F9;
-  --card: #111827;
-  --card-foreground: #F1F5F9;
-  --popover: #111827;
-  --popover-foreground: #F1F5F9;
-  --primary: #10B981;
-  --primary-foreground: #ECFDF5;
-  --secondary: #1E293B;
-  --secondary-foreground: #F1F5F9;
-  --muted: #1E293B;
-  --muted-foreground: #94A3B8;
-  --accent: #F59E0B;
-  --accent-foreground: #FFFBEB;
-  --destructive: #EF4444;
-  --border: #1E293B;
-  --input: #1E293B;
-  --ring: #10B981;
-  --chart-1: #10B981;
-  --chart-2: #F59E0B;
+  --radius: 0.75rem;
+  --background: #f8f9ff;
+  --foreground: #00345e;
+  --card: #ffffff;
+  --card-foreground: #00345e;
+  --popover: #ffffff;
+  --popover-foreground: #00345e;
+  --primary: #006c4a;
+  --primary-foreground: #e0ffec;
+  --secondary: #d5e3fd;
+  --secondary-foreground: #455367;
+  --muted: #eff4ff;
+  --muted-foreground: #26619d;
+  --accent: #e5eeff;
+  --accent-foreground: #00345e;
+  --destructive: #9f403d;
+  --border: transparent;
+  --input: #eff4ff;
+  --ring: #006c4a;
+  --chart-1: #006c4a;
+  --chart-2: #b8860b;
   --chart-3: #9945FF;
-  --chart-4: #3B82F6;
-  --chart-5: #EF4444;
-  --success: #22C55E;
-  --warning: #EAB308;
-  --info: #3B82F6;
-  --surface: #111827;
-  --surface-hover: #1A2235;
-}
-
-/* Keep dark class for compatibility */
-.dark {
-  --background: #0A0F1E;
-  --foreground: #F1F5F9;
-  --card: #111827;
-  --card-foreground: #F1F5F9;
-  --popover: #111827;
-  --popover-foreground: #F1F5F9;
-  --primary: #10B981;
-  --primary-foreground: #ECFDF5;
-  --secondary: #1E293B;
-  --secondary-foreground: #F1F5F9;
-  --muted: #1E293B;
-  --muted-foreground: #94A3B8;
-  --accent: #F59E0B;
-  --accent-foreground: #FFFBEB;
-  --destructive: #EF4444;
-  --border: #1E293B;
-  --input: #1E293B;
-  --ring: #10B981;
-  --chart-1: #10B981;
-  --chart-2: #F59E0B;
-  --chart-3: #9945FF;
-  --chart-4: #3B82F6;
-  --chart-5: #EF4444;
-  --success: #22C55E;
-  --warning: #EAB308;
-  --info: #3B82F6;
-  --surface: #111827;
-  --surface-hover: #1A2235;
+  --chart-4: #26619d;
+  --chart-5: #9f403d;
+  --success: #006c4a;
+  --warning: #b8860b;
+  --info: #26619d;
+  --surface: #f8f9ff;
+  --surface-hover: #dce9ff;
 }
 
 @layer base {
@@ -148,3 +114,15 @@
   }
 }
 
+@layer utilities {
+  .font-headline {
+    font-family: var(--font-headline), ui-sans-serif, system-ui, sans-serif;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

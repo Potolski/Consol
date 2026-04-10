@@ -38,8 +38,8 @@ function walletToColor(wallet: string): string {
   const r = parseInt(hash.slice(0, 2), 16) || 100;
   const g = parseInt(hash.slice(2, 4), 16) || 100;
   const b = parseInt(hash.slice(4, 6), 16) || 100;
-  // Ensure colors are vibrant enough by mixing toward a brighter range
-  const boost = (v: number) => Math.min(255, Math.floor(v * 0.6 + 80));
+  // Vibrant, saturated colors for light theme
+  const boost = (v: number) => Math.min(255, Math.floor(v * 0.5 + 120));
   return `rgb(${boost(r)}, ${boost(g)}, ${boost(b)})`;
 }
 
@@ -223,7 +223,7 @@ export function LotteryAnimation({
       {isOpen && (
         <motion.div
           ref={overlayRef}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#00345e]/60 backdrop-blur-md"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -235,7 +235,7 @@ export function LotteryAnimation({
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 z-10 rounded-full border border-white/[0.08] bg-white/[0.04] p-2 text-white/40 transition-colors hover:bg-white/[0.08] hover:text-white/60"
+            className="absolute right-4 top-4 z-10 rounded-full bg-white/20 p-2 text-white/70 transition-colors hover:bg-white/30 hover:text-white"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -246,7 +246,7 @@ export function LotteryAnimation({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
-            className="mb-4 text-sm font-medium text-white/40"
+            className="mb-4 text-sm font-semibold text-white/80"
           >
             Round {roundNumber} Drawing
           </motion.div>
@@ -262,8 +262,8 @@ export function LotteryAnimation({
               {/* Pointer triangle at top */}
               <div className="absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-2">
                 <svg width="24" height="18" viewBox="0 0 24 18" fill="none">
-                  <path d="M12 18L0 0H24L12 18Z" fill="#F59E0B" />
-                  <path d="M12 14L4 2H20L12 14Z" fill="#FBBF24" />
+                  <path d="M12 18L0 0H24L12 18Z" fill="#b8860b" />
+                  <path d="M12 14L4 2H20L12 14Z" fill="#d4a843" />
                 </svg>
               </div>
 
@@ -297,8 +297,9 @@ export function LotteryAnimation({
                   cy={cy}
                   r={radius + 4}
                   fill="none"
-                  stroke="rgba(255,255,255,0.08)"
-                  strokeWidth="2"
+                  stroke="white"
+                  strokeWidth="3"
+                  opacity={0.5}
                 />
 
                 {/* Segments */}
@@ -309,9 +310,9 @@ export function LotteryAnimation({
                       <path
                         d={seg.path}
                         fill={seg.color}
-                        stroke="#0A0F1E"
+                        stroke="white"
                         strokeWidth="2"
-                        opacity={showHighlight && !isWinner ? 0.3 : 0.85}
+                        opacity={showHighlight && !isWinner ? 0.4 : 1}
                         className="transition-opacity duration-500"
                       />
                       {/* Winner glow */}
@@ -319,7 +320,7 @@ export function LotteryAnimation({
                         <path
                           d={seg.path}
                           fill="none"
-                          stroke="#F59E0B"
+                          stroke="#b8860b"
                           strokeWidth="3"
                           className="animate-pulse"
                           opacity={0.8}
@@ -347,14 +348,12 @@ export function LotteryAnimation({
                 })}
 
                 {/* Center dot */}
-                <circle cx={cx} cy={cy} r="12" fill="#0A0F1E" />
+                <circle cx={cx} cy={cy} r="14" fill="white" />
                 <circle
                   cx={cx}
                   cy={cy}
-                  r="8"
-                  fill="#111827"
-                  stroke="rgba(255,255,255,0.1)"
-                  strokeWidth="1"
+                  r="10"
+                  fill="#006c4a"
                 />
               </motion.svg>
 
@@ -367,8 +366,8 @@ export function LotteryAnimation({
                   transition={{ duration: 2, repeat: Infinity }}
                   style={{
                     boxShadow: isYouWinner
-                      ? "0 0 60px 20px rgba(16, 185, 129, 0.25)"
-                      : "0 0 60px 20px rgba(245, 158, 11, 0.2)",
+                      ? "0 0 60px 20px rgba(0, 108, 74, 0.3)"
+                      : "0 0 60px 20px rgba(184, 134, 11, 0.25)",
                   }}
                 />
               )}
@@ -387,18 +386,18 @@ export function LotteryAnimation({
                 onClick={cancelAutoClose}
               >
                 <div
-                  className={`relative overflow-hidden rounded-2xl border bg-[#111827] p-6 ${
+                  className={`relative overflow-hidden rounded-xl bg-white p-8 shadow-[0_8px_40px_rgba(0,52,94,0.15)] ${
                     isYouWinner
-                      ? "border-primary/30 shadow-lg shadow-primary/10"
-                      : "border-white/[0.08]"
+                      ? "ring-2 ring-[#006c4a]/30"
+                      : ""
                   }`}
                 >
-                  {/* Subtle gradient at top */}
+                  {/* Accent line at top */}
                   <div
-                    className={`absolute inset-x-0 top-0 h-px ${
+                    className={`absolute inset-x-0 top-0 h-1 rounded-t-xl ${
                       isYouWinner
-                        ? "bg-gradient-to-r from-transparent via-primary to-transparent"
-                        : "bg-gradient-to-r from-transparent via-amber-500 to-transparent"
+                        ? "bg-[#006c4a]"
+                        : "bg-[#b8860b]"
                     }`}
                   />
 
@@ -416,7 +415,7 @@ export function LotteryAnimation({
                       className={`flex h-12 w-12 items-center justify-center rounded-full ${
                         isYouWinner
                           ? "bg-primary/10 text-primary"
-                          : "bg-amber-500/10 text-amber-500"
+                          : "bg-[#b8860b]/10 text-[#b8860b]"
                       }`}
                     >
                       <Trophy className="h-6 w-6" />
@@ -428,7 +427,7 @@ export function LotteryAnimation({
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.2 }}
                       className={`text-lg font-bold ${
-                        isYouWinner ? "text-primary" : "text-amber-500"
+                        isYouWinner ? "text-primary" : "text-[#b8860b]"
                       }`}
                     >
                       {isYouWinner ? "You Won!" : "Winner!"}
@@ -439,7 +438,7 @@ export function LotteryAnimation({
                       className={`inline-flex items-center rounded-full px-3 py-1 font-mono text-sm ${
                         isYouWinner
                           ? "bg-primary/10 text-primary"
-                          : "bg-white/[0.06] text-white/60"
+                          : "bg-[#eff4ff] text-[#00345e]"
                       }`}
                     >
                       {isYouWinner
@@ -449,29 +448,30 @@ export function LotteryAnimation({
 
                     {/* Amount */}
                     <div className="flex flex-col gap-0.5">
-                      <span className="font-mono text-3xl font-bold text-white">
+                      <span className="font-mono text-3xl font-bold text-[#00345e]">
                         {formatUSDC(winnerAmount)}
                       </span>
-                      <span className="text-xs text-white/30">
+                      <span className="text-xs text-[#526075]">
                         USDC Pool Payout
                       </span>
                     </div>
 
                     {/* Round badge */}
-                    <span className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.04] px-2.5 py-0.5 text-xs text-white/40">
+                    <span className="inline-flex items-center rounded-full bg-[#eff4ff] px-2.5 py-0.5 text-xs font-medium text-[#26619d]">
                       Round {roundNumber}
                     </span>
                   </div>
 
                   {/* VRF Proof toggle */}
                   {vrfResult && (
-                    <div className="mt-5 border-t border-white/[0.06] pt-4">
+                    <div className="mt-5 pt-4">
+                      <div className="-mt-4 mb-4 h-px bg-[#eff4ff]" />
                       <button
                         onClick={() => {
                           cancelAutoClose();
                           setShowVrfProof((v) => !v);
                         }}
-                        className="flex w-full items-center justify-between text-xs text-white/40 transition-colors hover:text-white/60"
+                        className="flex w-full items-center justify-between text-xs text-[#526075] transition-colors hover:text-[#00345e]"
                       >
                         <span>View VRF Proof</span>
                         {showVrfProof ? (

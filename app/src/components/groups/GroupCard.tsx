@@ -24,27 +24,21 @@ interface GroupCardProps {
 const statusConfig = {
   forming: {
     label: "Forming",
-    border: "border-primary/20",
-    hoverShadow: "hover:shadow-lg hover:shadow-primary/10",
-    badgeBg: "bg-primary/10",
-    badgeText: "text-primary",
-    badgeBorder: "border-primary/30",
+    shadow: "shadow-[#006c4a]/5 hover:shadow-[#006c4a]/10",
+    badgeBg: "bg-[#85f8c4]/30",
+    badgeText: "text-[#006c4a]",
   },
   active: {
     label: "Active",
-    border: "border-amber-500/20",
-    hoverShadow: "hover:shadow-lg hover:shadow-amber-500/10",
-    badgeBg: "bg-amber-500/10",
-    badgeText: "text-amber-500",
-    badgeBorder: "border-amber-500/30",
+    shadow: "shadow-[#b8860b]/5 hover:shadow-[#b8860b]/10",
+    badgeBg: "bg-[#b8860b]/10",
+    badgeText: "text-[#b8860b]",
   },
   completed: {
     label: "Completed",
-    border: "border-white/[0.06]",
-    hoverShadow: "",
-    badgeBg: "bg-white/[0.06]",
-    badgeText: "text-white/50",
-    badgeBorder: "border-white/[0.08]",
+    shadow: "",
+    badgeBg: "bg-[#eff4ff]",
+    badgeText: "text-[#526075]",
   },
 } as const;
 
@@ -68,20 +62,20 @@ export default function GroupCard({
   return (
     <Link
       href={`/group/${address}`}
-      className={`group flex flex-col gap-4 rounded-2xl border bg-white/[0.02] p-5 transition-all hover:border-white/[0.1] hover:bg-white/[0.04] ${cfg.border} ${cfg.hoverShadow}`}
+      className={`group flex flex-col gap-4 rounded-xl bg-white p-8 shadow-sm transition-all hover:bg-[#eff4ff] hover:shadow-md ${cfg.shadow}`}
     >
       {/* Top row: amount + badge */}
       <div className="flex items-center justify-between">
-        <span className="font-mono text-xl font-bold text-white">
+        <span className="font-mono text-xl font-bold text-[#00345e]">
           {formatUSDC(monthlyContribution)}{" "}
-          <span className="text-sm font-normal text-white/30">/mo</span>
+          <span className="text-sm font-normal text-[#526075]">/mo</span>
         </span>
         <span
-          className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${cfg.badgeBg} ${cfg.badgeText} ${cfg.badgeBorder}`}
+          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${cfg.badgeBg} ${cfg.badgeText}`}
         >
           {cfg.label}
           {status === "active" && currentRound != null && (
-            <span className="ml-1 text-white/30">
+            <span className="ml-1 text-[#526075]">
               R{currentRound + 1}
             </span>
           )}
@@ -89,24 +83,24 @@ export default function GroupCard({
       </div>
 
       {/* Description */}
-      <p className="text-sm font-bold text-white">{description}</p>
+      <p className="text-sm font-semibold text-[#00345e]">{description}</p>
 
       {/* Creator */}
-      <p className="text-xs text-white/30">
+      <p className="text-xs text-[#26619d]">
         by {truncateAddress(creator)}
       </p>
 
       {/* Members progress */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-white/40">Members</span>
-          <span className="font-mono text-xs text-white/50">
+          <span className="text-xs text-[#526075]">Members</span>
+          <span className="font-mono text-xs text-[#00345e]">
             {currentMembers}/{totalMembers}
           </span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#d5e3fd]">
           <div
-            className="h-full rounded-full bg-primary transition-all"
+            className="h-full rounded-full bg-[#006c4a] transition-all"
             style={{ width: `${memberPercent}%` }}
           />
         </div>
@@ -115,8 +109,8 @@ export default function GroupCard({
       {/* Bottom stats */}
       <div className="flex items-center gap-4 text-xs">
         <div className="flex flex-col">
-          <span className="text-white/30">Pool/round</span>
-          <span className="font-mono font-medium text-white/60">
+          <span className="text-[#526075]">Pool/round</span>
+          <span className="font-mono font-medium text-[#00345e]">
             $
             {poolPerRound.toLocaleString("en-US", {
               minimumFractionDigits: poolPerRound % 1 === 0 ? 0 : 2,
@@ -124,18 +118,18 @@ export default function GroupCard({
             })}
           </span>
         </div>
-        <div className="h-6 w-px bg-white/[0.06]" />
+        <div className="h-6 w-px bg-[#d5e3fd]" />
         <div className="flex flex-col">
-          <span className="text-white/30">Collateral</span>
-          <span className="font-mono font-medium text-white/60">
+          <span className="text-[#526075]">Collateral</span>
+          <span className="font-mono font-medium text-[#00345e]">
             {collateralBps / 100}%
           </span>
         </div>
       </div>
 
       {/* Separator + View Details */}
-      <div className="border-t border-white/[0.06]" />
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-white/40 transition-colors group-hover:text-primary">
+      <div className="h-px bg-[#eff4ff]" />
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#006c4a] transition-colors group-hover:text-[#006c4a]">
         View Details
         <ArrowRight className="h-3 w-3" />
       </span>

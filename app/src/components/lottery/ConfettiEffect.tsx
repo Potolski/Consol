@@ -16,7 +16,7 @@ interface Particle {
   shape: "circle" | "square";
 }
 
-const CONFETTI_COLORS = ["#10B981", "#F59E0B", "#ffffff", "#3B82F6", "#9945FF"];
+const CONFETTI_COLORS = ["#006c4a", "#85f8c4", "#b8860b", "#26619d", "#d5e3fd"];
 const PARTICLE_COUNT = 36;
 
 // ── Component ────────────────────────────────────────────────────────────────

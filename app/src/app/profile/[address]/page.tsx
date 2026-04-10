@@ -21,14 +21,14 @@ function StarRating({ rating }: { rating: number }) {
         return (
           <div key={star} className="relative">
             {/* Empty star (background) */}
-            <Star className="h-5 w-5 text-white/10" />
+            <Star className="h-5 w-5 text-[#d5e3fd]" />
             {/* Filled or half-filled overlay */}
             {(filled || half) && (
               <div
                 className="absolute inset-0 overflow-hidden"
                 style={{ width: filled ? "100%" : "50%" }}
               >
-                <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
+                <Star className="h-5 w-5 fill-[#b8860b] text-[#b8860b]" />
               </div>
             )}
           </div>
@@ -58,18 +58,18 @@ export default function ProfilePage() {
     <div className="flex flex-col gap-8 pb-16">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold text-white sm:text-3xl">Profile</h1>
+        <h1 className="font-headline text-2xl font-bold text-[#00345e] sm:text-3xl">Profile</h1>
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 ring-1 ring-primary/20">
-            <span className="font-mono text-sm font-bold text-primary">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#85f8c4]/30">
+            <span className="font-mono text-sm font-bold text-[#006c4a]">
               {address.slice(0, 2).toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="font-mono text-sm text-white/60">
+            <p className="font-mono text-sm text-[#00345e]">
               {truncateAddress(address, 8)}
             </p>
-            <p className="flex items-center gap-1.5 text-xs text-white/30">
+            <p className="flex items-center gap-1.5 text-xs text-[#526075]">
               <Calendar className="h-3 w-3" />
               Member since {profile.memberSince}
             </p>
@@ -78,26 +78,26 @@ export default function ProfilePage() {
       </div>
 
       {/* Reputation Card */}
-      <div className="rounded-2xl border border-amber-500/15 bg-gradient-to-br from-amber-500/[0.06] via-amber-500/[0.02] to-transparent p-6">
+      <div className="rounded-xl bg-[#eff4ff] p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 text-xs font-medium text-white/40">
-              <Star className="h-3.5 w-3.5 text-amber-500" />
+            <div className="flex items-center gap-2 text-xs font-medium font-headline text-[#526075]">
+              <Star className="h-3.5 w-3.5 text-[#b8860b]" />
               Reputation Score
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-white">
+              <span className="font-headline text-3xl font-bold text-[#00345e]">
                 {profile.reputation}
               </span>
               <div className="flex flex-col gap-1">
                 <StarRating rating={profile.reputation} />
-                <span className="text-[10px] text-white/30">out of 5.0</span>
+                <span className="text-[10px] text-[#526075]">out of 5.0</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5">
-            <Shield className="h-3.5 w-3.5 text-primary" />
-            <span className="text-xs font-semibold text-primary">
+          <div className="flex items-center gap-2 rounded-full bg-[#85f8c4]/30 px-3 py-1.5">
+            <Shield className="h-3.5 w-3.5 text-[#006c4a]" />
+            <span className="text-xs font-semibold text-[#006c4a]">
               Trusted Member
             </span>
           </div>
@@ -111,38 +111,38 @@ export default function ProfilePage() {
             icon: CheckCircle2,
             label: "Groups Completed",
             value: String(profile.groupsCompleted),
-            color: "text-primary",
+            color: "text-[#006c4a]",
           },
           {
             icon: AlertTriangle,
             label: "Defaults",
             value: String(profile.groupsDefaulted),
-            color: "text-emerald-400",
+            color: "text-[#006c4a]",
           },
           {
             icon: CreditCard,
             label: "Total Payments",
             value: String(profile.totalPayments),
-            color: "text-blue-400",
+            color: "text-[#26619d]",
           },
           {
             icon: TrendingUp,
             label: "Active Groups",
             value: String(profile.currentGroups),
-            color: "text-amber-500",
+            color: "text-[#b8860b]",
           },
         ].map((stat) => (
           <div
             key={stat.label}
-            className="group rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 transition-colors hover:border-white/[0.1] hover:bg-white/[0.04]"
+            className="group rounded-xl bg-white p-5 shadow-sm transition-colors hover:bg-[#eff4ff]"
           >
             <div className="mb-3 flex items-center gap-2">
               <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              <span className="text-xs font-medium text-white/40">
+              <span className="text-xs font-medium text-[#26619d]">
                 {stat.label}
               </span>
             </div>
-            <p className="font-mono text-2xl font-bold text-white">
+            <p className="font-mono text-2xl font-bold text-[#00345e]">
               {stat.value}
             </p>
           </div>
@@ -150,8 +150,8 @@ export default function ProfilePage() {
       </div>
 
       {/* Payment History Summary */}
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
-        <h2 className="mb-5 text-sm font-semibold text-white">
+      <div className="rounded-xl bg-white p-8 shadow-sm">
+        <h2 className="font-headline mb-5 text-sm font-semibold text-[#00345e]">
           Payment Summary
         </h2>
         <div className="flex flex-col gap-4">
@@ -174,13 +174,13 @@ export default function ProfilePage() {
           ].map((row) => (
             <div
               key={row.label}
-              className="flex items-center justify-between border-b border-white/[0.04] pb-3 last:border-0 last:pb-0"
+              className="flex items-center justify-between bg-[#eff4ff]/50 rounded-lg px-4 py-3 last:mb-0"
             >
               <div>
-                <span className="text-sm text-white/50">{row.label}</span>
-                <p className="text-[11px] text-white/25">{row.sub}</p>
+                <span className="text-sm text-[#526075]">{row.label}</span>
+                <p className="text-[11px] text-[#526075]/60">{row.sub}</p>
               </div>
-              <span className="font-mono text-sm font-semibold text-white/70">
+              <span className="font-mono text-sm font-semibold text-[#00345e]">
                 {row.value}
               </span>
             </div>
@@ -190,9 +190,9 @@ export default function ProfilePage() {
 
       {/* On-chain address */}
       <div className="text-center">
-        <p className="text-xs text-white/20">
+        <p className="text-xs text-[#526075]">
           Wallet:{" "}
-          <span className="font-mono text-white/30">{address}</span>
+          <span className="font-mono text-[#26619d]">{address}</span>
         </p>
       </div>
     </div>

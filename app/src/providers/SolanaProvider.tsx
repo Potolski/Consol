@@ -21,13 +21,13 @@ createAppKit({
     email: true,
     socials: ["google", "github", "discord", "x"],
   },
-  themeMode: "dark",
+  themeMode: "light",
   themeVariables: {
-    "--w3m-color-mix": "#10B981",
+    "--w3m-color-mix": "#006c4a",
     "--w3m-color-mix-strength": 15,
-    "--w3m-accent": "#10B981",
+    "--w3m-accent": "#006c4a",
     "--w3m-border-radius-master": "2px",
-    "--w3m-font-family": "var(--font-sans), Inter, system-ui, sans-serif",
+    "--w3m-font-family": "Inter, system-ui, sans-serif",
   },
 });
 
