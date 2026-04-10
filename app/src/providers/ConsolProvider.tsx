@@ -9,6 +9,7 @@ import {
 import type { Provider } from "@reown/appkit-adapter-solana/react";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
+import idl from "@/lib/idl/consol.json";
 
 const PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_PROGRAM_ID ||
@@ -56,12 +57,13 @@ export function ConsolProvider({ children }: { children: React.ReactNode }) {
     }
   }, [connection, walletProvider, address, isConnected]);
 
-  // Program will be initialized once we have the IDL from anchor build
   const program = useMemo(() => {
     if (!provider) return null;
-    // TODO: Uncomment when IDL is available
-    // return new Program(idl as any, provider);
-    return null;
+    try {
+      return new Program(idl as never, provider);
+    } catch {
+      return null;
+    }
   }, [provider]);
 
   return (
