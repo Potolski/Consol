@@ -55,6 +55,14 @@ pub struct Distribute<'info> {
     )]
     pub vault: Account<'info, TokenAccount>,
 
+    /// Protocol treasury vault (receives protocol fees)
+    #[account(
+        mut,
+        seeds = [TREASURY_SEED, group.key().as_ref()],
+        bump = group.treasury_bump,
+    )]
+    pub treasury_vault: Account<'info, TokenAccount>,
+
     pub token_program: Program<'info, Token>,
 }
 
@@ -85,7 +93,7 @@ pub fn handle_distribute(ctx: Context<Distribute>) -> Result<()> {
 
     token::transfer(
         CpiContext::new_with_signer(
-            ctx.accounts.token_program.key(),
+            ctx.accounts.token_program.to_account_info(),
             Transfer {
                 from: ctx.accounts.vault.to_account_info(),
                 to: ctx.accounts.winner_token_account.to_account_info(),
@@ -95,6 +103,22 @@ pub fn handle_distribute(ctx: Context<Distribute>) -> Result<()> {
         ),
         distribution_amount,
     )?;
+
+    // Transfer protocol fee to treasury vault
+    if protocol_fee > 0 {
+        token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.vault.to_account_info(),
+                    to: ctx.accounts.treasury_vault.to_account_info(),
+                    authority: ctx.accounts.vault.to_account_info(),
+                },
+                &[vault_seeds],
+            ),
+            protocol_fee,
+        )?;
+    }
 
     // Update winner member
     let winner = &mut ctx.accounts.winner;

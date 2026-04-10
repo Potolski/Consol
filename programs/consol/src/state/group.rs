@@ -39,6 +39,8 @@ pub struct ConsorcioGroup {
     pub vault_bump: u8,
     /// Bump seed for the insurance vault PDA
     pub insurance_bump: u8,
+    /// Bump seed for the protocol treasury PDA
+    pub treasury_bump: u8,
     /// Short description of the group's purpose
     #[max_len(64)]
     pub description: String,

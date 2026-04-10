@@ -13,6 +13,8 @@ pub const VAULT_SEED: &[u8] = b"vault";
 pub const INSURANCE_SEED: &[u8] = b"insurance";
 #[constant]
 pub const REPUTATION_SEED: &[u8] = b"reputation";
+#[constant]
+pub const TREASURY_SEED: &[u8] = b"treasury";
 
 // Protocol parameters
 pub const MAX_GROUP_SIZE: u8 = 50;

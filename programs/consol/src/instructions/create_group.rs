@@ -55,6 +55,16 @@ pub struct CreateGroup<'info> {
     )]
     pub insurance_vault: Account<'info, TokenAccount>,
 
+    #[account(
+        init,
+        payer = creator,
+        seeds = [TREASURY_SEED, group.key().as_ref()],
+        bump,
+        token::mint = mint,
+        token::authority = treasury_vault,
+    )]
+    pub treasury_vault: Account<'info, TokenAccount>,
+
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }
@@ -99,6 +109,7 @@ pub fn handle_create_group(ctx: Context<CreateGroup>, params: CreateGroupParams)
     group.bump = ctx.bumps.group;
     group.vault_bump = ctx.bumps.vault;
     group.insurance_bump = ctx.bumps.insurance_vault;
+    group.treasury_bump = ctx.bumps.treasury_vault;
     group.description = params.description;
 
     emit!(GroupCreated {
