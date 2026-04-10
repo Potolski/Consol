@@ -13,6 +13,8 @@ pub enum ConsolError {
     InvalidInsuranceBps,
     #[msg("Mint must have 6 decimals (USDC standard)")]
     InvalidMintDecimals,
+    #[msg("Description exceeds maximum length of 64 bytes")]
+    DescriptionTooLong,
 
     // Group state
     #[msg("Group is not in the expected state for this operation")]

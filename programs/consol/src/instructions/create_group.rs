@@ -90,6 +90,10 @@ pub fn handle_create_group(ctx: Context<CreateGroup>, params: CreateGroupParams)
         ctx.accounts.mint.decimals == 6,
         ConsolError::InvalidMintDecimals
     );
+    require!(
+        params.description.len() <= 64,
+        ConsolError::DescriptionTooLong
+    );
 
     let clock = Clock::get()?;
     let group = &mut ctx.accounts.group;
