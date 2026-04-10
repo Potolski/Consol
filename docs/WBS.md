@@ -68,12 +68,11 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 - [ ] `B-043` End-to-end VRF test on devnet
 - **Code completed**: Apr 8 — **needs devnet testing**
 
-### 1.6 Group Completion ❌
-- [ ] `B-050` `close_group` — finalize group after all rounds
-- [ ] `B-051` `return_collateral` — release collateral to non-defaulted members
-- [ ] `B-052` `distribute_insurance_surplus` — split remaining insurance pool
-- **Estimated**: ~5h
-- **Depends on**: B-034, B-042
+### 1.6 Group Completion ✅
+- [x] `B-050` `close_group` — finalize group (normal completion or dissolution)
+- [x] `B-051` `return_collateral` — release collateral to non-defaulted members (per-member crank)
+- [x] `B-052` `distribute_insurance` — split insurance surplus pro-rata (per-member crank)
+- **Completed**: Apr 10
 
 ### 1.7 Safety & Constraints (Partial) ✅
 - [x] `B-060` Checked arithmetic (overflow/underflow protection on all math)

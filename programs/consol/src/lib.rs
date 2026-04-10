@@ -62,4 +62,16 @@ pub mod consol {
     pub fn resolve_round(ctx: Context<ResolveRound>) -> Result<()> {
         handle_resolve_round(ctx)
     }
+
+    pub fn close_group(ctx: Context<CloseGroup>) -> Result<()> {
+        handle_close_group(ctx)
+    }
+
+    pub fn return_collateral(ctx: Context<ReturnCollateral>) -> Result<()> {
+        handle_return_collateral(ctx)
+    }
+
+    pub fn distribute_insurance(ctx: Context<DistributeInsurance>) -> Result<()> {
+        handle_distribute_insurance(ctx)
+    }
 }

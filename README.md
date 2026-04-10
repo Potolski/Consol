@@ -97,11 +97,6 @@ Consol is a decentralized protocol that replaces the intermediary with a Solana 
 
 ### Build & Test
 
-```bash
-# Clone the repo
-git clone https://github.com/your-username/consol.git
-cd consol
-
 # Build the program
 anchor build
 
