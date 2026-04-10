@@ -55,11 +55,16 @@ pub fn handle_distribute_insurance(ctx: Context<DistributeInsurance>) -> Result<
     // active_members tracks non-defaulted members — use it as the divisor
     require!(group.active_members > 0, ConsolError::NoEligibleMembers);
 
-    // Calculate this member's share of the insurance surplus
+    // Calculate this member's share of the insurance surplus.
+    // Last claimant gets the full remaining balance to avoid dust lockup.
     let insurance_balance = ctx.accounts.insurance_vault.amount;
-    let share = insurance_balance
-        .checked_div(group.active_members as u64)
-        .ok_or(ConsolError::MathOverflow)?;
+    let share = if group.active_members == 1 {
+        insurance_balance
+    } else {
+        insurance_balance
+            .checked_div(group.active_members as u64)
+            .ok_or(ConsolError::MathOverflow)?
+    };
 
     if share == 0 {
         return Ok(());
