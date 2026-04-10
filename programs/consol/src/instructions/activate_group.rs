@@ -6,6 +6,9 @@ use crate::state::{ConsorcioGroup, GroupStatus};
 
 #[derive(Accounts)]
 pub struct ActivateGroup<'info> {
+    #[account(
+        constraint = caller.key() == group.creator @ ConsolError::InvalidGroupState,
+    )]
     pub caller: Signer<'info>,
 
     #[account(
