@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   ArrowLeft,
   Wallet,
@@ -16,12 +17,22 @@ import {
   CheckCircle2,
   Timer,
   Share2,
+  Sparkles,
+  Trophy,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatUSDC, truncateAddress } from "@/lib/utils";
 import { getMockGroup } from "@/lib/mock-data";
+
+const LotteryAnimation = dynamic(
+  () =>
+    import("@/components/lottery/LotteryAnimation").then(
+      (mod) => mod.LotteryAnimation
+    ),
+  { ssr: false }
+);
 
 // ── Fallback Mock Data ──────────────────────────────────────────────────────
 
@@ -81,6 +92,7 @@ export default function GroupDetailPage() {
   const params = useParams<{ address: string }>();
   const [rulesOpen, setRulesOpen] = useState(true);
   const [memberFilter, setMemberFilter] = useState<MemberFilter>("all");
+  const [showLottery, setShowLottery] = useState(false);
 
   // Try to find group from shared mock data, fall back to hardcoded
   const found = getMockGroup(params.address ?? "");
@@ -194,15 +206,49 @@ export default function GroupDetailPage() {
               paid this round
             </p>
           </div>
-          <Button
-            size="lg"
-            className="gap-2 bg-primary px-6 font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 hover:shadow-primary/40"
-          >
-            <Zap className="h-4 w-4" />
-            Pay {formatUSDC(g.monthlyContribution)} USDC
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              size="lg"
+              className="gap-2 bg-primary px-6 font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 hover:shadow-primary/40"
+            >
+              <Zap className="h-4 w-4" />
+              Pay {formatUSDC(g.monthlyContribution)} USDC
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="gap-2 border-white/10 bg-white/[0.03] px-5 text-sm text-white/60 hover:bg-white/[0.06] hover:text-white/80"
+              onClick={() => setShowLottery(true)}
+            >
+              <Sparkles className="h-4 w-4 text-amber-400" />
+              Demo Lottery
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* -- Recent Winner Banner -- */}
+      {g.currentRound > 0 && (() => {
+        const lastRound = g.currentRound;
+        const lastWinner = roundWinners[lastRound];
+        if (!lastWinner) return null;
+        const payoutAmount = (g.monthlyContribution * g.totalMembers) / 1_000_000;
+        const netPayout = payoutAmount - (payoutAmount * protocolFeeBps) / 10_000;
+        return (
+          <div className="flex items-center gap-3 rounded-xl border border-amber-500/15 bg-gradient-to-r from-amber-500/[0.06] via-amber-500/[0.03] to-transparent px-4 py-3">
+            <Trophy className="h-4 w-4 shrink-0 text-amber-500" />
+            <p className="text-sm text-white/60">
+              <span className="font-semibold text-amber-400">Round {lastRound} Winner:</span>{" "}
+              <span className="font-mono text-white/50">{truncateAddress(lastWinner)}</span>{" "}
+              received{" "}
+              <span className="font-mono font-semibold text-white/70">
+                ~${netPayout.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </span>{" "}
+              USDC
+            </p>
+          </div>
+        );
+      })()}
 
       {/* -- Pool Overview -- */}
       <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
@@ -562,6 +608,19 @@ export default function GroupDetailPage() {
           <span className="font-mono text-white/30">{params.address}</span>
         </p>
       </div>
+
+      {/* -- Lottery Animation -- */}
+      <LotteryAnimation
+        isOpen={showLottery}
+        onClose={() => setShowLottery(false)}
+        members={mockMembers
+          .filter((m) => m.status !== "defaulted" && !m.hasReceived)
+          .map((m) => ({ wallet: m.wallet, isYou: m.isYou }))}
+        winnerWallet="8bWkTmRn4vSp9dXs2hYu5F"
+        winnerAmount={4_925_000_000}
+        roundNumber={4}
+        vrfResult="a3f8c2e1d4b59067123456789abcdef0fedcba9876543210abcdef1234567890"
+      />
     </div>
   );
 }
