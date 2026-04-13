@@ -23,9 +23,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Poolver — Decentralized Consorcio Protocol",
+  title: "Poolver — Decentralized Savings Pools on Solana",
   description:
-    "Transparent pools, verifiable fair selection, minimal fees. The Brazilian consorcio model, on Solana.",
+    "Transparent pools, verifiable fair selection, minimal fees. Inspired by savings circles, powered by Solana.",
 };
 
 export default function RootLayout({

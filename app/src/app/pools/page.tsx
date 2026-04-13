@@ -61,7 +61,7 @@ export default function PoolsPage() {
             Savings Pools
           </h1>
           <p className="mt-1 text-[#526075]">
-            Browse and join active cons&oacute;rcio groups
+            Browse and join active savings pools
           </p>
         </div>
         <Button

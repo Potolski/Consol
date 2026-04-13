@@ -117,7 +117,7 @@ export default function CreateGroupPage() {
                 Create your savings pool
               </h1>
               <p className="text-lg leading-relaxed text-[#526075]">
-                Configure your cons&oacute;rcio parameters. Members will join by
+                Configure your pool parameters. Members will join by
                 depositing collateral.
               </p>
             </div>
@@ -174,7 +174,7 @@ export default function CreateGroupPage() {
                     Member Protection
                   </p>
                   <p className="text-xs text-[#526075]">
-                    Covered by the cons&oacute;rcio insurance pool
+                    Covered by the pool insurance fund
                   </p>
                 </div>
               </div>

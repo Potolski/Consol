@@ -6,7 +6,7 @@ import { solanaAdapter, projectId, networks } from "@/config";
 
 const metadata = {
   name: "Poolver",
-  description: "Decentralized Consorcio Protocol on Solana",
+  description: "Decentralized Savings Pools on Solana",
   url: "https://poolver.com",
   icons: ["/poolver-logo.svg"],
 };

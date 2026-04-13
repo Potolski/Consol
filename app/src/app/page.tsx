@@ -50,7 +50,7 @@ export default function Home() {
 
         {/* Subtext */}
         <p className="relative max-w-xl text-base leading-relaxed text-[#26619d] sm:text-lg">
-          A cons&oacute;rcio is a savings circle: a group pools money monthly
+          Verifiable savings pools on Solana. A group pools money monthly
           and each round one member receives the full pot. No banks. No
           interest. Just collective power.
         </p>
@@ -77,14 +77,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── How A Consorcio Works ── */}
+      {/* ── How It Works ── */}
       <section id="how-it-works" className="flex flex-col gap-10">
         <div className="text-center">
           <h2 className="font-headline text-2xl font-bold text-[#00345e] sm:text-3xl">
-            How a Cons&oacute;rcio Works
+            How It Works
           </h2>
           <p className="mt-3 text-sm text-[#526075] sm:text-base">
-            Used by 10M+ Brazilians to buy cars, homes, and more
+            Inspired by savings circles used by millions worldwide
           </p>
         </div>
 
@@ -171,7 +171,7 @@ export default function Home() {
           {/* Traditional side */}
           <div className="rounded-xl bg-[#eff4ff] p-6 sm:p-8">
             <h3 className="mb-6 text-center text-sm font-semibold uppercase tracking-widest text-[#526075]">
-              Traditional Cons&oacute;rcio
+              Traditional Savings Circles
             </h3>
             <div className="flex flex-col gap-4">
               {[
@@ -343,7 +343,7 @@ export default function Home() {
       {/* ── Final CTA ── */}
       <section className="rounded-xl bg-[#eff4ff] p-12 text-center">
         <h2 className="font-headline text-2xl font-bold text-[#00345e] sm:text-3xl">
-          Ready to join a cons&oacute;rcio?
+          Ready to start saving?
         </h2>
         <p className="mt-3 text-[#526075]">
           Browse open pools or create your own.
