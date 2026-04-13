@@ -214,6 +214,31 @@
           }
         },
         {
+          "name": "treasury_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              }
+            ]
+          }
+        },
+        {
           "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
@@ -315,6 +340,34 @@
                   117,
                   108,
                   116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury_vault",
+          "docs": [
+            "Protocol treasury vault (receives protocol fees)"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
                 ]
               },
               {
@@ -1146,6 +1199,19 @@
       ]
     },
     {
+      "name": "InsuranceDistributed",
+      "discriminator": [
+        239,
+        211,
+        233,
+        84,
+        222,
+        227,
+        205,
+        106
+      ]
+    },
+    {
       "name": "MemberJoined",
       "discriminator": [
         156,
@@ -1234,106 +1300,116 @@
     },
     {
       "code": 6004,
+      "name": "InvalidMintDecimals",
+      "msg": "Mint must have 6 decimals (USDC standard)"
+    },
+    {
+      "code": 6005,
+      "name": "DescriptionTooLong",
+      "msg": "Description exceeds maximum length of 64 bytes"
+    },
+    {
+      "code": 6006,
       "name": "InvalidGroupState",
       "msg": "Group is not in the expected state for this operation"
     },
     {
-      "code": 6005,
+      "code": 6007,
       "name": "GroupFull",
       "msg": "Group is already full"
     },
     {
-      "code": 6006,
+      "code": 6008,
       "name": "FormationTimeout",
       "msg": "Group formation period has expired"
     },
     {
-      "code": 6007,
+      "code": 6009,
       "name": "AlreadyMember",
       "msg": "Already a member of this group"
     },
     {
-      "code": 6008,
+      "code": 6010,
       "name": "NotMember",
       "msg": "Not a member of this group"
     },
     {
-      "code": 6009,
+      "code": 6011,
       "name": "MemberDefaulted",
       "msg": "Member has been defaulted"
     },
     {
-      "code": 6010,
+      "code": 6012,
       "name": "AlreadyReceived",
       "msg": "Member has already received the pool"
     },
     {
-      "code": 6011,
+      "code": 6013,
       "name": "NotYetReceived",
       "msg": "Member has not received the pool yet"
     },
     {
-      "code": 6012,
+      "code": 6014,
       "name": "PaymentWindowClosed",
       "msg": "Payment window is not currently open"
     },
     {
-      "code": 6013,
+      "code": 6015,
       "name": "AlreadyPaid",
       "msg": "Payment already made for this round"
     },
     {
-      "code": 6014,
+      "code": 6016,
       "name": "IncorrectAmount",
       "msg": "Incorrect payment amount"
     },
     {
-      "code": 6015,
+      "code": 6017,
       "name": "InsufficientCollateral",
       "msg": "Insufficient collateral deposited"
     },
     {
-      "code": 6016,
+      "code": 6018,
       "name": "InvalidRoundState",
       "msg": "Round is not in the expected state"
     },
     {
-      "code": 6017,
+      "code": 6019,
       "name": "NoEligibleMembers",
       "msg": "No eligible members for selection"
     },
     {
-      "code": 6018,
+      "code": 6020,
       "name": "VrfNotResolved",
       "msg": "VRF result has not been received yet"
     },
     {
-      "code": 6019,
+      "code": 6021,
       "name": "NotEligible",
       "msg": "Member is not eligible for selection this round"
     },
     {
-      "code": 6020,
+      "code": 6022,
       "name": "InvalidRandomnessAccount",
       "msg": "Invalid Switchboard randomness account"
     },
     {
-      "code": 6021,
+      "code": 6023,
       "name": "NotInDefault",
       "msg": "Member has not exceeded the missed payment threshold"
     },
     {
-      "code": 6022,
+      "code": 6024,
       "name": "CannotWithdrawPostReceipt",
       "msg": "Cannot withdraw after receiving the pool"
     },
     {
-      "code": 6023,
+      "code": 6025,
       "name": "GracePeriodActive",
       "msg": "Grace period has not ended yet"
     },
     {
-      "code": 6024,
+      "code": 6026,
       "name": "MathOverflow",
       "msg": "Arithmetic overflow"
     }
@@ -1471,6 +1547,13 @@
             "name": "insurance_bump",
             "docs": [
               "Bump seed for the insurance vault PDA"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "treasury_bump",
+            "docs": [
+              "Bump seed for the protocol treasury PDA"
             ],
             "type": "u8"
           },
@@ -1676,6 +1759,34 @@
       }
     },
     {
+      "name": "InsuranceDistributed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "remaining_members",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "Member",
       "type": {
         "kind": "struct",
@@ -1725,7 +1836,7 @@
           {
             "name": "received_round",
             "docs": [
-              "The round in which this member received (0 = hasn't received)"
+              "The round in which this member received (u8::MAX = hasn't received; check has_received first)"
             ],
             "type": "u8"
           },
@@ -1742,6 +1853,20 @@
               "Last round this member paid for (used to prevent double-pay per round)"
             ],
             "type": "u8"
+          },
+          {
+            "name": "last_default_round",
+            "docs": [
+              "Last round this member was marked as defaulting (prevents double-default per round)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "insurance_claimed",
+            "docs": [
+              "Whether this member has claimed their insurance share"
+            ],
+            "type": "bool"
           },
           {
             "name": "status",
@@ -2090,6 +2215,11 @@
       "name": "ROUND_SEED",
       "type": "bytes",
       "value": "[114, 111, 117, 110, 100]"
+    },
+    {
+      "name": "TREASURY_SEED",
+      "type": "bytes",
+      "value": "[116, 114, 101, 97, 115, 117, 114, 121]"
     },
     {
       "name": "VAULT_SEED",

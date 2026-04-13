@@ -6,6 +6,7 @@ node_modules
 test-ledger
 .yarn
 .surfpool
+.next
 
 # Secrets & credentials
 token.md
@@ -25,3 +26,5 @@ deploy-keypair.json
 # Agents / local tooling
 .agents/
 skills-lock.json
+
+INVESTMENT_REPORT.md

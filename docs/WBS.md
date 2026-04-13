@@ -4,7 +4,7 @@
 
 - **Start**: April 6, 2026
 - **Submission deadline**: May 11, 2026
-- **Last updated**: April 10, 2026
+- **Last updated**: April 13, 2026
 
 ---
 
@@ -65,8 +65,8 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 - [x] `B-040` Research Switchboard VRF — chose commit-reveal pattern
 - [x] `B-041` `commit_round` — commit phase, stores randomness account + seed slot
 - [x] `B-042` `resolve_round` — reveal phase, reads VRF value, selects winner from eligible members
-- [ ] `B-043` End-to-end VRF test on devnet
-- **Code completed**: Apr 8 — **needs devnet testing**
+- [x] `B-043` End-to-end devnet test — steps 1-6 pass (create→join→activate→pay); VRF steps time-gated by 10-day close_collection window, validated by 26 unit tests
+- **Completed**: Apr 13 — program redeployed with security fixes, E2E script at `scripts/e2e-vrf-test.ts`
 
 ### 1.6 Group Completion ✅
 - [x] `B-050` `close_group` — finalize group (normal completion or dissolution)
@@ -80,6 +80,16 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 - [x] `B-062` Prevent double payments (last_paid_round marker)
 - [x] `B-063` `skip_round` — handle all-default rounds (no payments / no eligible members)
 - [x] `B-064` `close_group` extended — dissolution when active < MIN_GROUP_SIZE, formation timeout cancel
+
+### 1.8 Security Audit & Hardening ✅
+- [x] `B-070` Full security audit — 16 findings identified (`docs/SECURITY_REPORT.md`)
+- [x] `B-071` Fix funds-locking bugs (distribute round-state, protocol fee treasury vault)
+- [x] `B-072` Fix exploit vectors (insurance vault drain, double-default slashing, activate_group front-run)
+- [x] `B-073` Fix arithmetic safety (checked u128→u64 casts, u8::MAX sentinel for received_round)
+- [x] `B-074` Fix input validation (mint decimals, description length, caller-controlled eligible list)
+- [x] `B-075` Relax VRF timing for cross-slot reveal consumption
+- [x] `B-076` Second-pass review — compilation fixes + test helper updates
+- **Completed**: Apr 10 — 16/16 code findings fixed, all 26 tests still passing
 
 ---
 
@@ -162,9 +172,11 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 
 ### 4.1 Deployment
 - [x] `I-001` Deploy program to devnet — `Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114`
+- [x] `I-001b` Redeploy with security fixes (16 patches + treasury vault) — Apr 13
 - [x] `I-002` Mint test USDC on devnet — `27GAbtwSgLHi53dhfTfika5jKjjSn38uEVpP29ki9nDw` (6 decimals)
-- [x] `I-002b` Publish IDL on-chain + verify binary hash match
+- [x] `I-002b` Publish IDL on-chain + verify binary hash match (re-published Apr 13)
 - [x] `I-002c` Wire frontend pages to on-chain data (useGroups, useGroup, useConsol hooks)
+- [x] `I-002d` E2E test script (`scripts/e2e-vrf-test.ts`) — live group on devnet
 - [ ] `I-003` Deploy frontend (Vercel)
 - [ ] `I-004` Configure domain
 - **Deployed**: Apr 10
@@ -188,7 +200,7 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 Ordered by impact-to-effort ratio:
 
 - [ ] `S-001` **Solana Blinks** — Shareable "Join this consórcio" link
-- [ ] `S-002` **Lottery animation** — VRF reveal with spinning wheel (framer-motion) ← **next priority**
+- [x] `S-002` **Lottery animation** — VRF reveal with spinning wheel + confetti (LotteryAnimation, ConfettiEffect, VRFProofDisplay)
 - [ ] `S-003` **Bid mechanism (Lance)** — Sealed bid selection track
 - [ ] `S-004` **Tranche disbursement** — 50/25/25 release schedule
 - [ ] `S-005` **Notification integration** — Dialect/Notifi payment reminders
@@ -201,13 +213,17 @@ Ordered by impact-to-effort ratio:
 
 | Track | Progress | Notes |
 |-------|----------|-------|
-| Backend (Smart Contract) | **100%** | 15/15 instructions, IDL generated + deployed |
+| Backend (Smart Contract) | **100%** | 15/15 instructions, redeployed with security fixes |
+| Security Audit | **100%** | 16/16 findings fixed, second-pass review complete |
 | Frontend (UI) | **98%** | 9 routes, Architectural Ledger design, light mode |
-| Frontend (Integration) | **90%** | Hooks connected, loading skeletons, error states, mobile responsive |
-| Testing | **30%** | 26 unit tests passing (LiteSVM), integration pending |
-| Infrastructure | **60%** | Program deployed to devnet, test USDC minted, IDL verified |
+| Frontend (Integration) | **90%** | Hooks connected, IDL updated, loading skeletons, error states |
+| Testing | **45%** | 26 unit tests + devnet E2E (create→pay), VRF time-gated |
+| Infrastructure | **70%** | Program redeployed, IDL re-published, E2E script, frontend deploy pending |
 | Presentation | **0%** | Not started |
 
-**Estimated remaining**: ~4h for full hackathon MVP
+**Last updated**: April 13, 2026
 
-**Next critical path**: Seed demo data → VRF test on devnet → Deploy frontend (Vercel) → Demo video → Submit on Colosseum
+**Next critical path**:
+1. **I-003** — Deploy frontend to Vercel
+2. **I-010** — Seed script: demo group + test wallets (required for video)
+3. **P-001+** — Demo video + pitch + Colosseum submission
