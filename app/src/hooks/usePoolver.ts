@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { useConsolProgram } from "@/providers/ConsolProvider";
+import { usePoolverProgram } from "@/providers/PoolverProvider";
 import { useTransactionToast } from "./useTransactionToast";
 import {
   getGroupPDA,
@@ -13,8 +13,8 @@ import {
 } from "@/lib/pdas";
 import { buildCommitIx, buildRevealIx } from "@/lib/switchboard";
 
-export function useConsol() {
-  const { program, provider } = useConsolProgram();
+export function usePoolver() {
+  const { program, provider } = usePoolverProgram();
   const { showSuccess, showError, showLoading, dismiss } =
     useTransactionToast();
 

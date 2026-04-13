@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { useConsolProgram } from "@/providers/ConsolProvider";
+import { usePoolverProgram } from "@/providers/PoolverProvider";
 import { getRoundPDA } from "@/lib/pdas";
 
 interface RoundData {
@@ -25,7 +25,7 @@ export function useRound(
   groupAddress: string | undefined,
   roundNumber: number | undefined
 ) {
-  const { program } = useConsolProgram();
+  const { program } = usePoolverProgram();
   const [round, setRound] = useState<RoundData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

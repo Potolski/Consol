@@ -1,6 +1,6 @@
 <div align="center">
 
-# Consol
+# Poolver
 
 ### Decentralized Consórcio Protocol on Solana
 
@@ -12,7 +12,7 @@
 
 <br />
 
-**Consol** brings the Brazilian *consórcio* — a proven collective purchasing model used by millions — to the Solana blockchain. Transparent pools, verifiable fair selection, minimal fees.
+**Poolver** brings the Brazilian *consórcio* — a proven collective purchasing model used by millions — to the Solana blockchain. Transparent pools, verifiable fair selection, minimal fees.
 
 [Explore the Docs](docs/DESIGN.md) · [View Demo](#demo) · [Hackathon Submission](https://colosseum.com/frontier)
 
@@ -33,7 +33,7 @@ Traditional consórcios suffer from:
 
 ## The Solution
 
-Consol is a decentralized protocol that replaces the intermediary with a Solana smart contract:
+Poolver is a decentralized protocol that replaces the intermediary with a Solana smart contract:
 
 - **Verifiable fairness** — VRF-powered lottery that anyone can audit
 - **Transparent pools** — all funds, payments, and selections are on-chain
@@ -61,7 +61,7 @@ Consol is a decentralized protocol that replaces the intermediary with a Solana 
 └──────────────────┬───────────────────────────┘
                    │
 ┌──────────────────▼───────────────────────────┐
-│              Consol Program                   │
+│              Poolver Program                   │
 │   Anchor · Solana · SPL Token · VRF          │
 ├───────────────────────────────────────────────┤
 │  create_group · join_group · make_payment     │
@@ -141,6 +141,6 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 <div align="center">
 
-Built for the [Solana Frontier Hackathon 2026](https://colosseum.com/frontier) by the Consol team.
+Built for the [Solana Frontier Hackathon 2026](https://colosseum.com/frontier) by the Poolver team.
 
 </div>

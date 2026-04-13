@@ -18,9 +18,9 @@ use spl_token_interface::{
     ID as TOKEN_PROGRAM_ID,
 };
 
-pub use consol::constants::*;
-pub use consol::state::*;
-pub use consol::CreateGroupParams;
+pub use poolver::constants::*;
+pub use poolver::state::*;
+pub use poolver::CreateGroupParams;
 
 pub const USDC_DECIMALS: u8 = 6;
 pub const ONE_USDC: u64 = 1_000_000;
@@ -42,10 +42,10 @@ impl TestEnv {
         let mut svm = LiteSVM::new().with_default_programs();
 
         // Load our program
-        let elf = std::fs::read("target/deploy/consol.so")
-            .or_else(|_| std::fs::read("../../target/deploy/consol.so"))
+        let elf = std::fs::read("target/deploy/poolver.so")
+            .or_else(|_| std::fs::read("../../target/deploy/poolver.so"))
             .expect("Run `anchor build` first");
-        svm.add_program(consol::ID, &elf);
+        svm.add_program(poolver::ID, &elf);
 
         // Create mock USDC mint
         let mint = Pubkey::new_unique();
@@ -195,7 +195,7 @@ impl TestEnv {
         let (insurance_pda, _) = derive_insurance_pda(&group_pda);
         let (treasury_pda, _) = derive_treasury_pda(&group_pda);
 
-        let accounts = consol::accounts::CreateGroup {
+        let accounts = poolver::accounts::CreateGroup {
             creator: *creator,
             group: group_pda,
             mint: self.mint,
@@ -206,9 +206,9 @@ impl TestEnv {
             system_program: anchor_lang::system_program::ID,
         };
         let ix = Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::CreateGroup { params }.data(),
+            data: poolver::instruction::CreateGroup { params }.data(),
         };
         (ix, group_pda)
     }
@@ -222,7 +222,7 @@ impl TestEnv {
         let (member_pda, _) = derive_member_pda(group, user);
         let (vault_pda, _) = derive_vault_pda(group);
 
-        let accounts = consol::accounts::JoinGroup {
+        let accounts = poolver::accounts::JoinGroup {
             user: *user,
             group: *group,
             member: member_pda,
@@ -233,9 +233,9 @@ impl TestEnv {
             system_program: anchor_lang::system_program::ID,
         };
         let ix = Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::JoinGroup.data(),
+            data: poolver::instruction::JoinGroup.data(),
         };
         (ix, member_pda)
     }
@@ -249,7 +249,7 @@ impl TestEnv {
         let (member_pda, _) = derive_member_pda(group, user);
         let (vault_pda, _) = derive_vault_pda(group);
 
-        let accounts = consol::accounts::LeaveGroup {
+        let accounts = poolver::accounts::LeaveGroup {
             user: *user,
             group: *group,
             member: member_pda,
@@ -260,9 +260,9 @@ impl TestEnv {
             system_program: anchor_lang::system_program::ID,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::LeaveGroup.data(),
+            data: poolver::instruction::LeaveGroup.data(),
         }
     }
 
@@ -271,14 +271,14 @@ impl TestEnv {
         caller: &Pubkey,
         group: &Pubkey,
     ) -> Instruction {
-        let accounts = consol::accounts::ActivateGroup {
+        let accounts = poolver::accounts::ActivateGroup {
             caller: *caller,
             group: *group,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::ActivateGroup.data(),
+            data: poolver::instruction::ActivateGroup.data(),
         }
     }
 
@@ -290,16 +290,16 @@ impl TestEnv {
     ) -> (Instruction, Pubkey) {
         let (round_pda, _) = derive_round_pda(group, round_number);
 
-        let accounts = consol::accounts::StartRound {
+        let accounts = poolver::accounts::StartRound {
             caller: *caller,
             group: *group,
             round: round_pda,
             system_program: anchor_lang::system_program::ID,
         };
         let ix = Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::StartRound.data(),
+            data: poolver::instruction::StartRound.data(),
         };
         (ix, round_pda)
     }
@@ -316,7 +316,7 @@ impl TestEnv {
         let (vault_pda, _) = derive_vault_pda(group);
         let (insurance_pda, _) = derive_insurance_pda(group);
 
-        let accounts = consol::accounts::MakePayment {
+        let accounts = poolver::accounts::MakePayment {
             user: *user,
             group: *group,
             member: member_pda,
@@ -328,9 +328,9 @@ impl TestEnv {
             token_program: TOKEN_PROGRAM_ID,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::MakePayment.data(),
+            data: poolver::instruction::MakePayment.data(),
         }
     }
 
@@ -342,15 +342,15 @@ impl TestEnv {
     ) -> Instruction {
         let (round_pda, _) = derive_round_pda(group, round_number);
 
-        let accounts = consol::accounts::CloseCollection {
+        let accounts = poolver::accounts::CloseCollection {
             caller: *caller,
             group: *group,
             round: round_pda,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::CloseCollection.data(),
+            data: poolver::instruction::CloseCollection.data(),
         }
     }
 
@@ -366,7 +366,7 @@ impl TestEnv {
         let (vault_pda, _) = derive_vault_pda(group);
         let (insurance_pda, _) = derive_insurance_pda(group);
 
-        let accounts = consol::accounts::MarkDefault {
+        let accounts = poolver::accounts::MarkDefault {
             caller: *caller,
             group: *group,
             member: member_pda,
@@ -377,9 +377,9 @@ impl TestEnv {
             token_program: TOKEN_PROGRAM_ID,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::MarkDefault.data(),
+            data: poolver::instruction::MarkDefault.data(),
         }
     }
 
@@ -388,14 +388,14 @@ impl TestEnv {
         caller: &Pubkey,
         group: &Pubkey,
     ) -> Instruction {
-        let accounts = consol::accounts::CloseGroup {
+        let accounts = poolver::accounts::CloseGroup {
             caller: *caller,
             group: *group,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::CloseGroup.data(),
+            data: poolver::instruction::CloseGroup.data(),
         }
     }
 
@@ -409,7 +409,7 @@ impl TestEnv {
         let (member_pda, _) = derive_member_pda(group, member_wallet);
         let (vault_pda, _) = derive_vault_pda(group);
 
-        let accounts = consol::accounts::ReturnCollateral {
+        let accounts = poolver::accounts::ReturnCollateral {
             caller: *caller,
             group: *group,
             member: member_pda,
@@ -419,9 +419,9 @@ impl TestEnv {
             token_program: TOKEN_PROGRAM_ID,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::ReturnCollateral.data(),
+            data: poolver::instruction::ReturnCollateral.data(),
         }
     }
 
@@ -435,7 +435,7 @@ impl TestEnv {
         let (member_pda, _) = derive_member_pda(group, member_wallet);
         let (insurance_pda, _) = derive_insurance_pda(group);
 
-        let accounts = consol::accounts::DistributeInsurance {
+        let accounts = poolver::accounts::DistributeInsurance {
             caller: *caller,
             group: *group,
             member: member_pda,
@@ -445,9 +445,9 @@ impl TestEnv {
             token_program: TOKEN_PROGRAM_ID,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::DistributeInsurance.data(),
+            data: poolver::instruction::DistributeInsurance.data(),
         }
     }
 
@@ -459,15 +459,15 @@ impl TestEnv {
     ) -> Instruction {
         let (round_pda, _) = derive_round_pda(group, round_number);
 
-        let accounts = consol::accounts::SkipRound {
+        let accounts = poolver::accounts::SkipRound {
             caller: *caller,
             group: *group,
             round: round_pda,
         };
         Instruction {
-            program_id: consol::ID,
+            program_id: poolver::ID,
             accounts: accounts.to_account_metas(None),
-            data: consol::instruction::SkipRound.data(),
+            data: poolver::instruction::SkipRound.data(),
         }
     }
 }
@@ -477,30 +477,30 @@ impl TestEnv {
 pub fn derive_group_pda(creator: &Pubkey, group_id: u64) -> (Pubkey, u8) {
     Pubkey::find_program_address(
         &[GROUP_SEED, creator.as_ref(), &group_id.to_le_bytes()],
-        &consol::ID,
+        &poolver::ID,
     )
 }
 
 pub fn derive_vault_pda(group: &Pubkey) -> (Pubkey, u8) {
-    Pubkey::find_program_address(&[VAULT_SEED, group.as_ref()], &consol::ID)
+    Pubkey::find_program_address(&[VAULT_SEED, group.as_ref()], &poolver::ID)
 }
 
 pub fn derive_insurance_pda(group: &Pubkey) -> (Pubkey, u8) {
-    Pubkey::find_program_address(&[INSURANCE_SEED, group.as_ref()], &consol::ID)
+    Pubkey::find_program_address(&[INSURANCE_SEED, group.as_ref()], &poolver::ID)
 }
 
 pub fn derive_treasury_pda(group: &Pubkey) -> (Pubkey, u8) {
-    Pubkey::find_program_address(&[TREASURY_SEED, group.as_ref()], &consol::ID)
+    Pubkey::find_program_address(&[TREASURY_SEED, group.as_ref()], &poolver::ID)
 }
 
 pub fn derive_member_pda(group: &Pubkey, wallet: &Pubkey) -> (Pubkey, u8) {
-    Pubkey::find_program_address(&[MEMBER_SEED, group.as_ref(), wallet.as_ref()], &consol::ID)
+    Pubkey::find_program_address(&[MEMBER_SEED, group.as_ref(), wallet.as_ref()], &poolver::ID)
 }
 
 pub fn derive_round_pda(group: &Pubkey, round_number: u8) -> (Pubkey, u8) {
     Pubkey::find_program_address(
         &[ROUND_SEED, group.as_ref(), &[round_number]],
-        &consol::ID,
+        &poolver::ID,
     )
 }
 

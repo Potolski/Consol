@@ -3,7 +3,7 @@ import { Inter, JetBrains_Mono, Manrope } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SolanaProvider } from "@/providers/SolanaProvider";
-import { ConsolProvider } from "@/providers/ConsolProvider";
+import { PoolverProvider } from "@/providers/PoolverProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
@@ -23,7 +23,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Consol — Decentralized Consorcio Protocol",
+  title: "Poolver — Decentralized Consorcio Protocol",
   description:
     "Transparent pools, verifiable fair selection, minimal fees. The Brazilian consorcio model, on Solana.",
 };
@@ -40,7 +40,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-[#f8f9ff] text-[#00345e] antialiased">
         <SolanaProvider>
-          <ConsolProvider>
+          <PoolverProvider>
             <TooltipProvider>
               <AppShell>{children}</AppShell>
               <Toaster
@@ -55,7 +55,7 @@ export default function RootLayout({
                 }}
               />
             </TooltipProvider>
-          </ConsolProvider>
+          </PoolverProvider>
         </SolanaProvider>
       </body>
     </html>

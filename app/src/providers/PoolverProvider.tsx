@@ -9,14 +9,14 @@ import {
 import type { Provider } from "@reown/appkit-adapter-solana/react";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-import idl from "@/lib/idl/consol.json";
+import idl from "@/lib/idl/poolver.json";
 
 const PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_PROGRAM_ID ||
     "Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114"
 );
 
-interface ConsolContextType {
+interface PoolverContextType {
   program: Program | null;
   programId: PublicKey;
   provider: AnchorProvider | null;
@@ -24,7 +24,7 @@ interface ConsolContextType {
   address: string | undefined;
 }
 
-const ConsolContext = createContext<ConsolContextType>({
+const PoolverContext = createContext<PoolverContextType>({
   program: null,
   programId: PROGRAM_ID,
   provider: null,
@@ -32,7 +32,7 @@ const ConsolContext = createContext<ConsolContextType>({
   address: undefined,
 });
 
-export function ConsolProvider({ children }: { children: React.ReactNode }) {
+export function PoolverProvider({ children }: { children: React.ReactNode }) {
   const { connection } = useAppKitConnection();
   const { walletProvider } = useAppKitProvider<Provider>("solana");
   const { address, isConnected } = useAppKitAccount();
@@ -67,7 +67,7 @@ export function ConsolProvider({ children }: { children: React.ReactNode }) {
   }, [provider]);
 
   return (
-    <ConsolContext.Provider
+    <PoolverContext.Provider
       value={{
         program,
         programId: PROGRAM_ID,
@@ -77,10 +77,10 @@ export function ConsolProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </ConsolContext.Provider>
+    </PoolverContext.Provider>
   );
 }
 
-export function useConsolProgram() {
-  return useContext(ConsolContext);
+export function usePoolverProgram() {
+  return useContext(PoolverContext);
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useConsolProgram } from "@/providers/ConsolProvider";
+import { usePoolverProgram } from "@/providers/PoolverProvider";
 
 interface GroupListItem {
   address: string;
@@ -19,7 +19,7 @@ interface GroupListItem {
 export function useGroups(
   statusFilter?: "forming" | "active" | "completed"
 ) {
-  const { program } = useConsolProgram();
+  const { program } = usePoolverProgram();
   const [groups, setGroups] = useState<GroupListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

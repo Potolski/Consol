@@ -1,8 +1,8 @@
-# Security Audit Report — Consol (Solana Consorcio Protocol)
+# Security Audit Report — Poolver (Solana Consorcio Protocol)
 
 **Date**: 2026-04-10
 **Auditor**: Claude (AI-assisted review)
-**Scope**: Full program source (`programs/consol/src/`) + frontend providers
+**Scope**: Full program source (`programs/poolver/src/`) + frontend providers
 
 ---
 

@@ -5,10 +5,10 @@ import { createAppKit } from "@reown/appkit/react";
 import { solanaAdapter, projectId, networks } from "@/config";
 
 const metadata = {
-  name: "Consol",
+  name: "Poolver",
   description: "Decentralized Consorcio Protocol on Solana",
-  url: "https://consol.app",
-  icons: ["/consol-logo.svg"],
+  url: "https://poolver.com",
+  icons: ["/poolver-logo.svg"],
 };
 
 createAppKit({

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { useConsolProgram } from "@/providers/ConsolProvider";
+import { usePoolverProgram } from "@/providers/PoolverProvider";
 import { getMemberPDA } from "@/lib/pdas";
 
 interface MemberData {
@@ -24,7 +24,7 @@ export function useMember(
   groupAddress: string | undefined,
   walletAddress: string | undefined
 ) {
-  const { program } = useConsolProgram();
+  const { program } = usePoolverProgram();
   const [member, setMember] = useState<MemberData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

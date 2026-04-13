@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { WalletButton } from "@/components/wallet/WalletButton";
-import { useConsol } from "@/hooks/useConsol";
+import { usePoolver } from "@/hooks/usePoolver";
 import {
   ArrowLeft,
   Shield,
@@ -49,7 +49,7 @@ export default function CreateGroupPage() {
   const [collateralPct, setCollateralPct] = useState(20);
   const [insurancePct, setInsurancePct] = useState(3);
   const [submitting, setSubmitting] = useState(false);
-  const { createGroup } = useConsol();
+  const { createGroup } = usePoolver();
 
   const handleCreateGroup = async () => {
     setSubmitting(true);
@@ -408,7 +408,7 @@ export default function CreateGroupPage() {
         </div>
 
         <footer className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[#526075]">
-          <p>Consol Protocol &copy; 2026</p>
+          <p>Poolver Protocol &copy; 2026</p>
           <div className="flex items-center gap-4 mt-2 sm:mt-0">
             <span>Privacy Policy</span>
             <span>Risk Disclosure</span>

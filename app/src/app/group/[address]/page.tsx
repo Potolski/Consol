@@ -25,7 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { truncateAddress } from "@/lib/utils";
 import { getMockGroup } from "@/lib/mock-data";
 import { useGroup } from "@/hooks/useGroup";
-import { useConsol } from "@/hooks/useConsol";
+import { usePoolver } from "@/hooks/usePoolver";
 import { getMemberPDA } from "@/lib/pdas";
 
 const LotteryAnimation = dynamic(
@@ -137,7 +137,7 @@ export default function GroupDetailPage() {
   const [showLottery, setShowLottery] = useState(false);
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("current");
   const [showAllMembers, setShowAllMembers] = useState(false);
-  const { makePayment, commitRound, resolveRound } = useConsol();
+  const { makePayment, commitRound, resolveRound } = usePoolver();
 
   // Try real on-chain data first, then shared mock data, then hardcoded fallback
   const { group: realGroup, loading: groupLoading, error } = useGroup(params.address);

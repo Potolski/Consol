@@ -198,10 +198,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Consol side */}
+          {/* Poolver side */}
           <div className="rounded-xl bg-[#006c4a]/5 p-6 sm:p-8">
             <h3 className="mb-6 text-center text-sm font-semibold uppercase tracking-widest text-[#006c4a]">
-              Consol Protocol
+              Poolver Protocol
             </h3>
             <div className="flex flex-col gap-4">
               {[

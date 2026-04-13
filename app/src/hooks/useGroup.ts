@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { useConsolProgram } from "@/providers/ConsolProvider";
+import { usePoolverProgram } from "@/providers/PoolverProvider";
 
 interface GroupData {
   address: string;
@@ -25,7 +25,7 @@ interface GroupData {
 }
 
 export function useGroup(address: string | undefined) {
-  const { program } = useConsolProgram();
+  const { program } = usePoolverProgram();
   const [group, setGroup] = useState<GroupData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

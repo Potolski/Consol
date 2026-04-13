@@ -11,7 +11,7 @@ interface GroupCache {
   currentRound: number;
 }
 
-interface ConsolStore {
+interface PoolverStore {
   // Cached data
   groups: Map<string, GroupCache>;
 
@@ -27,7 +27,7 @@ interface ConsolStore {
   clearCache: () => void;
 }
 
-export const useConsolStore = create<ConsolStore>((set) => ({
+export const usePoolverStore = create<PoolverStore>((set) => ({
   groups: new Map(),
   isPaymentModalOpen: false,
   selectedGroupAddress: null,

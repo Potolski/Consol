@@ -1,4 +1,4 @@
-# Consol - Decentralized Consorcio Protocol on Solana
+# Poolver - Decentralized Consorcio Protocol on Solana
 
 ## Design Document v0.1 — Global Solana Hackathon
 
@@ -359,7 +359,7 @@ A protocol token could serve multiple purposes:
 ### 6.1 Program Structure (Anchor)
 
 ```
-programs/consol/
+programs/poolver/
 ├── src/
 │   ├── lib.rs                    // Program entrypoint
 │   ├── instructions/
@@ -420,7 +420,7 @@ app/
 │   │   ├── BidModal.tsx          // Submit lance/bid
 │   │   └── MemberList.tsx        // Group members + status
 │   └── hooks/
-│       ├── useConsol.ts          // Program interaction hooks
+│       ├── usePoolver.ts          // Program interaction hooks
 │       └── useVRF.ts             // VRF integration
 ```
 
@@ -456,7 +456,7 @@ app/
 - [ ] Multi-stablecoin support
 - [ ] Protocol token + governance
 - [ ] Mobile app (Solana Mobile SDK)
-- [ ] Fiat on-ramp integration (Pix → USDC → Consol)
+- [ ] Fiat on-ramp integration (Pix → USDC → Poolver)
 
 ---
 
@@ -478,7 +478,7 @@ app/
 
 ## 9. Naming & Branding
 
-**Consol** — a portmanteau of **Consórcio** + **Solana**.
+**Poolver** — a portmanteau of **Pool** + **Solver**, decentralized consórcio on Solana.
 
 Tagline ideas:
 - "Collective purchasing power, on-chain."

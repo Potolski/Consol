@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-consol = "Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114"
+poolver = "Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114"
 
 [programs.devnet]
-consol = "Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114"
+poolver = "Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114"
 
 [provider]
 cluster = "devnet"

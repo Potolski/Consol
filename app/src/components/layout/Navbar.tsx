@@ -39,10 +39,10 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2.5">
           <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-[#006c4a] shadow-lg shadow-[#006c4a]/15 transition-shadow group-hover:shadow-[#006c4a]/25">
-            <span className="text-base font-extrabold text-[#e0ffec]">C</span>
+            <span className="text-base font-extrabold text-[#e0ffec]">P</span>
           </div>
           <span className="text-lg font-bold tracking-tight text-[#006c4a]">
-            Consol
+            Poolver
           </span>
         </Link>
 

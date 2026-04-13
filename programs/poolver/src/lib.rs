@@ -16,7 +16,7 @@ pub use state::*;
 declare_id!("Fz4KqVayYMmRyToZxJzErd9qRsnh8Bdq84yicvhv4114");
 
 #[program]
-pub mod consol {
+pub mod poolver {
     use super::*;
 
     pub fn create_group(ctx: Context<CreateGroup>, params: CreateGroupParams) -> Result<()> {

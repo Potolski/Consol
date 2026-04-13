@@ -5,7 +5,7 @@ import { useAppKit } from "@reown/appkit/react";
 import { useRouter } from "next/navigation";
 import { WalletButton } from "@/components/wallet/WalletButton";
 import { useGroups } from "@/hooks/useGroups";
-import { useConsolProgram } from "@/providers/ConsolProvider";
+import { usePoolverProgram } from "@/providers/PoolverProvider";
 import { MOCK_GROUPS } from "@/lib/mock-data";
 import { formatUSDC, truncateAddress } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -129,7 +129,7 @@ export default function DashboardPage() {
   const { open } = useAppKit();
   const router = useRouter();
   const { groups: realGroups, loading, error } = useGroups();
-  const { program } = useConsolProgram();
+  const { program } = usePoolverProgram();
 
   /* ── Disconnected state ─────────────────────────────────────────────────── */
 

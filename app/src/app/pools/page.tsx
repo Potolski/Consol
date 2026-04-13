@@ -6,7 +6,7 @@ import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GroupCard from "@/components/groups/GroupCard";
 import { useGroups } from "@/hooks/useGroups";
-import { useConsolProgram } from "@/providers/ConsolProvider";
+import { usePoolverProgram } from "@/providers/PoolverProvider";
 import { MOCK_GROUPS } from "@/lib/mock-data";
 
 type Filter = "all" | "forming" | "active" | "completed";
@@ -14,7 +14,7 @@ type Filter = "all" | "forming" | "active" | "completed";
 export default function PoolsPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const { groups: realGroups, loading, error } = useGroups();
-  const { program } = useConsolProgram();
+  const { program } = usePoolverProgram();
 
   const groups = realGroups.length > 0 ? realGroups : MOCK_GROUPS;
   const isDemo = !program && realGroups.length === 0;

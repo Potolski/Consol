@@ -1,4 +1,4 @@
-# Consol — Work Breakdown Structure
+# Poolver — Work Breakdown Structure
 
 ## Hackathon: Solana Frontier (Colosseum)
 
@@ -33,7 +33,7 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 ## Track 1: Backend (Solana Program)
 
 ### 1.1 Project Scaffold ✅
-- [x] `B-001` Anchor project setup (`anchor init consol`)
+- [x] `B-001` Anchor project setup (`anchor init poolver`)
 - [x] `B-002` Define program error codes (`errors.rs`) — 25 error codes
 - [x] `B-003` Define program events (`events.rs`) — 9 events
 - [x] `B-004` Configure Anchor.toml for devnet
@@ -122,7 +122,7 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 - [x] `F-001` Next.js 16 (App Router) + React 19 + TypeScript
 - [x] `F-002` Reown AppKit wallet adapter (replaced @solana/wallet-adapter)
 - [x] `F-003` Tailwind CSS 4 + shadcn/ui (base-nova) + custom dark theme
-- [x] `F-004` Program IDL — Generated (43KB), imported in ConsolProvider
+- [x] `F-004` Program IDL — Generated (43KB), imported in PoolverProvider
 - [x] `F-005` Layout: Navbar + custom WalletButton + Footer + AppShell
 - **Completed**: Apr 9
 
@@ -140,14 +140,14 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 ### 3.3 Interactive Components ✅
 - [x] `F-020` `GroupCard` — Status glow, progress bar, pool/collateral stats
 - [x] `F-021` `RoundTimeline` — Monthly timeline with status dots, tooltips, "NOW" pulse
-- [x] `F-022` Make Contribution — Integrated in Group Detail CTA, useConsol().makePayment with fallback
+- [x] `F-022` Make Contribution — Integrated in Group Detail CTA, usePoolver().makePayment with fallback
 - [x] `F-023` `MemberList` — Table with names, avatars, status badges, filter, "View All" toggle
 - [x] `F-024` `CountdownTimer` — useCountdown hook with phase detection
 - [x] `F-025` `LotteryAnimation` — Light-themed SVG wheel + ConfettiEffect + VRFProofDisplay
 - **Completed**: Apr 10
 
 ### 3.4 Program Integration (Hooks) ✅
-- [x] `F-030` `useConsol` — 10 instruction wrappers (incl. commitRound + resolveRound VRF)
+- [x] `F-030` `usePoolver` — 10 instruction wrappers (incl. commitRound + resolveRound VRF)
 - [x] `F-031` `useGroup` — Fetch group, connected in Group Detail with 3-tier fallback
 - [x] `F-032` `useGroups` — Fetch all groups, connected in Pools + Dashboard with mock fallback
 - [x] `F-033` `useMember` — Fetch member PDA for connected wallet
@@ -175,7 +175,7 @@ Apr 11+    ····  Next: smart contract completion + deploy + real integration
 - [x] `I-001b` Redeploy with security fixes (16 patches + treasury vault) — Apr 13
 - [x] `I-002` Mint test USDC on devnet — `27GAbtwSgLHi53dhfTfika5jKjjSn38uEVpP29ki9nDw` (6 decimals)
 - [x] `I-002b` Publish IDL on-chain + verify binary hash match (re-published Apr 13)
-- [x] `I-002c` Wire frontend pages to on-chain data (useGroups, useGroup, useConsol hooks)
+- [x] `I-002c` Wire frontend pages to on-chain data (useGroups, useGroup, usePoolver hooks)
 - [x] `I-002d` E2E test script (`scripts/e2e-vrf-test.ts`) — live group on devnet
 - [ ] `I-003` Deploy frontend (Vercel)
 - [ ] `I-004` Configure domain

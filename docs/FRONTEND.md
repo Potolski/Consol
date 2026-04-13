@@ -1,8 +1,8 @@
-# Consol Frontend — Architecture & Style Guide
+# Poolver Frontend — Architecture & Style Guide
 
 ## Overview
 
-The Consol frontend is a Next.js 16 application providing the user interface for the decentralized consórcio protocol. It enables users to create savings groups, join existing ones, make payments, and participate in VRF-powered lottery selections — all through a premium light-themed fintech interface following the "Architectural Ledger" design system.
+The Poolver frontend is a Next.js 16 application providing the user interface for the decentralized consórcio protocol. It enables users to create savings groups, join existing ones, make payments, and participate in VRF-powered lottery selections — all through a premium light-themed fintech interface following the "Architectural Ledger" design system.
 
 ---
 
@@ -95,7 +95,7 @@ app/src/
 │   ├── wallet/                       # WalletButton, WalletRedirect
 │   └── lottery/                      # LotteryAnimation, ConfettiEffect, VRFProofDisplay
 ├── hooks/
-│   ├── useConsol.ts                  # 10 instruction wrappers (incl. VRF)
+│   ├── usePoolver.ts                  # 10 instruction wrappers (incl. VRF)
 │   ├── useGroup.ts                   # Fetch single group
 │   ├── useGroups.ts                  # Fetch all/filtered groups
 │   ├── useRound.ts                   # Fetch round
@@ -110,10 +110,10 @@ app/src/
 │   ├── store.ts                      # Zustand store
 │   ├── mock-data.ts                  # Demo data (fallback)
 │   ├── switchboard.ts                # Switchboard VRF helpers
-│   └── idl/consol.json              # Anchor IDL (generated)
+│   └── idl/poolver.json              # Anchor IDL (generated)
 ├── providers/
 │   ├── SolanaProvider.tsx            # Reown AppKit setup
-│   └── ConsolProvider.tsx            # Anchor Program context
+│   └── PoolverProvider.tsx            # Anchor Program context
 ├── config/
 │   └── index.ts                      # AppKit config
 └── types/
@@ -152,7 +152,7 @@ Group creation wizard. **Requires wallet connection.**
 - Two-column layout: info + badges (left), form (right)
 - Sliders for group size, collateral, insurance
 - Live fee breakdown and "Total to Commit"
-- Uses `useConsol().createGroup()` with demo fallback
+- Uses `usePoolver().createGroup()` with demo fallback
 - Security badges: Vault-Grade, Member Protection, Verifiable Fairness
 
 ### Group Detail (`/group/[address]`)

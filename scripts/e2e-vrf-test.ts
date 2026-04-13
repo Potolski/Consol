@@ -79,7 +79,7 @@ function log(step: string, detail?: string) {
 // ─── Main ────────────────────────────────────────────────────────
 async function main() {
   console.log("\n═══════════════════════════════════════════");
-  console.log("  Consol E2E VRF Test — Devnet");
+  console.log("  Poolver E2E VRF Test — Devnet");
   console.log("═══════════════════════════════════════════\n");
 
   // Setup connection + deployer wallet
@@ -89,7 +89,7 @@ async function main() {
   log("Setup", `Deployer: ${deployer.publicKey.toBase58()}`);
 
   // Load IDL
-  const idlPath = path.resolve(__dirname, "../target/idl/consol.json");
+  const idlPath = path.resolve(__dirname, "../target/idl/poolver.json");
   const idl = JSON.parse(fs.readFileSync(idlPath, "utf-8"));
 
   // Create provider + program
