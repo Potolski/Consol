@@ -865,28 +865,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "consol"
-version = "0.1.0"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bytemuck",
- "litesvm",
- "solana-account",
- "solana-clock",
- "solana-instruction",
- "solana-keypair",
- "solana-message",
- "solana-program-option",
- "solana-program-pack",
- "solana-pubkey 3.0.0",
- "solana-signer",
- "solana-transaction",
- "spl-associated-token-account-interface",
- "spl-token-interface",
-]
-
-[[package]]
 name = "const-crypto"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1937,6 +1915,28 @@ dependencies = [
  "cpufeatures 0.2.17",
  "opaque-debug",
  "universal-hash",
+]
+
+[[package]]
+name = "poolver"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+ "bytemuck",
+ "litesvm",
+ "solana-account",
+ "solana-clock",
+ "solana-instruction",
+ "solana-keypair",
+ "solana-message",
+ "solana-program-option",
+ "solana-program-pack",
+ "solana-pubkey 3.0.0",
+ "solana-signer",
+ "solana-transaction",
+ "spl-associated-token-account-interface",
+ "spl-token-interface",
 ]
 
 [[package]]
