@@ -23,7 +23,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Poolver — Decentralized Savings Pools on Solana",
+  title: "Poolver",
   description:
     "Transparent pools, verifiable fair selection, minimal fees. Inspired by savings circles, powered by Solana.",
 };
