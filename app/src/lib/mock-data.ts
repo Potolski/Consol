@@ -2,6 +2,7 @@ export type PoolStatus = "active" | "forming" | "closing";
 
 export interface Pool {
   id: string;
+  address?: string;
   status: PoolStatus;
   monthly: number;
   members: number;

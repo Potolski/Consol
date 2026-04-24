@@ -5,10 +5,11 @@ import { PoolverMark } from "@/components/brand/PoolverLogo";
 import { Ticker } from "@/components/layout/Ticker";
 import { SectionHead } from "@/components/layout/SectionHead";
 import { PoolCard } from "@/components/pools/PoolCard";
-import { POOLS } from "@/lib/mock-data";
+import { useGroups } from "@/hooks/useGroups";
 
 export default function Home() {
-  const featured = POOLS.slice(0, 3);
+  const { pools, loading } = useGroups();
+  const featured = pools.slice(0, 3);
 
   return (
     <>
@@ -203,16 +204,51 @@ export default function Home() {
           title="Circles <em>now forming</em>"
           meta="FEATURED"
         />
-        <div className="pools-grid">
-          {featured.map((p) => (
-            <PoolCard key={p.id} p={p} featured={p.featured} />
-          ))}
-        </div>
-        <div style={{ marginTop: 20, textAlign: "center" }}>
-          <Link href="/pools" className="btn lg">
-            All pools ({POOLS.length}) →
-          </Link>
-        </div>
+        {loading ? (
+          <div
+            style={{
+              padding: "48px 16px",
+              textAlign: "center",
+              color: "var(--fg-3)",
+              fontFamily: "var(--mono)",
+              fontSize: 12,
+              letterSpacing: "0.1em",
+              border: "1px dashed var(--line)",
+              borderRadius: 2,
+            }}
+          >
+            Loading pools from devnet…
+          </div>
+        ) : featured.length === 0 ? (
+          <div
+            style={{
+              padding: "48px 16px",
+              textAlign: "center",
+              border: "1px dashed var(--line)",
+              borderRadius: 2,
+            }}
+          >
+            <div style={{ color: "var(--fg-2)", fontSize: 14, marginBottom: 16 }}>
+              No pools on devnet yet. Be the first.
+            </div>
+            <Link href="/create" className="btn primary">
+              + Create a pool
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div className="pools-grid">
+              {featured.map((p) => (
+                <PoolCard key={p.address ?? p.id} p={p} featured={p.featured} />
+              ))}
+            </div>
+            <div style={{ marginTop: 20, textAlign: "center" }}>
+              <Link href="/pools" className="btn lg">
+                All pools ({pools.length}) →
+              </Link>
+            </div>
+          </>
+        )}
       </section>
 
       <section className="shell section">

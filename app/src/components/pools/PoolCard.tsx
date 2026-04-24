@@ -43,7 +43,7 @@ export function PoolCard({ p, featured }: PoolCardProps) {
   const barColor = isForming ? "var(--warn)" : "var(--acc)";
 
   return (
-    <Link href={`/group/${p.id}`} className={`pool-card ${featured ? "featured" : ""}`}>
+    <Link href={`/group/${p.address ?? p.id}`} className={`pool-card ${featured ? "featured" : ""}`}>
       {featured && <div className="pool-featured-badge">YOUR POSITION</div>}
       <div className="pool-card-head">
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

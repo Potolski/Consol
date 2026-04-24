@@ -3,18 +3,66 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { PoolverMark } from "@/components/brand/PoolverLogo";
+import { GroupActions } from "@/components/groups/GroupActions";
 import { Timeline } from "@/components/groups/Timeline";
 import { Roster } from "@/components/groups/Roster";
 import { Vaults } from "@/components/groups/Vaults";
 import { How } from "@/components/groups/How";
 import { LotterySection } from "@/components/lottery/LotterySection";
-import { getPool, POOLS } from "@/lib/mock-data";
+import { useGroup } from "@/hooks/useGroup";
 
 export default function GroupPage() {
   const { address } = useParams<{ address: string }>();
   const router = useRouter();
-  const pool = getPool(address) ?? POOLS[0];
-  const fill = (pool.round / pool.duration) * 100;
+  const { pool, group, members, loading, error, refetch } = useGroup(address);
+
+  if (loading) {
+    return (
+      <section className="shell section" style={{ textAlign: "center" }}>
+        <div
+          style={{
+            padding: "96px 16px",
+            color: "var(--fg-3)",
+            fontFamily: "var(--mono)",
+            fontSize: 12,
+            letterSpacing: "0.1em",
+          }}
+        >
+          Loading pool from devnet…
+        </div>
+      </section>
+    );
+  }
+
+  if (error || !pool || !group) {
+    return (
+      <section className="shell section" style={{ textAlign: "center" }}>
+        <div style={{ padding: "80px 16px" }}>
+          <div
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: 11,
+              letterSpacing: "0.14em",
+              color: "var(--fg-4)",
+              marginBottom: 8,
+            }}
+          >
+            POOL NOT FOUND
+          </div>
+          <div style={{ color: "var(--fg-2)", fontSize: 14, marginBottom: 20 }}>
+            {error
+              ? error.message
+              : "This address does not match a Poolver group on devnet."}
+          </div>
+          <Link href="/pools" className="btn">
+            ← All pools
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  const fill = pool.duration > 0 ? (pool.round / pool.duration) * 100 : 0;
 
   return (
     <>
@@ -49,28 +97,27 @@ export default function GroupPage() {
               </b>{" "}
               this round. Next draw in{" "}
               <b style={{ color: "var(--acc)" }}>{pool.nextDraw}</b>.
-              {pool.rep && (
-                <>
-                  {" "}
-                  Circle reputation{" "}
-                  <b style={{ color: "var(--acc)" }}>{pool.rep}/1000</b> ·
-                  on-time{" "}
-                  <b style={{ color: "var(--acc)" }}>{pool.onTime}%</b>.
-                </>
-              )}
             </p>
-            <div
-              style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}
-            >
-              <button className="btn primary lg">▶ Contribute this round</button>
-              <button className="btn lg">◆ Place bid (Lance)</button>
-            </div>
+            {group.description && (
+              <p
+                style={{
+                  color: "var(--fg-3)",
+                  fontSize: 14,
+                  marginTop: -12,
+                  marginBottom: 20,
+                  maxWidth: "60ch",
+                }}
+              >
+                “{group.description}”
+              </p>
+            )}
+            <GroupActions group={group} members={members} onRefresh={refetch} />
             <div className="hero-byline">
               <span>COLLATERAL {pool.ratio}%</span>
               <span>
                 {pool.chain} · {pool.asset}
               </span>
-              <span>FEE 1.50%</span>
+              <span>FEE {(group.protocolFeeBps / 100).toFixed(2)}%</span>
             </div>
           </div>
 
@@ -102,20 +149,20 @@ export default function GroupPage() {
                 <span className="k">Monthly</span>
                 <span className="v">${pool.monthly.toLocaleString()}</span>
                 <span className="k">Members</span>
-                <span className="v">{pool.members}</span>
+                <span className="v">
+                  {pool.members}/{pool.memberCap ?? pool.members}
+                </span>
                 <span className="k">Collateral</span>
                 <span className="v">{pool.ratio}%</span>
                 <span className="k">Next draw</span>
                 <span className="v acc">{pool.nextDraw}</span>
-                <span className="k">Circle rep</span>
+                <span className="k">Insurance</span>
                 <span className="v">
-                  {pool.rep ?? "—"}
-                  {pool.rep ? " / 1000" : ""}
+                  {(group.insuranceBps / 100).toFixed(2)}%
                 </span>
-                <span className="k">On-time</span>
-                <span className="v acc">
-                  {pool.onTime ?? "—"}
-                  {pool.onTime ? "%" : ""}
+                <span className="k">Received</span>
+                <span className="v">
+                  {group.membersReceived}/{group.totalMembers}
                 </span>
               </div>
             </div>

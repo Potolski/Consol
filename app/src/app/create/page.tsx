@@ -3,7 +3,10 @@
 import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAppKit } from "@reown/appkit/react";
 import { PoolverMark } from "@/components/brand/PoolverLogo";
+import { usePoolverProgram } from "@/providers/PoolverProvider";
+import { createGroupTx } from "@/lib/tx";
 
 type Tranches = "100/0/0" | "50/25/25" | "40/30/30";
 type Access = "open" | "invite";
@@ -51,7 +54,10 @@ function Kv({ k, v, accent }: { k: string; v: string; accent?: boolean }) {
 
 export default function CreatePage() {
   const router = useRouter();
+  const { program, connected } = usePoolverProgram();
+  const { open } = useAppKit();
   const [step, setStep] = useState(1);
+  const [deploying, setDeploying] = useState(false);
   const [cfg, setCfg] = useState<PoolConfig>({
     name: "",
     asset: "USDC",
@@ -96,9 +102,36 @@ export default function CreatePage() {
         ? "Default. 50% at draw · 25% at +3mo · 25% at +6mo."
         : "Conservative. 40% at draw · 30% at +3mo · 30% at +6mo.";
 
-  function launch() {
-    toast.success(`Pool ${cfg.name || "PLVR-XXXX"} queued for deploy`);
-    router.push("/pools");
+  async function launch() {
+    if (!connected || !program) {
+      open();
+      return;
+    }
+    if (cfg.asset !== "USDC") {
+      toast.error("Only USDC is supported on devnet right now");
+      return;
+    }
+    setDeploying(true);
+    const toastId = toast.loading("Deploying pool…");
+    try {
+      const { groupAddress } = await createGroupTx(program, {
+        monthlyContribution: cfg.monthly,
+        totalMembers: cfg.memberCap,
+        collateralBps: cfg.collateralPct * 100,
+        insuranceBps: cfg.insurancePct * 100,
+        description: (cfg.name || "Poolver pool").slice(0, 64),
+      });
+      toast.success("Pool deployed", {
+        id: toastId,
+        description: `${groupAddress.slice(0, 8)}…`,
+      });
+      router.push(`/group/${groupAddress}`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error("Deploy failed", { id: toastId, description: msg.slice(0, 200) });
+    } finally {
+      setDeploying(false);
+    }
   }
 
   return (
@@ -547,8 +580,16 @@ export default function CreatePage() {
               </button>
             )}
             {step === 4 && (
-              <button className="btn primary lg" onClick={launch}>
-                ▶ Deploy pool
+              <button
+                className="btn primary lg"
+                onClick={launch}
+                disabled={deploying}
+              >
+                {deploying
+                  ? "Deploying…"
+                  : connected
+                    ? "▶ Deploy pool"
+                    : "▶ Connect wallet to deploy"}
               </button>
             )}
           </div>
