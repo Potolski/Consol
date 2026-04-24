@@ -29,3 +29,6 @@ skills-lock.json
 tsx-501/
 
 INVESTMENT_REPORT.md
+
+# Local-only design prototype (see docs/DESIGN_HANDOFF.md for the spec)
+design_handoff_poolver/

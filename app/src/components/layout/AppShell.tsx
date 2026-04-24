@@ -1,16 +1,16 @@
 "use client";
 
-import { Navbar } from "./Navbar";
+import { TopBar } from "./TopBar";
+import { Footer } from "./Footer";
 import { WalletRedirect } from "@/components/wallet/WalletRedirect";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Navbar />
+      <TopBar />
       <WalletRedirect />
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        {children}
-      </main>
+      <main>{children}</main>
+      <Footer />
     </>
   );
 }

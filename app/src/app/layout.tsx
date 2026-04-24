@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Manrope } from "next/font/google";
+import { Geist, JetBrains_Mono, Instrument_Serif } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { SolanaProvider } from "@/providers/SolanaProvider";
 import { PoolverProvider } from "@/providers/PoolverProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
-const inter = Inter({
+const geist = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
 });
@@ -17,8 +16,10 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const manrope = Manrope({
-  variable: "--font-headline",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif",
+  weight: "400",
+  style: ["normal", "italic"],
   subsets: ["latin"],
 });
 
@@ -36,25 +37,37 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${manrope.variable}`}
+      data-theme="dark"
+      data-accent="electric"
+      className={`${geist.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen flex flex-col bg-[#f8f9ff] text-[#00345e] antialiased">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('poolver-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body>
+        <div className="glow-orb a" />
+        <div className="glow-orb b" />
+        <div className="glow-orb c" />
         <SolanaProvider>
           <PoolverProvider>
-            <TooltipProvider>
-              <AppShell>{children}</AppShell>
-              <Toaster
-                position="bottom-right"
-                toastOptions={{
-                  style: {
-                    background: "#ffffff",
-                    border: "none",
-                    boxShadow: "0 4px 24px rgba(0, 52, 94, 0.08)",
-                    color: "#00345e",
-                  },
-                }}
-              />
-            </TooltipProvider>
+            <AppShell>{children}</AppShell>
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: "oklch(0.17 0.018 260)",
+                  border: "1px solid oklch(0.28 0.02 260)",
+                  color: "oklch(0.96 0.012 240)",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "12px",
+                },
+              }}
+            />
           </PoolverProvider>
         </SolanaProvider>
       </body>

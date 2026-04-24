@@ -1,372 +1,245 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowDown,
-  Users,
-  Wallet,
-  Sparkles,
-  Trophy,
-  X,
-  Check,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import GroupCard from "@/components/groups/GroupCard";
-import { useGroups } from "@/hooks/useGroups";
-import { MOCK_GROUPS } from "@/lib/mock-data";
+import { PoolverMark } from "@/components/brand/PoolverLogo";
+import { Ticker } from "@/components/layout/Ticker";
+import { SectionHead } from "@/components/layout/SectionHead";
+import { PoolCard } from "@/components/pools/PoolCard";
+import { POOLS } from "@/lib/mock-data";
 
 export default function Home() {
-  const { groups: onChainGroups, loading } = useGroups();
-
-  // Use on-chain groups if available, otherwise show mock data
-  const hasOnChain = onChainGroups.length > 0;
-  const displayGroups = hasOnChain
-    ? onChainGroups.filter((g) => g.status === "forming" || g.status === "active")
-    : MOCK_GROUPS.filter((g) => g.status === "forming" || g.status === "active");
+  const featured = POOLS.slice(0, 3);
 
   return (
-    <div className="flex flex-col gap-28 pb-16">
-      {/* ── Hero Section ── */}
-      <section className="relative flex flex-col items-center gap-8 pt-12 text-center sm:pt-20">
-        {/* Live on Devnet badge */}
-        <div className="relative inline-flex items-center gap-2 rounded-full bg-[#85f8c4]/20 px-4 py-1.5 text-sm font-medium text-[#006c4a]">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#006c4a] opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#006c4a]" />
-          </span>
-          Live on Devnet
-        </div>
+    <>
+      <Ticker />
 
-        {/* Headline */}
-        <h1 className="font-headline relative max-w-3xl text-4xl font-extrabold leading-[1.08] tracking-tight text-[#00345e] sm:text-5xl lg:text-7xl">
-          Save Together.
-          <br />
-          Win{" "}
-          <span className="text-[#006c4a]">
-            Together.
-          </span>
-        </h1>
+      <section className="hero">
+        <div className="shell hero-grid">
+          <div>
+            <div className="hero-kicker">
+              <span className="sq" />
+              POOLVER PROTOCOL · v0.1.0-devnet
+            </div>
+            <h1 className="hero-headline">
+              Pool <em>savings</em>,<br />
+              not risk.
+            </h1>
+            <p className="hero-deck">
+              An on-chain rotating savings protocol. N wallets pool monthly USDC; a verifiable draw each round selects who receives. No administrator, no custodian, no permission — just a Solana program running 24/7.
+            </p>
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                marginBottom: 24,
+                flexWrap: "wrap",
+              }}
+            >
+              <Link href="/pools" className="btn primary lg">
+                ▶ Browse pools
+              </Link>
+              <Link href="/create" className="btn lg">
+                + Create a pool
+              </Link>
+              <Link href="/docs" className="btn ghost lg">
+                Read the docs →
+              </Link>
+            </div>
+            <div className="hero-byline">
+              <span>PROGRAM 5x7K…9FrA</span>
+              <span>v0.1.0-devnet</span>
+              <span>AUDIT PENDING</span>
+            </div>
+          </div>
 
-        {/* Subtext */}
-        <p className="relative max-w-xl text-base leading-relaxed text-[#26619d] sm:text-lg">
-          Verifiable savings pools on Solana. A group pools money monthly
-          and each round one member receives the full pot. No banks. No
-          interest. Just collective power.
-        </p>
-
-        {/* CTAs */}
-        <div className="relative flex flex-col gap-3 sm:flex-row">
-          <Button
-            size="lg"
-            className="gap-2 bg-[#006c4a] px-6 font-semibold text-[#e0ffec] shadow-lg shadow-[#006c4a]/10 hover:bg-[#005a3e] rounded-xl"
-            render={<Link href="/pools" />}
-          >
-            Get Started
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="gap-2 border-0 bg-[#d5e3fd] px-6 text-[#455367] hover:bg-[#dce9ff] rounded-xl"
-            render={<Link href="#how-it-works" />}
-          >
-            See How It Works
-            <ArrowDown className="h-4 w-4" />
-          </Button>
-        </div>
-      </section>
-
-      {/* ── How It Works ── */}
-      <section id="how-it-works" className="flex flex-col gap-10">
-        <div className="text-center">
-          <h2 className="font-headline text-2xl font-bold text-[#00345e] sm:text-3xl">
-            How It Works
-          </h2>
-          <p className="mt-3 text-sm text-[#526075] sm:text-base">
-            Inspired by savings circles used by millions worldwide
-          </p>
-        </div>
-
-        {/* 4-step cards on tonal bg */}
-        <div className="rounded-xl bg-[#eff4ff] p-6 sm:p-8">
-          <div className="relative grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3">
-            {[
-              {
-                step: "01",
-                label: "POOL",
-                description: "Members form a group of 5-50 people",
-                icon: Users,
-                iconColor: "text-[#006c4a]",
-                iconBg: "bg-[#006c4a]/10",
-              },
-              {
-                step: "02",
-                label: "PAY",
-                description: "Everyone pays monthly into the shared pool",
-                icon: Wallet,
-                iconColor: "text-[#b8860b]",
-                iconBg: "bg-[#b8860b]/10",
-              },
-              {
-                step: "03",
-                label: "DRAW",
-                description:
-                  "VRF picks a winner fairly — provably random, on-chain",
-                icon: Sparkles,
-                iconColor: "text-[#26619d]",
-                iconBg: "bg-[#26619d]/10",
-              },
-              {
-                step: "04",
-                label: "RECEIVE",
-                description: "Winner gets the full pot to make their purchase",
-                icon: Trophy,
-                iconColor: "text-[#526075]",
-                iconBg: "bg-[#526075]/10",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="group relative z-10 overflow-hidden rounded-xl bg-white p-6 transition-all hover:bg-[#eff4ff]"
-              >
-                <div className="relative flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold text-[#26619d]/40">
-                      {item.step}
-                    </span>
-                    <span className="text-[10px] font-bold tracking-widest text-[#526075]">
-                      {item.label}
-                    </span>
-                  </div>
-                  <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-xl ${item.iconBg} ${item.iconColor}`}
-                  >
-                    <item.icon className="h-5 w-5" />
-                  </div>
-                  <p className="text-sm leading-relaxed text-[#526075]">
-                    {item.description}
-                  </p>
-                </div>
+          <div className="terminal">
+            <div className="term-head">
+              <span>
+                <PoolverMark size={12} /> protocol.summary
+              </span>
+              <div className="term-dots">
+                <div className="d" />
+                <div className="d" />
+                <div className="d" />
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom note */}
-        <p className="text-center text-sm text-[#526075]">
-          Repeat until everyone has received. Then collateral is returned.
-        </p>
-      </section>
-
-      {/* ── Why On-Chain? ── */}
-      <section className="flex flex-col gap-10">
-        <div className="text-center">
-          <h2 className="font-headline text-2xl font-bold text-[#00345e] sm:text-3xl">
-            Why On-Chain?
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto_1fr]">
-          {/* Traditional side */}
-          <div className="rounded-xl bg-[#eff4ff] p-6 sm:p-8">
-            <h3 className="mb-6 text-center text-sm font-semibold uppercase tracking-widest text-[#526075]">
-              Traditional Savings Circles
-            </h3>
-            <div className="flex flex-col gap-4">
-              {[
-                "10-20% admin fees",
-                "Opaque lottery",
-                "Brazil only",
-                "Weeks to set up",
-                "Trust a company",
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-3">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#9f403d]/10">
-                    <X className="h-3.5 w-3.5 text-[#9f403d]" />
-                  </div>
-                  <span className="text-sm text-[#526075]">{item}</span>
-                </div>
-              ))}
             </div>
-          </div>
-
-          {/* VS divider */}
-          <div className="flex items-center justify-center px-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#d5e3fd] text-xs font-bold text-[#455367]">
-              vs
-            </div>
-          </div>
-
-          {/* Poolver side */}
-          <div className="rounded-xl bg-[#006c4a]/5 p-6 sm:p-8">
-            <h3 className="mb-6 text-center text-sm font-semibold uppercase tracking-widest text-[#006c4a]">
-              Poolver Protocol
-            </h3>
-            <div className="flex flex-col gap-4">
-              {[
-                "1.5% protocol fee",
-                "VRF verifiable lottery",
-                "Global — anyone with a wallet",
-                "Minutes to set up",
-                "Trust the code",
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-3">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#006c4a]/10">
-                    <Check className="h-3.5 w-3.5 text-[#006c4a]" />
-                  </div>
-                  <span className="text-sm text-[#00345e]">{item}</span>
-                </div>
-              ))}
+            <div className="term-body">
+              <PoolverMark size={240} className="terminal-watermark" />
+              <div className="metric-label">Total value locked</div>
+              <div className="metric-value">
+                $22.9M<span className="tick">_</span>
+              </div>
+              <div className="metric-bar">
+                <div className="fill" />
+              </div>
+              <div className="metric-sub">
+                Across 12 active pools · 184 members
+              </div>
+              <div className="metric-kv">
+                <span className="k">Protocol fee</span>
+                <span className="v">1.50%</span>
+                <span className="k">Insurance reserve</span>
+                <span className="v">$89,214</span>
+                <span className="k">Avg. on-time rate</span>
+                <span className="v acc">95.4%</span>
+                <span className="k">Defaults to date</span>
+                <span className="v">0</span>
+                <span className="k">Network</span>
+                <span className="v">Solana · 400ms</span>
+                <span className="k">Settlement asset</span>
+                <span className="v">SPL · USDC</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Example Calculator ── */}
-      <section className="flex flex-col gap-10">
-        <div className="text-center">
-          <h2 className="font-headline text-2xl font-bold text-[#00345e] sm:text-3xl">
-            See the Math
-          </h2>
-          <p className="mt-3 text-sm text-[#526075] sm:text-base">
-            A{" "}
-            <span className="font-mono text-[#00345e]">$500</span>/mo group of{" "}
-            <span className="font-mono text-[#00345e]">10</span> members
-          </p>
+      <section className="shell section">
+        <SectionHead n="01" title="Why <em>Poolver</em>" meta="THE THESIS" />
+        <div className="landing-cards">
+          <div className="landing-card">
+            <div className="lc-icon">
+              <PoolverMark size={28} />
+            </div>
+            <h3>Rotation, not interest</h3>
+            <p>
+              ROSCAs have funded families for 500+ years. You pay a fixed amount
+              monthly; one round you receive the whole pool. Over N rounds
+              everyone gets exactly what they put in — earlier liquidity for
+              whoever needs it.
+            </p>
+          </div>
+          <div className="landing-card">
+            <div className="lc-icon">◈</div>
+            <h3>Trustless by construction</h3>
+            <p>
+              Traditional circles break when the administrator vanishes with the
+              money. Poolver has no administrator. Every contribution, draw, and
+              release is a public transaction against an open Solana program.
+            </p>
+          </div>
+          <div className="landing-card">
+            <div className="lc-icon">◆</div>
+            <h3>Collateral + reputation</h3>
+            <p>
+              25% locked collateral + tranched release + insurance reserve +
+              on-chain reputation scoring. Four layers of enforcement mean
+              defaulting costs more than walking away.
+            </p>
+          </div>
         </div>
+      </section>
 
-        <div className="mx-auto w-full max-w-2xl rounded-xl bg-white p-6 shadow-sm shadow-[#00345e]/5 sm:p-8">
-          <div className="flex flex-col gap-5">
-            {/* Row: You pay */}
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-[#526075]">You pay</span>
-              <span className="text-right font-mono text-sm text-[#00345e]">
-                $500/mo &times; 10 months ={" "}
-                <span className="font-semibold text-[#00345e]">$5,000</span>
-              </span>
+      <section className="shell section">
+        <SectionHead n="02" title="Three moves" meta="MECHANIC" />
+        <div className="landing-how">
+          <div className="lh-step">
+            <div className="lh-n">01</div>
+            <div className="lh-k">JOIN</div>
+            <div className="lh-t">
+              Deposit 25% collateral + first month&apos;s contribution. Your
+              slot activates when the pool fills.
             </div>
-
-            <div className="h-px bg-[#eff4ff]" />
-
-            {/* Row: You receive */}
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-[#526075]">You receive</span>
-              <span className="text-right font-mono text-sm">
-                <span className="font-semibold text-[#006c4a]">$5,000</span>{" "}
-                <span className="text-[#526075]">in one lump sum</span>
-              </span>
+          </div>
+          <div className="lh-step">
+            <div className="lh-n">02</div>
+            <div className="lh-k">CONTRIBUTE</div>
+            <div className="lh-t">
+              Pay your monthly USDC within a 7-day window. Optionally bid for
+              priority in the auction slot.
             </div>
-
-            <div className="h-px bg-[#eff4ff]" />
-
-            {/* Row: Protocol fee */}
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-[#526075]">Protocol fee</span>
-              <span className="text-right font-mono text-sm text-[#00345e]">
-                1.5% ={" "}
-                <span className="font-semibold text-[#00345e]">$75</span>
-              </span>
-            </div>
-
-            <div className="h-px bg-[#eff4ff]" />
-
-            {/* Row: Collateral */}
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-[#526075]">Your collateral</span>
-              <span className="text-right font-mono text-sm text-[#00345e]">
-                $1,000{" "}
-                <span className="text-[#526075]">(returned at end)</span>
-              </span>
-            </div>
-
-            <div className="h-px bg-[#eff4ff]" />
-
-            {/* Row: Net cost — highlighted */}
-            <div className="flex items-center justify-between gap-4 rounded-xl bg-[#006c4a]/5 px-4 py-3">
-              <span className="text-sm font-medium text-[#006c4a]">
-                Net cost
-              </span>
-              <span className="text-right font-mono text-sm">
-                <span className="font-bold text-[#006c4a]">$75 total</span>
-                <span className="ml-2 text-[#526075]">
-                  vs $500-1,000 in traditional fees
-                </span>
-              </span>
+          </div>
+          <div className="lh-step">
+            <div className="lh-n">03</div>
+            <div className="lh-k">DRAW &amp; RECEIVE</div>
+            <div className="lh-t">
+              Switchboard VRF selects a recipient. Payout releases in three
+              tranches as you keep paying.
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Open Groups Grid ── */}
-      <section id="groups" className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <h2 className="font-headline text-xl font-bold text-[#00345e] sm:text-2xl">
-            Open Pools
-          </h2>
-          <Link
-            href="/create"
-            className="inline-flex items-center gap-1 text-sm font-medium text-[#006c4a] transition-colors hover:text-[#005a3e]"
-          >
-            Create yours
-            <ArrowRight className="h-3.5 w-3.5" />
+      <section className="shell section">
+        <SectionHead n="03" title="Protocol at a glance" meta="LIVE DATA" />
+        <div className="stats">
+          <div className="stat">
+            <div className="lbl">
+              <PoolverMark size={11} /> Active pools
+            </div>
+            <div className="v">12</div>
+            <div className="sub">5 forming · 5 active · 2 closing</div>
+            <div className="mini-bar">
+              <div className="fill" style={{ width: "85%" }} />
+            </div>
+          </div>
+          <div className="stat">
+            <div className="lbl">
+              <PoolverMark size={11} /> Total locked
+            </div>
+            <div className="v">$22.9M</div>
+            <div className="sub">USDC · across circles</div>
+            <div className="mini-bar">
+              <div className="fill" style={{ width: "70%" }} />
+            </div>
+          </div>
+          <div className="stat">
+            <div className="lbl">
+              <PoolverMark size={11} /> Insurance reserve
+            </div>
+            <div className="v">$89K</div>
+            <div className="sub">5% of all contributions accrues</div>
+            <div className="mini-bar">
+              <div className="fill" style={{ width: "45%" }} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="shell section">
+        <SectionHead
+          n="04"
+          title="Circles <em>now forming</em>"
+          meta="FEATURED"
+        />
+        <div className="pools-grid">
+          {featured.map((p) => (
+            <PoolCard key={p.id} p={p} featured={p.featured} />
+          ))}
+        </div>
+        <div style={{ marginTop: 20, textAlign: "center" }}>
+          <Link href="/pools" className="btn lg">
+            All pools ({POOLS.length}) →
           </Link>
         </div>
-
-        {loading ? (
-          <div className="py-12 text-center text-sm text-[#526075]">Loading pools...</div>
-        ) : displayGroups.length === 0 ? (
-          <div className="py-12 text-center text-sm text-[#526075]">
-            No open pools yet. Be the first to create one!
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {displayGroups.map((group) => (
-              <GroupCard
-                key={group.address}
-                address={group.address}
-                description={group.description}
-                creator={group.creator}
-                monthlyContribution={group.monthlyContribution}
-                totalMembers={group.totalMembers}
-                currentMembers={group.currentMembers}
-                status={group.status}
-                collateralBps={group.collateralBps}
-                insuranceBps={group.insuranceBps}
-                currentRound={group.currentRound}
-              />
-            ))}
-          </div>
-        )}
       </section>
 
-      {/* ── Final CTA ── */}
-      <section className="rounded-xl bg-[#eff4ff] p-12 text-center">
-        <h2 className="font-headline text-2xl font-bold text-[#00345e] sm:text-3xl">
-          Ready to start saving?
-        </h2>
-        <p className="mt-3 text-[#526075]">
-          Browse open pools or create your own.
-        </p>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button
-            size="lg"
-            className="gap-2 bg-[#006c4a] px-6 font-semibold text-[#e0ffec] shadow-lg shadow-[#006c4a]/10 hover:bg-[#005a3e] rounded-xl"
-            render={<Link href="/pools" />}
+      <section className="shell section">
+        <div className="landing-cta">
+          <PoolverMark size={56} className="cta-mark" />
+          <h2>Ready to join a circle?</h2>
+          <p>
+            Browse 12 active pools, or configure your own in under 5 minutes.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              justifyContent: "center",
+              flexWrap: "wrap",
+              marginTop: 20,
+            }}
           >
-            Browse Pools
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="gap-2 border-0 bg-[#d5e3fd] px-6 text-[#455367] hover:bg-[#dce9ff] rounded-xl"
-            render={<Link href="/create" />}
-          >
-            Create a Pool
-          </Button>
+            <Link href="/pools" className="btn primary lg">
+              ▶ Browse pools
+            </Link>
+            <Link href="/create" className="btn lg">
+              + Create a pool
+            </Link>
+          </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

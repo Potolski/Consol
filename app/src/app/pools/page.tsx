@@ -1,146 +1,172 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { ArrowRight, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import GroupCard from "@/components/groups/GroupCard";
-import { useGroups } from "@/hooks/useGroups";
-import { usePoolverProgram } from "@/providers/PoolverProvider";
-import { MOCK_GROUPS } from "@/lib/mock-data";
+import { useMemo, useState } from "react";
+import { PoolverMark } from "@/components/brand/PoolverLogo";
+import { PoolCard } from "@/components/pools/PoolCard";
+import { POOLS, fmtUSD, type PoolStatus } from "@/lib/mock-data";
 
-type Filter = "all" | "forming" | "active" | "completed";
+type Filter = "all" | PoolStatus;
+type Sort = "rep" | "size" | "monthly" | "soon";
 
 export default function PoolsPage() {
   const [filter, setFilter] = useState<Filter>("all");
-  const { groups: realGroups, loading, error } = useGroups();
-  const { program } = usePoolverProgram();
+  const [sort, setSort] = useState<Sort>("rep");
 
-  const groups = realGroups.length > 0 ? realGroups : MOCK_GROUPS;
-  const isDemo = !program && realGroups.length === 0;
-
-  const filteredGroups =
-    filter === "all"
-      ? groups
-      : groups.filter((g) => g.status === filter);
+  const pools = useMemo(() => {
+    const filtered = POOLS.filter(
+      (p) => filter === "all" || p.status === filter
+    );
+    return [...filtered].sort((a, b) => {
+      if (sort === "rep") return (b.rep ?? 0) - (a.rep ?? 0);
+      if (sort === "size") return b.total - a.total;
+      if (sort === "monthly") return a.monthly - b.monthly;
+      if (sort === "soon") return a.nextDraw.localeCompare(b.nextDraw);
+      return 0;
+    });
+  }, [filter, sort]);
 
   const counts = {
-    all: groups.length,
-    forming: groups.filter((g) => g.status === "forming").length,
-    active: groups.filter((g) => g.status === "active").length,
-    completed: groups.filter((g) => g.status === "completed").length,
+    all: POOLS.length,
+    active: POOLS.filter((p) => p.status === "active").length,
+    forming: POOLS.filter((p) => p.status === "forming").length,
+    closing: POOLS.filter((p) => p.status === "closing").length,
   };
 
-  const tabs: { key: Filter; label: string }[] = [
-    { key: "all", label: "All" },
-    { key: "forming", label: "Forming" },
-    { key: "active", label: "Active" },
-    { key: "completed", label: "Completed" },
-  ];
+  const tvl = POOLS.reduce((s, p) => s + p.total, 0);
+  const wallets = POOLS.reduce((s, p) => s + p.members, 0);
+  const repPools = POOLS.filter((p) => p.rep != null);
+  const avgRep = Math.round(
+    repPools.reduce((s, p) => s + (p.rep ?? 0), 0) / repPools.length
+  );
 
   return (
-    <div className="flex flex-col gap-8 pb-16 pt-8">
-      {/* Demo mode banner */}
-      {isDemo && !loading && (
-        <div className="rounded-xl bg-[#eff4ff] px-4 py-3 text-center text-xs text-[#26619d]">
-          Showing demo data — deploy to devnet for real pools
-        </div>
-      )}
-
-      {/* Error state */}
-      {error && (
-        <div className="rounded-xl bg-[#9f403d]/5 p-4 text-center text-sm text-[#9f403d]">
-          Failed to load data. Please try again.
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-headline text-3xl font-extrabold text-[#00345e]">
-            Savings Pools
-          </h1>
-          <p className="mt-1 text-[#526075]">
-            Browse and join active savings pools
-          </p>
-        </div>
-        <Button
-          size="lg"
-          className="gap-2 bg-[#006c4a] px-6 font-semibold text-[#e0ffec] shadow-lg shadow-[#006c4a]/10 hover:bg-[#005a3e] rounded-xl"
-          render={<Link href="/create" />}
+    <>
+      <section style={{ borderBottom: "1px solid var(--line)", padding: "48px 0 32px" }}>
+        <div
+          className="shell pools-hero-grid"
         >
-          + Create New Pool
-        </Button>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="bg-[#eff4ff] rounded-xl p-1 inline-flex gap-1 overflow-x-auto max-w-full">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setFilter(tab.key)}
-            className={`shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              filter === tab.key
-                ? "bg-white shadow-sm text-[#00345e] font-semibold"
-                : "text-[#526075] hover:text-[#00345e]"
-            }`}
-          >
-            {tab.label}{" "}
-            <span
-              className={
-                filter === tab.key ? "text-[#00345e]" : "text-[#526075]/60"
-              }
-            >
-              ({counts[tab.key]})
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {/* Loading skeleton */}
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse rounded-xl bg-[#eff4ff] p-6"
-            >
-              <div className="mb-4 h-4 w-2/3 rounded bg-[#dce9ff]" />
-              <div className="mb-2 h-3 w-1/2 rounded bg-[#dce9ff]" />
-              <div className="mb-6 h-3 w-1/3 rounded bg-[#dce9ff]" />
-              <div className="h-8 w-full rounded bg-[#dce9ff]" />
+          <div>
+            <div className="hero-kicker">
+              <span className="sq" />
+              ALL POOLS · LIVE INDEX
             </div>
+            <h1
+              className="hero-headline"
+              style={{ fontSize: "clamp(36px, 4.4vw, 60px)", margin: "16px 0 14px" }}
+            >
+              Concurrent <em>circles</em>.<br />Pick your ticket.
+            </h1>
+            <p className="hero-deck" style={{ maxWidth: "56ch" }}>
+              Every pool is isolated state on the Solana program. Collateral,
+              roster, draw schedule — independent. Join any you qualify for.
+            </p>
+          </div>
+          <div className="stats" style={{ gridTemplateColumns: "1fr 1fr" }}>
+            <div className="stat" style={{ padding: 18 }}>
+              <div className="lbl">
+                <PoolverMark size={11} /> Total value locked
+              </div>
+              <div className="v" style={{ fontSize: 32, margin: "10px 0 6px" }}>
+                {fmtUSD(tvl)}
+              </div>
+              <div className="sub">Across {POOLS.length} pools</div>
+            </div>
+            <div className="stat" style={{ padding: 18 }}>
+              <div className="lbl">
+                <PoolverMark size={11} /> Active wallets
+              </div>
+              <div className="v" style={{ fontSize: 32, margin: "10px 0 6px" }}>
+                {wallets}
+              </div>
+              <div className="sub">Avg. rep {avgRep}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="shell"
+        style={{
+          padding: "24px 0 12px",
+          display: "flex",
+          gap: 16,
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            gap: 4,
+            padding: 3,
+            background: "var(--bg-2)",
+            border: "1px solid var(--line)",
+            borderRadius: 2,
+          }}
+        >
+          {(
+            [
+              ["all", "ALL"],
+              ["active", "ACTIVE"],
+              ["forming", "FORMING"],
+              ["closing", "CLOSING"],
+            ] as const
+          ).map(([k, lbl]) => (
+            <button
+              key={k}
+              onClick={() => setFilter(k)}
+              style={{
+                padding: "5px 12px",
+                fontSize: 10,
+                borderRadius: 2,
+                border: 0,
+                cursor: "pointer",
+                fontFamily: "var(--mono)",
+                letterSpacing: "0.08em",
+                background: filter === k ? "var(--bg)" : "transparent",
+                boxShadow: filter === k ? "inset 0 0 0 1px var(--line-2)" : "none",
+                color: filter === k ? "var(--acc)" : "var(--fg-3)",
+              }}
+            >
+              {lbl}{" "}
+              <span style={{ color: "var(--fg-4)", marginLeft: 4 }}>
+                {counts[k]}
+              </span>
+            </button>
           ))}
         </div>
-      ) : filteredGroups.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGroups.map((group) => (
-            <GroupCard
-              key={group.address}
-              address={group.address}
-              description={group.description}
-              creator={group.creator}
-              monthlyContribution={group.monthlyContribution}
-              totalMembers={group.totalMembers}
-              currentMembers={group.currentMembers}
-              status={group.status === "cancelled" ? "completed" : group.status}
-              collateralBps={group.collateralBps}
-              insuranceBps={group.insuranceBps}
-              currentRound={group.currentRound}
-            />
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <span
+            style={{
+              fontSize: 10,
+              color: "var(--fg-4)",
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+            }}
+          >
+            Sort
+          </span>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as Sort)}
+            className="pool-select"
+          >
+            <option value="rep">Circle reputation</option>
+            <option value="size">Pool size</option>
+            <option value="monthly">Monthly (low → high)</option>
+            <option value="soon">Next draw (soonest)</option>
+          </select>
+        </div>
+      </section>
+
+      <section className="shell" style={{ padding: "12px 0 48px" }}>
+        <div className="pools-grid">
+          {pools.map((p) => (
+            <PoolCard key={p.id} p={p} featured={p.featured} />
           ))}
         </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center rounded-xl bg-[#eff4ff] px-8 py-20 text-center">
-          <Search className="mb-4 h-8 w-8 text-[#26619d]" />
-          <p className="text-sm font-medium text-[#00345e]">
-            No pools match this filter
-          </p>
-          <p className="mt-1 text-xs text-[#526075]">
-            Try selecting a different category or create a new pool
-          </p>
-        </div>
-      )}
-    </div>
+      </section>
+    </>
   );
 }

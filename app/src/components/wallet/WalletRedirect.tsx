@@ -14,7 +14,7 @@ export function WalletRedirect() {
     // Only redirect when connection state changes from disconnected to connected
     // AND user is on the landing page
     if (isConnected && !wasConnected.current && pathname === "/") {
-      router.push("/dashboard");
+      router.push("/pools");
     }
     wasConnected.current = isConnected;
   }, [isConnected, pathname, router]);
