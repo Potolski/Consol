@@ -21,7 +21,7 @@ export function Timeline() {
         </div>
         <div className="timeline-side">
           <h4>
-            <PoolverMark size={11} /> Circle stats
+            <PoolverMark size={11} /> Poolver stats
           </h4>
           <div className="kv-list">
             <div className="kv-row"><span className="k">Rounds complete</span><span className="v">06 / 20</span></div>
@@ -29,7 +29,7 @@ export function Timeline() {
             <div className="kv-row"><span className="k">Outstanding</span><span className="v">$700,000</span></div>
             <div className="kv-row"><span className="k">Avg. payment delay</span><span className="v">0.4d</span></div>
             <div className="kv-row"><span className="k">Default rate</span><span className="v">5.0%</span></div>
-            <div className="kv-row"><span className="k">Circle reputation</span><span className="v acc">4.2 / 5</span></div>
+            <div className="kv-row"><span className="k">Poolver reputation</span><span className="v acc">4.2 / 5</span></div>
           </div>
           <pre className="ascii" style={{ marginTop: 24 }}>
 {`  ┌─ round 07 ──────────┐

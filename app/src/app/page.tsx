@@ -115,9 +115,10 @@ export default function Home() {
             <div className="lc-icon">◈</div>
             <h3>Trustless by construction</h3>
             <p>
-              Traditional circles break when the administrator vanishes with the
-              money. Poolver has no administrator. Every contribution, draw, and
-              release is a public transaction against an open Solana program.
+              Traditional savings circles break when the administrator vanishes
+              with the money. Poolver has no administrator. Every contribution,
+              draw, and release is a public transaction against an open Solana
+              program.
             </p>
           </div>
           <div className="landing-card">
@@ -180,7 +181,7 @@ export default function Home() {
               <PoolverMark size={11} /> Total locked
             </div>
             <div className="v">$22.9M</div>
-            <div className="sub">USDC · across circles</div>
+            <div className="sub">USDC · across Poolvers</div>
             <div className="mini-bar">
               <div className="fill" style={{ width: "70%" }} />
             </div>
@@ -201,7 +202,7 @@ export default function Home() {
       <section className="shell section">
         <SectionHead
           n="04"
-          title="Circles <em>now forming</em>"
+          title="Poolvers <em>now forming</em>"
           meta="FEATURED"
         />
         {loading ? (
@@ -254,7 +255,7 @@ export default function Home() {
       <section className="shell section">
         <div className="landing-cta">
           <PoolverMark size={56} className="cta-mark" />
-          <h2>Ready to join a circle?</h2>
+          <h2>Ready to join a Poolver?</h2>
           <p>
             Browse 12 active pools, or configure your own in under 5 minutes.
           </p>

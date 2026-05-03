@@ -26,7 +26,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   title: "Poolver",
   description:
-    "Transparent pools, verifiable fair selection, minimal fees. Inspired by savings circles, powered by Solana.",
+    "Transparent pools, verifiable fair selection, minimal fees. Inspired by traditional rotating savings, powered by Solana.",
 };
 
 export default function RootLayout({

@@ -2,7 +2,7 @@ import { PoolverWordmark } from "@/components/brand/PoolverLogo";
 
 const SECTIONS = {
   proto: ["Whitepaper", "GitHub", "Audit Report", "Program ID", "Status"],
-  circle: ["Browse Pools", "Create Pool", "Reputation", "Treasury", "Insurance"],
+  poolver: ["Browse Pools", "Create Pool", "Reputation", "Treasury", "Insurance"],
   social: ["@poolver", "Discord", "Telegram EN", "Telegram PT", "Dialect"],
 };
 
@@ -35,9 +35,9 @@ IDL v0.1.0 · devnet
           </ul>
         </div>
         <div>
-          <h4>Circle</h4>
+          <h4>Poolver</h4>
           <ul>
-            {SECTIONS.circle.map((x) => (
+            {SECTIONS.poolver.map((x) => (
               <li key={x}>
                 <a href="#">{x}</a>
               </li>

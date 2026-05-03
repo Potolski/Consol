@@ -185,7 +185,7 @@ export default function DocsPage() {
             </p>
             <Callout title="Why on-chain">
               Traditional ROSCAs are limited by trust — you must know your
-              circle. Poolver replaces social trust with{" "}
+              group. Poolver replaces social trust with{" "}
               <b>collateral + verifiable reputation</b>, so strangers across the
               world can pool savings safely.
             </Callout>
@@ -374,7 +374,7 @@ export default function DocsPage() {
             </Callout>
             <p className="dim" style={{ fontSize: 11.5 }}>
               Bids are binding. If you win and default, insurance pays the
-              circle and you are slashed per §06.
+              Poolver and you are slashed per §06.
             </p>
           </DocSection>
 
@@ -389,7 +389,7 @@ export default function DocsPage() {
             <p>
               The 25% collateral you deposit at join is <b>locked until pool
               completion</b>, not until you win. If you stop paying after
-              winning, your collateral is slashed in favour of the circle. For
+              winning, your collateral is slashed in favour of the Poolver. For
               our example pool the collateral is $625 — one month&apos;s worth
               of &quot;skin in the game&quot; from every member.
             </p>
@@ -422,9 +422,9 @@ export default function DocsPage() {
             <p>
               5% of every contribution accrues to an{" "}
               <Code>insurance_pda</Code>. If a member defaults, the waterfall
-              is: (a) slashed collateral → circle, (b) forfeited tranches →
-              circle, (c) insurance reserve → circle to make it whole. The
-              circle is guaranteed against single-member default in virtually
+              is: (a) slashed collateral → Poolver, (b) forfeited tranches →
+              Poolver, (c) insurance reserve → Poolver to make it whole. The
+              Poolver is guaranteed against single-member default in virtually
               every configuration.
             </p>
 
@@ -432,7 +432,7 @@ export default function DocsPage() {
             <p>
               Defaults are the <i>single largest</i> negative signal in the
               wallet reputation score. A default can permanently drop a wallet
-              below the threshold required to join any future Poolver circle.
+              below the threshold required to join any future Poolver.
               Because the score is on-chain and non-transferable, a new wallet
               starts from 0 — so the cost of defaulting is structural, not just
               financial.
@@ -442,7 +442,7 @@ export default function DocsPage() {
 {`        ENFORCEMENT STACK
         ─────────────────
         ┌─ reputation ─┐   ← permanent, on-chain
-        ├─ insurance ──┤   ← circle kept whole
+        ├─ insurance ──┤   ← Poolver kept whole
         ├─ tranche ────┤   ← leverage over time
         └─ collateral ─┘   ← locked at join
 
@@ -502,7 +502,7 @@ export default function DocsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>Circles completed</td><td className="num">35%</td><td>program events</td></tr>
+                  <tr><td>Poolvers completed</td><td className="num">35%</td><td>program events</td></tr>
                   <tr><td>On-time payment rate</td><td className="num">30%</td><td>program events</td></tr>
                   <tr><td>Lifetime volume</td><td className="num">15%</td><td>program events</td></tr>
                   <tr><td>Tenure (first-seen)</td><td className="num">10%</td><td>earliest pool-activity</td></tr>

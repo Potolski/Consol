@@ -160,7 +160,7 @@ export default function CreatePage() {
         className="hero-headline"
         style={{ fontSize: "clamp(36px, 4.4vw, 56px)", margin: "12px 0 8px" }}
       >
-        Launch a <em>circle</em>.
+        Launch a <em>Poolver</em>.
       </h1>
       <p className="hero-deck" style={{ maxWidth: "62ch" }}>
         Configure the parameters. Deploy as a new PDA on Solana. Anyone with the
@@ -280,7 +280,7 @@ export default function CreatePage() {
               <div className="create-fields">
                 <Field
                   label={`Collateral — ${cfg.collateralPct}%`}
-                  hint="Locked at join. Higher = safer circle, more capital needed."
+                  hint="Locked at join. Higher = safer Poolver, more capital needed."
                 >
                   <input
                     type="range"

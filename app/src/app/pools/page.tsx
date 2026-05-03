@@ -51,7 +51,7 @@ export default function PoolsPage() {
               className="hero-headline"
               style={{ fontSize: "clamp(36px, 4.4vw, 60px)", margin: "16px 0 14px" }}
             >
-              Concurrent <em>circles</em>.<br />Pick your ticket.
+              Concurrent <em>Poolvers</em>.<br />Pick your ticket.
             </h1>
             <p className="hero-deck" style={{ maxWidth: "56ch" }}>
               Every pool is isolated state on the Solana program. Collateral,
@@ -152,7 +152,7 @@ export default function PoolsPage() {
             <option value="size">Pool size</option>
             <option value="monthly">Monthly (low → high)</option>
             <option value="soon">Next draw (soonest)</option>
-            <option value="rep">Circle reputation</option>
+            <option value="rep">Poolver reputation</option>
           </select>
         </div>
       </section>
@@ -243,7 +243,7 @@ function EmptyPoolsState({ total, filter }: { total: number; filter: Filter }) {
       </div>
       <div style={{ color: "var(--fg-2)", fontSize: 14, marginBottom: 20 }}>
         {none
-          ? "Be the first to create a circle on the deployed program."
+          ? "Be the first to create a Poolver on the deployed program."
           : "Try a different filter or create a new pool."}
       </div>
       <Link href="/create" className="btn primary">

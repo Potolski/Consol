@@ -83,7 +83,7 @@ export function Roster() {
     <section className="shell section">
       <SectionHead
         n="02"
-        title="Circle <em>Roster</em>"
+        title="Poolver <em>Roster</em>"
         meta="Members, reputation, status"
       />
       <div style={{ border: "1px solid var(--line)", borderRadius: 3, overflow: "auto" }}>
@@ -94,7 +94,7 @@ export function Roster() {
               <th>Wallet</th>
               <th className="num">Collateral</th>
               <th>Wallet Reputation</th>
-              <th className="num">Circles · On-time</th>
+              <th className="num">Poolvers · On-time</th>
               <th>Status</th>
               <th className="num">Received</th>
             </tr>
@@ -160,7 +160,7 @@ export function Roster() {
         }}
       >
         <span style={{ color: "var(--acc)" }}>◆ WALLET REPUTATION</span> is
-        computed on-chain from: circles completed · on-time payment rate · total
+        computed on-chain from: Poolvers completed · on-time payment rate · total
         volume contributed · tenure · peer vouch-stakes. Non-transferable.
       </div>
     </section>

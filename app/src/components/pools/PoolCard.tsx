@@ -180,7 +180,7 @@ export function PoolCard({ p, featured }: PoolCardProps) {
           <span className="v">{p.ratio}%</span>
         </div>
         <div className="pool-kv-row">
-          <span>Circle rep</span>
+          <span>Poolver rep</span>
           <span className="v">{p.rep ? `${p.rep} / 1000` : "—"}</span>
         </div>
         <div className="pool-kv-row">
